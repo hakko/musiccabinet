@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation=
+	"http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- This allows for overriding any property found in property file
+		     by setting a corresponding system.property variable.
+		     Default behavior is using test database, to use production database,
+		     do System.setProperty("jdbc.url", "prod url") or run JVM with -D.		-->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="location">
+			<value>classpath:local.jdbc.properties</value>
+		</property>
+	</bean>
+
+
+	<!--  SERVICES -->
+
+	<bean id="databaseAdministrationService" class="com.github.hakko.musiccabinet.service.DatabaseAdministrationService">
+		<property name="databaseAdministrationDao" ref="databaseAdministrationDao" />	
+	</bean>
+
+	<bean id="throttleService" class="com.github.hakko.musiccabinet.service.ThrottleService">
+	</bean>
+
+	<bean id="artistInfoService" class="com.github.hakko.musiccabinet.service.ArtistInfoService">
+		<property name="artistInfoClient" ref="artistInfoClient" />
+		<property name="artistInfoDao" ref="artistInfoDao" />
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
+	</bean>	
+
+	<bean id="albumInfoService" class="com.github.hakko.musiccabinet.service.AlbumInfoService">
+		<property name="albumInfoClient" ref="albumInfoClient" />
+		<property name="albumInfoDao" ref="albumInfoDao" />
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+	</bean>	
+
+	<bean id="artistRelationService" class="com.github.hakko.musiccabinet.service.ArtistRelationService">
+		<property name="artistSimilarityClient" ref="artistSimilarityClient" />
+		<property name="artistRelationDao" ref="artistRelationDao" />
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+	</bean>	
+
+	<bean id="artistTopTracksService" class="com.github.hakko.musiccabinet.service.ArtistTopTracksService">
+		<property name="artistTopTracksClient" ref="artistTopTracksClient" />
+		<property name="artistTopTracksDao" ref="artistTopTracksDao" />
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+	</bean>	
+
+	<bean id="artistTopTagsService" class="com.github.hakko.musiccabinet.service.ArtistTopTagsService">
+		<property name="artistTopTagsClient" ref="artistTopTagsClient" />
+		<property name="artistTopTagsDao" ref="artistTopTagsDao" />
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+	</bean>	
+
+	<bean id="trackRelationService" class="com.github.hakko.musiccabinet.service.TrackRelationService">
+		<property name="trackSimilarityClient" ref="trackSimilarityClient" />
+		<property name="trackRelationDao" ref="trackRelationDao" />
+		<property name="musicFileDao" ref="musicFileDao" />
+	</bean>
+	
+	<bean id="scrobbledTracksService" class="com.github.hakko.musiccabinet.service.ScrobbledTracksService">
+		<property name="scrobbledTracksClient" ref="scrobbledTracksClient" />
+		<property name="trackPlayCountDao" ref="trackPlayCountDao" />
+	</bean>
+
+	<bean id="tagService" class="com.github.hakko.musiccabinet.service.TagService">
+		<property name="tagDao" ref="tagDao" />
+	</bean>
+
+	<bean id="tagInfoService" class="com.github.hakko.musiccabinet.service.TagInfoService">
+		<property name="tagInfoClient" ref="tagInfoClient" />
+		<property name="tagInfoDao" ref="tagInfoDao" />
+		<property name="tagDao" ref="tagDao" />
+	</bean>
+
+	<bean id="artistRecommendationService" class="com.github.hakko.musiccabinet.service.ArtistRecommendationService">
+		<property name="artistRecommendationDao" ref="artistRecommendationDao" />
+		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
+	</bean>
+
+	<bean id="searchIndexUpdateExecutorService" class="com.github.hakko.musiccabinet.service.SearchIndexUpdateExecutorService">
+		<property name="throttleService" ref="throttleService" />
+	</bean>
+
+	<bean id="subsonicIndexService" class="com.github.hakko.musiccabinet.service.SubsonicIndexService">
+		<property name="musicFileDao" ref="musicFileDao" />
+		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
+		<property name="playlistGeneratorDao" ref="playlistGeneratorDao" />
+	</bean>
+
+	<bean id="itunesMusicLibraryService" class="com.github.hakko.musiccabinet.service.ItunesMusicLibraryService">
+		<property name="musicFileDao" ref="musicFileDao" />
+	</bean>
+
+	<bean id="playlistGeneratorService" class="com.github.hakko.musiccabinet.service.PlaylistGeneratorService">
+		<property name="playlistGeneratorDao" ref="playlistGeneratorDao" />
+		<property name="musicFileDao" ref="musicFileDao" />
+		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
+		<property name="trackRelationService" ref="trackRelationService" />
+	</bean>
+	
+	
+	<!--  LAST.FM WS CLIENTS -->
+	<bean id="artistInfoClient" class="com.github.hakko.musiccabinet.ws.lastfm.ArtistInfoClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>	
+
+	<bean id="albumInfoClient" class="com.github.hakko.musiccabinet.ws.lastfm.AlbumInfoClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>	
+
+	<bean id="artistSimilarityClient" class="com.github.hakko.musiccabinet.ws.lastfm.ArtistSimilarityClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>	
+
+	<bean id="artistTopTracksClient" class="com.github.hakko.musiccabinet.ws.lastfm.ArtistTopTracksClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>	
+
+	<bean id="artistTopTagsClient" class="com.github.hakko.musiccabinet.ws.lastfm.ArtistTopTagsClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>	
+
+	<bean id="trackSimilarityClient" class="com.github.hakko.musiccabinet.ws.lastfm.TrackSimilarityClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>
+	
+	<bean id="scrobbledTracksClient" class="com.github.hakko.musiccabinet.ws.lastfm.ScrobbledTracksClient">
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+		<property name="throttleService" ref="throttleService" />
+	</bean>
+	
+	<bean id="tagInfoClient" class="com.github.hakko.musiccabinet.ws.lastfm.TagInfoClient">
+		<property name="throttleService" ref="throttleService" />
+	</bean>
+
+
+	<!--  DAOs  -->
+
+	<bean id="musicDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="musicFileDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicFileDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="musicDirectoryDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicDirectoryDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="trackPlayCountDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcTrackPlayCountDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="webserviceHistoryDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcWebserviceHistoryDao">
+		<property name="dataSource" ref="dataSource" />
+		<property name="musicDao" ref="musicDao" />
+	</bean>
+
+	<bean id="trackRelationDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcTrackRelationDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="artistInfoDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistInfoDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="albumInfoDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcAlbumInfoDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="artistRelationDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistRelationDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="artistTopTracksDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistTopTracksDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="artistTopTagsDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistTopTagsDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="playlistGeneratorDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcPlaylistGeneratorDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="artistRecommendationDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistRecommendationDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="tagDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcTagDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="tagInfoDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcTagInfoDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="functionCountDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcFunctionCountDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="databaseAdministrationDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcDatabaseAdministrationDao">
+		<property name="dataSource" ref="dataSource" />
+		<property name="initialDataSource" ref="initialDataSource" />
+	</bean>
+
+
+	<!--  DATA SOURCE -->
+
+	<bean id="dataSource" destroy-method="close"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${musiccabinet.jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${musiccabinet.jdbc.url}" />
+		<property name="user" value="${musiccabinet.jdbc.username}" />
+		<property name="password" value="${musiccabinet.jdbc.password}" />
+
+		<property name="testConnectionOnCheckout" value="true" />
+		<property name="acquireRetryAttempts" value="1" />
+	</bean>
+
+	<bean id="initialDataSource" destroy-method="close"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${musiccabinet.jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${musiccabinet.jdbc.initialurl}" />
+		<property name="user" value="${musiccabinet.jdbc.username}" />
+		<property name="password" value="${musiccabinet.jdbc.password}" />
+	</bean>
+	
+</beans>

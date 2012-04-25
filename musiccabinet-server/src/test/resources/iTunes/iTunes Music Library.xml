@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Major Version</key><integer>1</integer>
+	<key>Minor Version</key><integer>1</integer>
+	<key>Date</key><date>2012-02-24T18:41:04Z</date>
+	<key>Application Version</key><string>10.5.2</string>
+	<key>Features</key><integer>5</integer>
+	<key>Show Content Ratings</key><true/>
+	<key>Music Folder</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/</string>
+	<key>Library Persistent ID</key><string>9EBCCCE865C42A30</string>
+	<key>Tracks</key>
+	<dict>
+		<key>5718</key>
+		<dict>
+			<key>Track ID</key><integer>5718</integer>
+			<key>Name</key><string>The Brothel</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>10227485</integer>
+			<key>Total Time</key><integer>375745</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:28Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>215</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>25</integer>
+			<key>Play Date</key><integer>3394662059</integer>
+			<key>Play Date UTC</key><date>2011-07-28T00:40:59Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Sort Name</key><string>Brothel</string>
+			<key>Persistent ID</key><string>980C96472A4DF8C0</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/01%20The%20Brothel.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5720</key>
+		<dict>
+			<key>Track ID</key><integer>5720</integer>
+			<key>Name</key><string>Lilith</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>6275408</integer>
+			<key>Total Time</key><integer>215588</integer>
+			<key>Track Number</key><integer>2</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:28Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>229</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>21</integer>
+			<key>Play Date</key><integer>3388424822</integer>
+			<key>Play Date UTC</key><date>2011-05-16T20:07:02Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>01361DE9F22F8AB1</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/02%20Lilith.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5722</key>
+		<dict>
+			<key>Track ID</key><integer>5722</integer>
+			<key>Name</key><string>Black Widow</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>5680186</integer>
+			<key>Total Time</key><integer>196362</integer>
+			<key>Track Number</key><integer>3</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:28Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>227</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>17</integer>
+			<key>Play Date</key><integer>3376396936</integer>
+			<key>Play Date UTC</key><date>2010-12-28T15:02:16Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>91678D2089145CA0</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/03%20Black%20Widow.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5724</key>
+		<dict>
+			<key>Track ID</key><integer>5724</integer>
+			<key>Name</key><string>It's All Gone Tomorrow</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>11370905</integer>
+			<key>Total Time</key><integer>367229</integer>
+			<key>Track Number</key><integer>4</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:28Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>245</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>11</integer>
+			<key>Play Date</key><integer>3374173939</integer>
+			<key>Play Date UTC</key><date>2010-12-02T21:32:19Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>F228E920F98D62B5</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/04%20It's%20All%20Gone%20Tomorrow.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5726</key>
+		<dict>
+			<key>Track ID</key><integer>5726</integer>
+			<key>Name</key><string>Knight of Noir</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>8304491</integer>
+			<key>Total Time</key><integer>302341</integer>
+			<key>Track Number</key><integer>5</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:28Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>217</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>11</integer>
+			<key>Play Date</key><integer>3374174241</integer>
+			<key>Play Date UTC</key><date>2010-12-02T21:37:21Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>2647EA0BD102A01C</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/05%20Knight%20of%20Noir.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5728</key>
+		<dict>
+			<key>Track ID</key><integer>5728</integer>
+			<key>Name</key><string>Turkish Delight</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>8969616</integer>
+			<key>Total Time</key><integer>289097</integer>
+			<key>Track Number</key><integer>6</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:28Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>245</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>11</integer>
+			<key>Play Date</key><integer>3374174530</integer>
+			<key>Play Date UTC</key><date>2010-12-02T21:42:10Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>BDDD0CB64205D352</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/06%20Turkish%20Delight.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5730</key>
+		<dict>
+			<key>Track ID</key><integer>5730</integer>
+			<key>Name</key><string>As I Walked Out One Evening</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>5420740</integer>
+			<key>Total Time</key><integer>198661</integer>
+			<key>Track Number</key><integer>7</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:29Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>214</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>11</integer>
+			<key>Play Date</key><integer>3374174729</integer>
+			<key>Play Date UTC</key><date>2010-12-02T21:45:29Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>390100A0CC2764EC</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/07%20As%20I%20Walked%20Out%20One%20Evening.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5732</key>
+		<dict>
+			<key>Track ID</key><integer>5732</integer>
+			<key>Name</key><string>O Master</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>7408091</integer>
+			<key>Total Time</key><integer>261198</integer>
+			<key>Track Number</key><integer>8</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:29Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>224</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>11</integer>
+			<key>Play Date</key><integer>3376424259</integer>
+			<key>Play Date UTC</key><date>2010-12-28T22:37:39Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>DC8E3C2231E52FFA</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/08%20O%20Master.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5734</key>
+		<dict>
+			<key>Track ID</key><integer>5734</integer>
+			<key>Name</key><string>Lullaby</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>9022814</integer>
+			<key>Total Time</key><integer>288731</integer>
+			<key>Track Number</key><integer>9</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:29Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>247</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>10</integer>
+			<key>Play Date</key><integer>3376425492</integer>
+			<key>Play Date UTC</key><date>2010-12-28T22:58:12Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>B59E1AE2AD7C5EB3</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/09%20Lullaby.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>5736</key>
+		<dict>
+			<key>Track ID</key><integer>5736</integer>
+			<key>Name</key><string>Father Father</string>
+			<key>Artist</key><string>Susanne Sundf�r</string>
+			<key>Album Artist</key><string>Susanne Sundf�r</string>
+			<key>Album</key><string>The Brothel</string>
+			<key>Kind</key><string>MPEG audio file</string>
+			<key>Size</key><integer>5640756</integer>
+			<key>Total Time</key><integer>202344</integer>
+			<key>Track Number</key><integer>10</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2010</integer>
+			<key>Date Modified</key><date>2012-02-24T00:19:29Z</date>
+			<key>Date Added</key><date>2010-09-12T15:49:06Z</date>
+			<key>Bit Rate</key><integer>219</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>10</integer>
+			<key>Play Date</key><integer>3376425694</integer>
+			<key>Play Date UTC</key><date>2010-12-28T23:01:34Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album</key><string>Brothel</string>
+			<key>Persistent ID</key><string>555D615F2677A455</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/Users/hakko/Music/iTunes/iTunes%20Media/Music/Susanne%20Sundf%C3%B8r/The%20Brothel/10%20Father%20Father.mp3</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+	</dict>
+	<key>Playlists</key>
+	<array>
+		<dict>
+			<key>Name</key><string>Top rated</string>
+			<key>Playlist ID</key><integer>186478</integer>
+			<key>Playlist Persistent ID</key><string>6108B85F32C7B302</string>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>5734</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>5736</integer>
+				</dict>		
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
