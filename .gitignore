@@ -1,0 +1,4 @@
+.metadata
+installationguide
+musiccabinet-server/src/main/resources/local.jdbc.properties
+musiccabinet-server/target
