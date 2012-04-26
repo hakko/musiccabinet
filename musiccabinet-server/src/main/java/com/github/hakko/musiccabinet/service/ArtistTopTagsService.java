@@ -1,13 +1,12 @@
 package com.github.hakko.musiccabinet.service;
 
-import java.util.HashSet;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TAGS;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTagsDao;
 import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
-import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -31,11 +30,9 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		Set<Artist> artists = new HashSet<Artist>();
-		artists.addAll(artistTopTagsDao.getArtistsWithoutTopTags());
-		artists.addAll(webserviceHistoryDao.getArtistsWithOldestInvocations(
-				Calltype.ARTIST_GET_TOP_TAGS));
-
+		List<Artist> artists = webserviceHistoryDao.
+				getArtistsScheduledForUpdate(ARTIST_GET_TOP_TAGS);
+		
 		setTotalOperations(artists.size());
 		
 		for (Artist artist : artists) {
@@ -63,8 +60,8 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 	
 	/*
 	 * The top tag response from Last.fm contains tags with very low relevance.
-	 * Don't bother to save them to database, they won't affect the radio selection
-	 * algorithm anyway.
+	 * Don't bother to save them to database, they won't really affect the radio
+	 * selection algorithm anyway.
 	 */
 	protected void removeTagsWithLowTagCount(List<Tag> tags) {
 		for (Iterator<Tag> it = tags.iterator(); it.hasNext();) {

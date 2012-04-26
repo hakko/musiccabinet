@@ -2,10 +2,14 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_ARTIST_ID;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_TRACK_ID;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_INFO;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -19,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
+import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
@@ -32,6 +37,9 @@ public class JdbcWebserviceHistoryDaoTest {
 	@Autowired
 	private JdbcWebserviceHistoryDao dao;
 
+	@Autowired
+	private JdbcMusicFileDao musicDao;
+	
 	@Before
 	public void setUp() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(dao, GET_ARTIST_ID);
@@ -201,6 +209,43 @@ public class JdbcWebserviceHistoryDaoTest {
 			assertTrue(isAllowed == cacheIsInvalid);
 		}
 	}
+	
+	@Test
+	public void identifiesArtistsWithoutInvocations() {
+		deleteMusicFiles();
+		deleteWebserviceInvocations();
+
+		MusicFile mf = new MusicFile("Madonna", "Jump", "/path/to/madonna/jump", 0L, 0L);
+		
+		musicDao.clearImport();
+		musicDao.addMusicFiles(Arrays.asList(mf));
+		musicDao.createMusicFiles();
+		
+		final Calltype INFO = ARTIST_GET_INFO, TOP_TRACKS = ARTIST_GET_TOP_TRACKS;
+		final Artist MADONNA = mf.getTrack().getArtist();
+		List<Artist> artistInfo, artistTopTracks;
+		artistInfo = dao.getArtistsWithNoInvocations(INFO);
+		artistTopTracks = dao.getArtistsWithNoInvocations(TOP_TRACKS);
+		
+		Assert.assertNotNull(artistInfo);
+		Assert.assertNotNull(artistTopTracks);
+		Assert.assertTrue(artistInfo.contains(MADONNA));
+		Assert.assertTrue(artistTopTracks.contains(MADONNA));
+		
+		dao.logWebserviceInvocation(new WebserviceInvocation(INFO, mf.getTrack().getArtist()));
+
+		artistInfo = dao.getArtistsWithNoInvocations(INFO);
+		artistTopTracks = dao.getArtistsWithNoInvocations(TOP_TRACKS);
+		Assert.assertFalse(artistInfo.contains(MADONNA));
+		Assert.assertTrue(artistTopTracks.contains(MADONNA));
+
+		dao.logWebserviceInvocation(new WebserviceInvocation(TOP_TRACKS, mf.getTrack().getArtist()));
+
+		artistInfo = dao.getArtistsWithNoInvocations(INFO);
+		artistTopTracks = dao.getArtistsWithNoInvocations(TOP_TRACKS);
+		Assert.assertFalse(artistInfo.contains(MADONNA));
+		Assert.assertFalse(artistTopTracks.contains(MADONNA));
+	}
 
 	@Test
 	public void quarantineLogsInvocationTimeInTheFuture() {
@@ -234,5 +279,9 @@ public class JdbcWebserviceHistoryDaoTest {
 	private void deleteWebserviceInvocations() {
 		dao.getJdbcTemplate().execute("truncate library.webservice_history cascade");
 	}
-	
+
+	private void deleteMusicFiles() {
+		dao.getJdbcTemplate().execute("truncate library.musicfile cascade");
+	}
+
 }

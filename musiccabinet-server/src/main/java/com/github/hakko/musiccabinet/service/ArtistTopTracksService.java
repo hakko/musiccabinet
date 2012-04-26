@@ -1,11 +1,11 @@
 package com.github.hakko.musiccabinet.service;
 
-import java.util.HashSet;
-import java.util.Set;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
+
+import java.util.List;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
 import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
-import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -28,11 +28,9 @@ public class ArtistTopTracksService extends SearchIndexUpdateService {
 
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		Set<Artist> artists = new HashSet<Artist>();
 		long ms = -System.currentTimeMillis();
-		artists.addAll(artistTopTracksDao.getArtistsWithoutTopTracks());
-		artists.addAll(webserviceHistoryDao.getArtistsWithOldestInvocations(
-				Calltype.ARTIST_GET_TOP_TRACKS));
+		List<Artist> artists = webserviceHistoryDao.
+				getArtistsScheduledForUpdate(ARTIST_GET_TOP_TRACKS);
 		ms += System.currentTimeMillis();
 		
 		LOG.debug(artists.size() + " jobs to do, gathered in " + ms + " ms");

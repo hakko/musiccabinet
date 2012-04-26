@@ -19,6 +19,6 @@ public interface WebserviceHistoryDao {
 	
 	boolean isWebserviceInvocationAllowed(WebserviceInvocation webserviceInvocation);
 	
-	List<Artist> getArtistsWithOldestInvocations(WebserviceInvocation.Calltype callType);
+	List<Artist> getArtistsScheduledForUpdate(WebserviceInvocation.Calltype callType);
 	
 }

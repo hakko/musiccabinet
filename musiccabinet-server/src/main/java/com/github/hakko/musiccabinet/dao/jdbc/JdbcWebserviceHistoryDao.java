@@ -149,8 +149,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	 * Group artists in local library by last update time from last.fm, and return
 	 * the 1/30th that were updated longest ago.
 	 */
-	@Override
-	public List<Artist> getArtistsWithOldestInvocations(Calltype callType) {
+	protected List<Artist> getArtistsWithOldestInvocations(Calltype callType) {
 		String sql = "select a.artist_name_capitalization from ("
 			+ "  select artist_id, ntile(30) over (order by invocation_time) "
 			+ "   from library.webservice_history where calltype_id = " + callType.getDatabaseId()
@@ -169,6 +168,45 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 		});
 		
 		return artists;
+	}
+
+	/*
+	 * Return artists found in local library, who's never been looked up from last.fm.
+	 */
+	protected List<Artist> getArtistsWithNoInvocations(Calltype callType) {
+		String sql = "select artist_name_capitalization from music.artist where id in ("
+				+ " select distinct t.artist_id from library.musicfile mf"
+				+ " inner join music.track t on mf.track_id = t.id"
+				+ " where not exists ("
+				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
+				+ " and calltype_id = " + callType.getDatabaseId() + "))";
+		
+		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
+			@Override
+			public Artist mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new Artist(rs.getString(1));
+			}
+		});
+		
+		return artists;
+	}
+
+	/*
+	 * Returns a concatenated list of artists from the local library, who:
+	 * - have either never been looked up from last.fm
+	 * - or have been looked up, but belong in the oldest ntile,
+	 *   meaning it's time for them to get updated.
+	 */
+	@Override
+	public List<Artist> getArtistsScheduledForUpdate(Calltype callType) {
+		List<Artist> newArtists = getArtistsWithNoInvocations(callType);
+		List<Artist> oldestArtists = getArtistsWithOldestInvocations(callType);
+		
+		if (!newArtists.isEmpty()) {
+			oldestArtists.addAll(newArtists);
+		}
+		
+		return oldestArtists;
 	}
 	
 	@Override

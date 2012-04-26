@@ -3,9 +3,7 @@ package com.github.hakko.musiccabinet.service;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_INFO;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistInfoDao;
 import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
@@ -43,11 +41,10 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		Set<Artist> artists = new HashSet<Artist>();
-		artists.addAll(artistInfoDao.getArtistsWithoutInfo());
-		artists.addAll(webserviceHistoryDao.getArtistsWithOldestInvocations(ARTIST_GET_INFO));
+		List<Artist> artists = webserviceHistoryDao.
+				getArtistsScheduledForUpdate(ARTIST_GET_INFO);
 		
-		List<ArtistInfo> artistInfos = new ArrayList<ArtistInfo>();
+		List<ArtistInfo> artistInfos = new ArrayList<ArtistInfo>(artists.size());
 		setTotalOperations(artists.size());
 		
 		for (Artist artist : artists) {
