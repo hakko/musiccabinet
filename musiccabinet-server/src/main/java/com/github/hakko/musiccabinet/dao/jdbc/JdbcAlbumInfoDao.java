@@ -102,6 +102,7 @@ public class JdbcAlbumInfoDao implements AlbumInfoDao, JdbcTemplateDao {
 				" inner join music.album alb on ai.album_id = alb.id" +
 				" inner join music.artist art on alb.artist_id = art.id" +
 				" where alb.album_name = upper(?) and art.artist_name = upper(?)";
+		
 		AlbumInfo albumInfo = jdbcTemplate.queryForObject(sql, 
 				new Object[]{album.getName(), album.getArtist().getName()}, 
 				new RowMapper<AlbumInfo>() {
@@ -162,26 +163,30 @@ public class JdbcAlbumInfoDao implements AlbumInfoDao, JdbcTemplateDao {
 				+ " where md.path in (" + getParameters(paths.size()) + ")";
 
 		final Map<String, AlbumInfo> albumInfos = new HashMap<String, AlbumInfo>();
-		jdbcTemplate.query(sql, paths.toArray(), new RowCallbackHandler() {
-			@Override
-			public void processRow(ResultSet rs) throws SQLException {
-				AlbumInfo ai = new AlbumInfo();
-				String albumName = rs.getString(1);
-				ai.setMediumImageUrl(rs.getString(2));
-				ai.setLargeImageUrl(rs.getString(3));
-				ai.setExtraLargeImageUrl(rs.getString(4));
-				ai.setAlbum(new Album(albumName));
-				String path = rs.getString(5);
-				albumInfos.put(path, ai);
-			}
-		});
+		try {
+			jdbcTemplate.query(sql, paths.toArray(), new RowCallbackHandler() {
+				@Override
+				public void processRow(ResultSet rs) throws SQLException {
+					AlbumInfo ai = new AlbumInfo();
+					String albumName = rs.getString(1);
+					ai.setMediumImageUrl(rs.getString(2));
+					ai.setLargeImageUrl(rs.getString(3));
+					ai.setExtraLargeImageUrl(rs.getString(4));
+					ai.setAlbum(new Album(albumName));
+					String path = rs.getString(5);
+					albumInfos.put(path, ai);
+				}
+			});
+		} catch (DataAccessException e) {
+			LOG.warn("Could not fetch album infos for paths " + paths + "!", e);
+		}
 		
 		return albumInfos;
 	}
 	
 	@Override
 	public List<Album> getAlbumsWithoutInfo() {
-		String sql = "select distinct art.artist_name_capitalization, alb.album_name_capitalization from"
+		String sql = "select art.artist_name_capitalization, alb.album_name_capitalization from"
 				+ " library.musicdirectory md"
 				+ " inner join music.album alb on md.album_id = alb.id"
 				+ " inner join music.artist art on alb.artist_id = art.id"
