@@ -41,11 +41,12 @@ public class TagInfoClient extends AbstractWSClient {
 					WebserviceInvocation webserviceInvocation) {
 				return true;
 			}
-			
+
 			@Override
-			public List<Artist> getArtistsWithOldestInvocations(Calltype callType) {
+			public List<Artist> getArtistsScheduledForUpdate(Calltype callType) {
 				return null;
 			}
+			
 		});
 	}
 	
