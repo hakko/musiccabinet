@@ -121,11 +121,18 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		return passwordCorrect;
 	}
 	
+	/*
+	 * Create actual database (musiccabinet, or musiccabinet-test depending on environment).
+	 * template0 is used as template since template1 has a few connected sessions through
+	 * the database connection pooling, and postgresql has a lock for reading it when
+	 * more than one session is connected.
+	 */
 	@Override
 	public void createEmptyDatabase() {
 		String createSql = "create database \"" + database + "\" with"
-				+ " encoding='UTF8'"
 				+ " owner=postgres"
+				+ " template=template0"
+				+ " encoding='UTF8'"
 				+ " connection limit=-1;";
 		initialJdbcTemplate.execute(createSql);
 	}
@@ -137,16 +144,20 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		// doesn't support password updates.
 		ComboPooledDataSource dataSource = 
 				(ComboPooledDataSource) jdbcTemplate.getDataSource();
+		ComboPooledDataSource initialDataSource = 
+				(ComboPooledDataSource) initialJdbcTemplate.getDataSource();
 		dataSource.setPassword(password);
+		initialDataSource.setPassword(password);
 		try {
 			dataSource.softResetDefaultUser();
+			initialDataSource.softResetDefaultUser();
 		} catch (SQLException e) {
 			throw new ApplicationException("Password update failed!", e);
 		}
 		try {
-			jdbcTemplate.execute("select 1");
+			initialJdbcTemplate.execute("select 1");
 		} catch (DataAccessException e) {
-			throw new ApplicationException("Could not execute statement!", e);
+			throw new ApplicationException("Password update failed!", e);
 		}
 	}
 	
