@@ -125,15 +125,14 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 
 	@Override
 	public List<Artist> getArtistsWithoutInfo() {
-		String sql = "select distinct a.artist_name_capitalization from"
-				+ " library.musicfile mf"
+		String sql = "select artist_name_capitalization from music.artist where id in ("
+				+ " select distinct t.artist_id from library.musicfile mf"
 				+ " inner join music.track t on mf.track_id = t.id"
-				+ " inner join music.artist a on t.artist_id = a.id"
 				+ " where not exists ("
-				+ " select 1 from music.artistinfo where artist_id = a.id)"
+				+ " select 1 from music.artistinfo where artist_id = t.artist_id)"
 				+ " and not exists ("
-				+ " select 1 from library.webservice_history where artist_id = a.id "
-				+ " and calltype_id = " + ARTIST_GET_INFO.getDatabaseId() + ")";
+				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
+				+ " and calltype_id = " + ARTIST_GET_INFO.getDatabaseId() + "))";
 
 		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
 			@Override

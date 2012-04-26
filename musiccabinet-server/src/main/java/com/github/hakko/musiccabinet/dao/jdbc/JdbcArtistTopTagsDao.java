@@ -91,15 +91,14 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 
 	@Override
 	public List<Artist> getArtistsWithoutTopTags() {
-		String sql = "select distinct a.artist_name_capitalization from"
-			+ " library.musicfile mf"
-			+ " inner join music.track t on mf.track_id = t.id"
-			+ " inner join music.artist a on t.artist_id = a.id"
-			+ " where not exists ("
-			+ " select 1 from music.artisttoptag att where att.artist_id = a.id)"
-			+ " and not exists ("
-			+ " select 1 from library.webservice_history where artist_id = a.id "
-			+ " and calltype_id = " + ARTIST_GET_TOP_TAGS.getDatabaseId() + ")";
+		String sql = "select artist_name_capitalization from music.artist where id in ("
+				+ " select distinct t.artist_id from library.musicfile mf"
+				+ " inner join music.track t on mf.track_id = t.id"
+				+ " where not exists ("
+				+ " select 1 from music.artisttoptag where artist_id = t.artist_id)"
+				+ " and not exists ("
+				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
+				+ " and calltype_id = " + ARTIST_GET_TOP_TAGS.getDatabaseId() + "))";
 		
 		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
 			@Override
