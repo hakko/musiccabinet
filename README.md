@@ -23,7 +23,7 @@ How does it work?
 -----------------
 
 * you run a PostgreSQL database on your own machine.
-* the database stores information about your local music library (artist, albums, tracks).
+* the database stores information about your local music library (artists, albums, tracks).
 * meta-data, such as related artists, top tracks, genres and image urls, is fetched from last.fm and stored.
 * methods to help you browse your library or generate playlists are exposed through an API.
 * MusicCabinet is a Java library, meant to be bundled with other applications.
