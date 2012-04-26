@@ -96,7 +96,7 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 				+ " select distinct t.artist_id from library.musicfile mf"
 				+ " inner join music.track t on mf.track_id = t.id"
 				+ " where not exists ("
-				+ " select 1 from music.artistrelation where ar.source_id = t.artist_id)"
+				+ " select 1 from music.artistrelation where source_id = t.artist_id)"
 				+ " and not exists ("
 				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
 				+ " and calltype_id = " + ARTIST_GET_SIMILAR.getDatabaseId() + "))";
