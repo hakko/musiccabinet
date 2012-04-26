@@ -130,13 +130,13 @@ public abstract class AbstractWSClient {
 
 	/*
 	 * Try calling the web service. If invocation fails but it is marked as
-	 * recoverable, sleep for five minutes and try again until an hour has passed.
-	 * Then give up.
+	 * recoverable, sleep for five minutes and try again until fifteen
+	 * minutes has passed. Then give up.
 	 */
 	private WSResponse invokeCall(List<NameValuePair> params) throws ApplicationException {
 		WSResponse wsResponse = null;
 		int callAttempts = 0;
-		while (++callAttempts <= 12) {
+		while (++callAttempts <= 3) {
 			wsResponse = invokeSingleCall(params);
 			if (wsResponse.wasCallSuccessful()) {
 				break;
