@@ -28,13 +28,8 @@ public class ArtistTopTracksService extends SearchIndexUpdateService {
 
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		long ms = -System.currentTimeMillis();
 		List<Artist> artists = webserviceHistoryDao.
 				getArtistsScheduledForUpdate(ARTIST_GET_TOP_TRACKS);
-		ms += System.currentTimeMillis();
-		
-		LOG.debug(artists.size() + " jobs to do, gathered in " + ms + " ms");
-
 		setTotalOperations(artists.size());
 		
 		for (Artist artist : artists) {

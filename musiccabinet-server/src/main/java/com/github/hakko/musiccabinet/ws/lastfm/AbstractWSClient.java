@@ -171,17 +171,7 @@ public abstract class AbstractWSClient {
 			params.add(new BasicNameValuePair(PARAM_API_KEY, API_KEY));
 			HttpGet httpGet = new HttpGet(getURI(params));
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            long ms = -System.currentTimeMillis();
             String responseBody = httpClient.execute(httpGet, responseHandler);
-            ms += System.currentTimeMillis();
-
-            StringBuilder sb = new StringBuilder();
-            for (NameValuePair nvp : params) {
-            	if (!nvp.getName().equals(PARAM_API_KEY))
-            	sb.append(nvp.getValue() + "\t");
-            }
-            LOG.debug(sb.toString() + "\t" + ms + " ms");
-            
             wsResponse = new WSResponse(responseBody);
 		} catch (ClientProtocolException e) {
 			if (e instanceof HttpResponseException) {

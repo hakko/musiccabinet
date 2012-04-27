@@ -140,7 +140,7 @@ public class WSResponse {
 		}
 		
 		if (errorCodeStart * errorCodeEnd * errorMsgStart * errorMsgEnd == 0) {
-			LOG.debug(responseBody);
+			LOG.info(responseBody);
 			throw new ApplicationException("Response from Last.fm not properly formed!");
 		}
 		

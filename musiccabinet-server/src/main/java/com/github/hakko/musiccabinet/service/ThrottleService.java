@@ -33,9 +33,6 @@ public class ThrottleService {
 	}
 	
 	public void allowCalls() {
-		int avail = semaphore.availablePermits();
-		LOG.debug("Throttle service: allow calls, available: " + avail 
-				+ ", hand out " + (60 * THRESHOLD - avail));
 		semaphore.release(60 * THRESHOLD - semaphore.availablePermits());
 	}
 
