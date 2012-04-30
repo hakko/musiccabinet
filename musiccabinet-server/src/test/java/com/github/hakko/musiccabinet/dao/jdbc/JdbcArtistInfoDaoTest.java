@@ -15,8 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
-import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.parser.lastfm.ArtistInfoParserImpl;
@@ -48,9 +46,6 @@ public class JdbcArtistInfoDaoTest {
 
 	@Autowired
 	private JdbcMusicDao musicDao;
-	
-	@Autowired
-	private JdbcMusicFileDao musicFileDao;
 
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
@@ -110,36 +105,6 @@ public class JdbcArtistInfoDaoTest {
 	}
 	
 	@Test
-	public void allArtistsWithoutInfoAreReturned() {
-		deleteArtistInfos();
-		deleteMusicFiles();
-		
-		musicFileDao.addMusicFiles(getMusicFiles(aiAbba, aiCher, aiTina));
-		musicFileDao.createMusicFiles();
-		
-		List<Artist> artists = dao.getArtistsWithoutInfo();
-		Assert.assertNotNull(artists);
-		Assert.assertTrue(artists.contains(aiAbba.getArtist()));
-		Assert.assertTrue(artists.contains(aiCher.getArtist()));
-		Assert.assertTrue(artists.contains(aiTina.getArtist()));
-	}
-
-	@Test
-	public void onlyPresentArtistsWithoutInfoAreReturned() {
-		deleteArtistInfos();
-		deleteMusicFiles();
-		
-		musicFileDao.addMusicFiles(getMusicFiles(aiTina));
-		musicFileDao.createMusicFiles();
-
-		List<Artist> artists = dao.getArtistsWithoutInfo();
-		Assert.assertNotNull(artists);
-		Assert.assertTrue(artists.contains(aiTina.getArtist()));
-		Assert.assertFalse(artists.contains(aiAbba.getArtist()));
-		Assert.assertFalse(artists.contains(aiCher.getArtist()));
-	}
-
-	@Test
 	public void biographyAndImageUrlAreReturnedAsInfo() throws ApplicationException {
 		deleteArtistInfos();
 
@@ -158,20 +123,6 @@ public class JdbcArtistInfoDaoTest {
 	
 	private void deleteArtistInfos() {
 		dao.getJdbcTemplate().execute("truncate music.artistinfo cascade");
-	}
-	
-	private void deleteMusicFiles() {
-		dao.getJdbcTemplate().execute("truncate library.musicfile cascade");
-	}
-
-	private List<MusicFile> getMusicFiles(ArtistInfo... artistInfos) {
-		List<MusicFile> musicFiles = new ArrayList<MusicFile>();
-		for (ArtistInfo ai : artistInfos) {
-			String artistName = ai.getArtist().getName();
-			musicFiles.add(new MusicFile(artistName, "track by " + artistName, 
-					"path to " + artistName, 0L, 0L));
-		}
-		return musicFiles;
 	}
 	
 }

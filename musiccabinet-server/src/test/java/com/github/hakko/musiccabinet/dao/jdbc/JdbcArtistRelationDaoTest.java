@@ -1,7 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTRELATION_FROM_IMPORT;
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -18,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.MusicDao;
-import com.github.hakko.musiccabinet.dao.MusicFileDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistRelation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -41,12 +37,6 @@ public class JdbcArtistRelationDaoTest {
 	private ArtistRelation ar5 = new ArtistRelation(new Artist("Geri Halliwell"), 0.291044f);
 	private ArtistRelation ar6 = new ArtistRelation(new Artist("Jennifer Lopez"), 0.208765f);
 	private ArtistRelation ar7 = new ArtistRelation(new Artist("Cher"), 0.195111f);
-
-	@Autowired
-	private MusicDao musicDao;
-	
-	@Autowired
-	private MusicFileDao musicFileDao;
 	
 	@Autowired
 	private JdbcArtistRelationDao dao;
@@ -110,82 +100,7 @@ public class JdbcArtistRelationDaoTest {
 			assertTrue(kylieRelations.contains(ar));
 		}
 	}
-	
-	@Test
-	public void noArtistsMeanNoMissingRelations() {
-		deleteArtists();
 		
-		List<Artist> artists = dao.getArtistsWithoutRelations();
-		Assert.assertNotNull(artists);
-		Assert.assertEquals(0, artists.size());
-	}
-	
-	@Test
-	public void oneArtistMeansOneMissingRelation() {
-		final String artistName = "Piano Magic";
-		final String trackName = "Kingfisher / Grass";
-		final String path = "/";
-		final long lastModified = System.currentTimeMillis(), created = lastModified;
-		
-		deleteArtists();
-		
-		createMusicFiles(Arrays.asList(
-				new MusicFile(artistName, trackName, path, created, lastModified)));
-		
-		List<Artist> artists = dao.getArtistsWithoutRelations();
-		Assert.assertNotNull(artists);
-		Assert.assertEquals(1, artists.size());
-		Assert.assertTrue(artistName.equals(artists.get(0).getName()));
-		Assert.assertNotNull(artists.get(0).getName());
-	}
-
-	@Test
-	public void onlyArtistsWithoutRelationsAreReturned() {
-		long time = System.currentTimeMillis();
-		MusicFile mf1 = new MusicFile("Emily Barker", "Blackbird", "/path1", time, time);
-		MusicFile mf2 = new MusicFile("Emily Haines", "Our Hell", "/path2", time, time);
-		MusicFile mf3 = new MusicFile("Emily Jane White", "Dagger", "/path3", time, time);
-		
-		Artist artist1 = mf1.getTrack().getArtist();
-		Artist artist2 = mf2.getTrack().getArtist();
-		Artist artist3 = mf3.getTrack().getArtist();
-		
-		createMusicFiles(asList(mf1, mf2, mf3));
-		dao.createArtistRelations(artist1, asList(new ArtistRelation(artist3, 0.25f)));
-		
-		List<Artist> artists = dao.getArtistsWithoutRelations();
-
-		Assert.assertNotNull(artists);
-		Assert.assertFalse(artists.contains(artist1));
-		Assert.assertTrue(artists.contains(artist2));
-		Assert.assertTrue(artists.contains(artist3));
-	}
-	
-	@Test
-	public void artistWithoutMusicFilesAreNotReturned() {
-		long time = System.currentTimeMillis();
-		MusicFile mf = new MusicFile("Jay Munly", "My Darling Sambo", "/path/" + time, time, time);
-
-		createMusicFiles(Arrays.asList(mf));
-		musicDao.getArtistId("Jay Farrar");
-		
-		List<Artist> artists = dao.getArtistsWithoutRelations();
-		Assert.assertNotNull(artists);
-		Assert.assertEquals(1, artists.size());
-		Assert.assertTrue(mf.getTrack().getArtist().getName()
-				.equals(artists.get(0).getName()));
-	}
-	
-	private void createMusicFiles(List<MusicFile> musicFiles) {
-		musicFileDao.clearImport();
-		musicFileDao.addMusicFiles(musicFiles);
-		musicFileDao.createMusicFiles();
-	}
-	
-	private void deleteArtists() {
-		dao.getJdbcTemplate().execute("truncate music.artist cascade");
-	}
-	
 	private void deleteArtistRelations() {
 		dao.getJdbcTemplate().execute("truncate music.artistrelation cascade");
 	}
