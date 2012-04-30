@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.service;
 
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TAGS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,20 +70,21 @@ public class ArtistTopTagsServiceTest {
 	public void artistTopTagsUpdateUpdatesAllArtists() throws ApplicationException, IOException {
 		clearLibraryAndAddCherTrack();
 		
-		List<Artist> artists = artistTopTagsDao.getArtistsWithoutTopTags();
+		WebserviceInvocation wi = new WebserviceInvocation(ARTIST_GET_TOP_TAGS, new Artist(artistName));
+		Assert.assertTrue(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
+		
+		List<Artist> artists = webserviceHistoryDao.getArtistsScheduledForUpdate(ARTIST_GET_TOP_TAGS);
 		Assert.assertNotNull(artists);
 		Assert.assertEquals(1, artists.size());
 		Assert.assertTrue(artists.contains(new Artist(artistName)));
 
 		ArtistTopTagsService artistTopTagsService = new ArtistTopTagsService();
-		artistTopTagsService.setArtistTopTagsClient(getArtistTopTagsClient());
+		artistTopTagsService.setArtistTopTagsClient(getArtistTopTagsClient(webserviceHistoryDao));
 		artistTopTagsService.setArtistTopTagsDao(artistTopTagsDao);
 		artistTopTagsService.setWebserviceHistoryDao(webserviceHistoryDao);
 		artistTopTagsService.updateSearchIndex();
-		
-		artists = artistTopTagsDao.getArtistsWithoutTopTags();
-		Assert.assertNotNull(artists);
-		Assert.assertEquals(0, artists.size());
+
+		Assert.assertFalse(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
 	}
 	
 	@Test
@@ -117,12 +119,7 @@ public class ArtistTopTagsServiceTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ArtistTopTagsClient getArtistTopTagsClient() throws IOException {
-		// create a HistoryDao that allow all calls
-		WebserviceHistoryDao historyDao = mock(WebserviceHistoryDao.class);
-		when(historyDao.isWebserviceInvocationAllowed(
-				Mockito.any(WebserviceInvocation.class))).thenReturn(true);
-
+	private ArtistTopTagsClient getArtistTopTagsClient(WebserviceHistoryDao historyDao) throws IOException {
 		// create a HTTP client that always returns Cher top tracks
 		HttpClient httpClient = mock(HttpClient.class);
 		ClientConnectionManager connectionManager = mock(ClientConnectionManager.class);
@@ -131,13 +128,13 @@ public class ArtistTopTagsServiceTest {
 		when(httpClient.execute(Mockito.any(HttpUriRequest.class), 
 				Mockito.any(ResponseHandler.class))).thenReturn(httpResponse);
 
-		// create a client that allows all calls and returns Cher top tracks
+		// create a throttling service that allows calls at any rate
+		ThrottleService throttleService = mock(ThrottleService.class);
+
+		// create a client based on mocked HTTP client
 		ArtistTopTagsClient attClient = new ArtistTopTagsClient();
 		attClient.setWebserviceHistoryDao(historyDao);
 		attClient.setHttpClient(httpClient);
-
-		// create a throttling service that allows calls at any rate
-		ThrottleService throttleService = mock(ThrottleService.class);
 		attClient.setThrottleService(throttleService);
 
 		return attClient;

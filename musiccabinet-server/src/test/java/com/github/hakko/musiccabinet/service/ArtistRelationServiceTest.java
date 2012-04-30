@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.service;
 
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_SIMILAR;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,21 +67,22 @@ public class ArtistRelationServiceTest {
 	@Test
 	public void artistRelationUpdateUpdatesAllArtists() throws ApplicationException, IOException {
 		clearLibraryAndAddCherTrack();
-		
-		List<Artist> artists = artistRelationDao.getArtistsWithoutRelations();
+
+		WebserviceInvocation wi = new WebserviceInvocation(ARTIST_GET_SIMILAR, new Artist(artistName));
+		Assert.assertTrue(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
+
+		List<Artist> artists = webserviceHistoryDao.getArtistsScheduledForUpdate(ARTIST_GET_SIMILAR);
 		Assert.assertNotNull(artists);
 		Assert.assertEquals(1, artists.size());
 		Assert.assertTrue(artists.contains(new Artist(artistName)));
 
 		ArtistRelationService artistRelationService = new ArtistRelationService();
-		artistRelationService.setArtistSimilarityClient(getArtistSimilarityClient());
+		artistRelationService.setArtistSimilarityClient(getArtistSimilarityClient(webserviceHistoryDao));
 		artistRelationService.setArtistRelationDao(artistRelationDao);
 		artistRelationService.setWebserviceHistoryDao(webserviceHistoryDao);
 		artistRelationService.updateSearchIndex();
 		
-		artists = artistRelationDao.getArtistsWithoutRelations();
-		Assert.assertNotNull(artists);
-		Assert.assertEquals(0, artists.size());
+		Assert.assertFalse(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
 	}
 	
 	private void clearLibraryAndAddCherTrack() throws ApplicationException {
@@ -95,12 +97,7 @@ public class ArtistRelationServiceTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ArtistSimilarityClient getArtistSimilarityClient() throws IOException {
-		// create a HistoryDao that allow all calls
-		WebserviceHistoryDao historyDao = mock(WebserviceHistoryDao.class);
-		when(historyDao.isWebserviceInvocationAllowed(
-				Mockito.any(WebserviceInvocation.class))).thenReturn(true);
-
+	private ArtistSimilarityClient getArtistSimilarityClient(WebserviceHistoryDao historyDao) throws IOException {
 		// create a HTTP client that always returns Cher artist relations
 		HttpClient httpClient = mock(HttpClient.class);
 		ClientConnectionManager connectionManager = mock(ClientConnectionManager.class);
@@ -108,14 +105,14 @@ public class ArtistRelationServiceTest {
 		String httpResponse = new ResourceUtil(CHER_ARTIST_RELATIONS).getContent();
 		when(httpClient.execute(Mockito.any(HttpUriRequest.class), 
 				Mockito.any(ResponseHandler.class))).thenReturn(httpResponse);
+		
+		// create a throttling service that allows calls at any rate
+		ThrottleService throttleService = mock(ThrottleService.class);
 
 		// create a client that allows all calls and returns Cher artist relations
 		ArtistSimilarityClient asClient = new ArtistSimilarityClient();
 		asClient.setWebserviceHistoryDao(historyDao);
 		asClient.setHttpClient(httpClient);
-
-		// create a throttling service that allows calls at any rate
-		ThrottleService throttleService = mock(ThrottleService.class);
 		asClient.setThrottleService(throttleService);
 
 		return asClient;
