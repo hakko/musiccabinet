@@ -11,6 +11,5 @@ public interface ArtistInfoDao {
 	void createArtistInfo(List<ArtistInfo> artistInfo);
 	ArtistInfo getArtistInfo(int artistId) throws ApplicationException;
 	ArtistInfo getArtistInfo(Artist artist) throws ApplicationException;
-	List<Artist> getArtistsWithoutInfo();
 	
 }

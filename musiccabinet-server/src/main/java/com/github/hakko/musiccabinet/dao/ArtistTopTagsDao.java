@@ -9,7 +9,5 @@ public interface ArtistTopTagsDao {
 
 	void createTopTags(Artist artist, List<Tag> tags);
 	List<Tag> getTopTags(Artist artist);
-	
-	List<Artist> getArtistsWithoutTopTags();
 
 }

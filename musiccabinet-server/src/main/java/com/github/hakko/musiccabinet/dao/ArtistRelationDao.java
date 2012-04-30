@@ -10,6 +10,4 @@ public interface ArtistRelationDao {
 	void createArtistRelations(Artist sourceArtist, List<ArtistRelation> artistRelations);
 	List<ArtistRelation> getArtistRelations(Artist sourceArtist);
 	
-	List<Artist> getArtistsWithoutRelations();
-	
 }
