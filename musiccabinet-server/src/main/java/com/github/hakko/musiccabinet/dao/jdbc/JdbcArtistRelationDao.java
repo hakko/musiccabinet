@@ -1,7 +1,5 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_SIMILAR;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -88,27 +86,6 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
-	}
-
-	@Override
-	public List<Artist> getArtistsWithoutRelations() {
-		String sql = "select artist_name_capitalization from music.artist where id in ("
-				+ " select distinct t.artist_id from library.musicfile mf"
-				+ " inner join music.track t on mf.track_id = t.id"
-				+ " where not exists ("
-				+ " select 1 from music.artistrelation where source_id = t.artist_id)"
-				+ " and not exists ("
-				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
-				+ " and calltype_id = " + ARTIST_GET_SIMILAR.getDatabaseId() + "))";
-		
-		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
-			@Override
-			public Artist mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new Artist(rs.getString(1));
-			}
-		});
-		
-		return artists;
 	}
 
 }
