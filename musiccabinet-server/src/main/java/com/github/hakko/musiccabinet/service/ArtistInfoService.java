@@ -35,8 +35,15 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 	private static final Logger LOG = Logger.getLogger(ArtistInfoService.class);
 	
 	public ArtistInfo getArtistInfo(String path) throws ApplicationException {
+		ArtistInfo artistInfo = null;
 		Integer artistId = musicDirectoryDao.getArtistId(path);
-		return artistId == null ? null : artistInfoDao.getArtistInfo(artistId);
+		if (artistId != null) {
+			artistInfo = artistInfoDao.getArtistInfo(artistId);
+			if (artistInfo == null) {
+				LOG.info("No artist info found for " + path);
+			}
+		}
+		return artistInfo;
 	}
 	
 	@Override
