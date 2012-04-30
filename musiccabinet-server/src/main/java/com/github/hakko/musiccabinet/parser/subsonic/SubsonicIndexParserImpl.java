@@ -15,6 +15,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import com.github.hakko.musiccabinet.domain.model.library.MusicDirectory;
 import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.log.Logger;
 
 public class SubsonicIndexParserImpl implements SubsonicIndexParser {
 
@@ -35,6 +36,8 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
 	 * The subsonic index file might be too big to fit in heap.
 	 */
 	public static final int BATCH_SIZE = 1000;
+	
+	private static final Logger LOG = Logger.getLogger(SubsonicIndexParserImpl.class);
 	
 	public SubsonicIndexParserImpl(InputStream inputStream) throws ApplicationException {
 		try {
@@ -96,6 +99,15 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
     	if (!IS_FILE.equals(tokens[0])) {
         	return;
         }
+    	
+    	/* One user reported an ArrayIndexOutOfBoundsException from this class.
+    	 * Still haven't figured out the exact cause for this, so this line is
+    	 * to be seen as debugging of when Subsonic creates such a line.
+    	 */
+    	if (tokens.length < 8) {
+    		LOG.warn("Can't add track from line " + line + "!");
+    		return;
+    	}
         
         long created = Long.parseLong(tokens[1]);
         long lastModified = Long.parseLong(tokens[2]);
@@ -105,7 +117,8 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
 
         musicFiles.add(new MusicFile(artistName, trackName, path, created, lastModified));
     }
-	/**
+	
+    /**
 	 * Parses a single line representing a directory from a Subsonic index file, version 14.
 	 * 
 	 * @see net.sourceforge.subsonic.service.SearchService
