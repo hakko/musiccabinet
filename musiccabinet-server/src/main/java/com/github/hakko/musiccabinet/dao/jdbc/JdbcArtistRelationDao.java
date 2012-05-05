@@ -82,10 +82,71 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 		
 		return artistRelations;
 	}
+	
+	/*
+	 * TODO
+	 * 
+	 * on "Related artists" page, add an "Edit" possibility
+	 * Display top tags for main artist
+	 * Allow user to select which ones to use
+	 * Return matching artists (see below)
+	 * Add selected matching artists as related
+	 * 
+	 * somehow mark as updated to avoid overwriting
+	 */
+	public List<ArtistRelation> getSimilarArtistsByTags(int artistId) {
+		String topTagsSql =
+				"select tag_id, tag_count from music.artisttoptag"
+				+ " where artist_id = " + artistId
+				+ " order by tag_count desc limit 5";
+		String similarityTableSql =
+				"create temporary table similarity"
+				+ " (artist_id integer not null, count integer not null";
+		String insertSimilaritySql =
+				"insert into similarity (artist_id, count)"
+				+ " select artist_id, 100-abs(?-tag_count) from"
+				+ " music.artisttoptag where tag_id = ?";
+		String topArtistsSql =
+				"select a.artist_name_capitalization, m.sum/(100.0*?) from music.artist a"
+				+ " inner join (select artist_id, sum(count) from similarity group by artist_id) s"
+				+ " on a.id = s.artist_id order by m.sum desc";
+		
+		List<TagCount> topTags = jdbcTemplate.query(topTagsSql, new RowMapper<TagCount>() {
+			@Override
+			public TagCount mapRow(ResultSet rs, int rowNum)
+					throws SQLException {
+				return new TagCount(rs.getInt(1), rs.getInt(2));
+			}
+		});
+		
+		jdbcTemplate.execute(similarityTableSql);
+		for (TagCount topTag : topTags) {
+			jdbcTemplate.update(insertSimilaritySql, topTag.tagCount, topTag.tagId);
+		}
+
+		return jdbcTemplate.query(topArtistsSql, new Object[]{topTags.size()}, 
+				new RowMapper<ArtistRelation>() {
+			@Override
+			public ArtistRelation mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new ArtistRelation(new Artist(rs.getString(1)), rs.getFloat(2));
+			}
+		});
+	}
+
 
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	private class TagCount {
+		protected int tagId;
+		protected int tagCount;
+		
+		public TagCount(int id, int count) {
+			this.tagId = id;
+			this.tagCount = count;
+		}
 	}
 
 }
