@@ -100,9 +100,10 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
         	return;
         }
     	
-    	/* One user reported an ArrayIndexOutOfBoundsException from this class.
-    	 * Still haven't figured out the exact cause for this, so this line is
-    	 * to be seen as debugging of when Subsonic creates such a line.
+    	/* If a file with title null is found by Subsonic scan, the title gets
+    	 * written as an empty string in the index file. When parsing with Apache's
+    	 * StrTokenizer, those empty tokens aren't added to the token array.
+    	 * Ignore such lines as they won't match anything from last.fm anyway.
     	 */
     	if (tokens.length < 8) {
     		LOG.warn("Can't add track from line " + line + "!");
