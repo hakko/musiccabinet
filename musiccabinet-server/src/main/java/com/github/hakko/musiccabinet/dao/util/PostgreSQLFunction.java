@@ -15,36 +15,39 @@ public enum PostgreSQLFunction {
 	GET_ARTIST_ID("music", "get_artist_id", "sql/music/get-artist-id.sql"),
 	GET_ALBUM_ID("music", "get_album_id", "sql/music/get-album-id.sql"),
 	GET_TRACK_ID("music", "get_track_id", "sql/music/get-track-id.sql"),
-	UPDATE_TRACKRELATION_FROM_IMPORT("music", "update_trackrelation_from_import", 
-		"sql/music/update-trackrelation-from-import.sql"),
-	UPDATE_ARTISTINFO_FROM_IMPORT("music", "update_artistinfo_from_import",
-		"sql/music/update-artistinfo-from-import.sql"),
-	UPDATE_ALBUMINFO_FROM_IMPORT("music", "update_albuminfo_from_import",
-		"sql/music/update-albuminfo-from-import.sql"),
-	UPDATE_ARTISTRELATION_FROM_IMPORT("music", "update_artistrelation_from_import", 
-		"sql/music/update-artistrelation-from-import.sql"),
-	UPDATE_ARTISTTOPTRACK_FROM_IMPORT("music", "update_artisttoptrack_from_import",
-		"sql/music/update-artisttoptrack-from-import.sql"),
-	UPDATE_ARTISTTOPTAG_FROM_IMPORT("music", "update_artisttoptag_from_import",
-		"sql/music/update-artisttoptag-from-import.sql"),
-	UPDATE_TAGINFO_FROM_IMPORT("music", "update_taginfo_from_import",
-		"sql/music/update-taginfo-from-import.sql"),
+	UPDATE_TRACKRELATION("music", "update_trackrelation", 
+		"sql/music/update-trackrelation.sql"),
+	UPDATE_ARTISTINFO("music", "update_artistinfo",
+		"sql/music/update-artistinfo.sql"),
+	UPDATE_ALBUMINFO("music", "update_albuminfo",
+		"sql/music/update-albuminfo.sql"),
+	UPDATE_ARTISTRELATION("music", "update_artistrelation", 
+		"sql/music/update-artistrelation.sql"),
+	UPDATE_ARTISTTOPTRACK("music", "update_artisttoptrack",
+		"sql/music/update-artisttoptrack.sql"),
+	UPDATE_ARTISTTOPTAG("music", "update_artisttoptag",
+		"sql/music/update-artisttoptag.sql"),
+	UPDATE_TAGINFO("music", "update_taginfo",
+		"sql/music/update-taginfo.sql"),
 		
 	/* Library schema */
-	UPDATE_MUSICFILE_FROM_IMPORT("library", "update_musicfile_from_import", 
-		"sql/library/update-musicfile-from-import.sql"),
-	UPDATE_MUSICFILE_EXTERNAL_IDS("library", "update_musicfile_external_ids", 
-		"sql/library/update-musicfile-external-ids.sql"),
-	UPDATE_MUSICDIRECTORY_FROM_IMPORT("library", "update_musicdirectory_from_import", 
-		"sql/library/update-musicdirectory-from-import.sql"),
-	UPDATE_TRACKPLAYCOUNT_FROM_IMPORT("library", "update_trackplaycount_from_import", 
-		"sql/library/update-trackplaycount-from-import.sql");
+	UPDATE_MUSICFILE("library", "update_musicfile", 
+		"sql/library/update-musicfile.sql"),
+	UPDATE_MUSICFILE_EXTERNAL_IDS("library", "update_musicfile_extid", 
+		"sql/library/update-musicfile-extid.sql"),
+	UPDATE_MUSICDIRECTORY("library", "update_musicdirectory", 
+		"sql/library/update-musicdirectory.sql"),
+	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 
+		"sql/library/update-trackplaycount.sql");
 
 	private final String schema;
 	private final String functionName;
 	private final String URI;
 	
 	PostgreSQLFunction(String schema, String functionName, String URI) {
+		if (schema.length() + 1 + functionName.length() >= 32) {
+			throw new IllegalArgumentException("Function name too long!");
+		}
 		this.schema = schema;
 		this.functionName = functionName;
 		this.URI = URI;

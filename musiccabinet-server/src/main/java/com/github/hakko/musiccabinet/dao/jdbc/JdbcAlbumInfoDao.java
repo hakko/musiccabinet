@@ -65,7 +65,7 @@ public class JdbcAlbumInfoDao implements AlbumInfoDao, JdbcTemplateDao {
 	}
 
 	private void updateLibrary() {
-		jdbcTemplate.execute("select music.update_albuminfo_from_import()");
+		jdbcTemplate.execute("select music.update_albuminfo()");
 	}
 
 	@Override

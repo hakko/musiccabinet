@@ -62,7 +62,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	}
 
 	private void updateLibrary() {
-		jdbcTemplate.execute("select music.update_artistinfo_from_import()");
+		jdbcTemplate.execute("select music.update_artistinfo()");
 	}
 
 	@Override

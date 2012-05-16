@@ -32,7 +32,7 @@ public class JdbcTagInfoDao implements TagInfoDao, JdbcTemplateDao {
 		}
 		batchUpdate.flush();
 
-		jdbcTemplate.execute("select music.update_taginfo_from_import()");
+		jdbcTemplate.execute("select music.update_taginfo()");
 	}
 
 	@Override
