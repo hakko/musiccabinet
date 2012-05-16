@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_TAGINFO_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_TAGINFO;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +44,7 @@ public class JdbcTagInfoDaoTest {
 	
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_TAGINFO_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_TAGINFO);
 		
 		tiDisco = new TagInfoParserImpl(new ResourceUtil(
 				TI_DISCO_FILE).getInputStream()).getTagInfo();

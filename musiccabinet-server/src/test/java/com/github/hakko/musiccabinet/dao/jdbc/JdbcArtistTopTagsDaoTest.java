@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTTOPTAG_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTTOPTAG;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
@@ -41,7 +41,7 @@ public class JdbcArtistTopTagsDaoTest {
 
 	@Before
 	public void loadFunctionDependencyAndTestdata() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_ARTISTTOPTAG_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_ARTISTTOPTAG);
 
 		ArtistTopTagsParser cherParser = new ArtistTopTagsParserImpl(
 				new ResourceUtil(CHER_TOP_TAGS).getInputStream());
