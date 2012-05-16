@@ -25,17 +25,14 @@ public class DatabaseAdministrationServiceTest {
 	@Test
 	public void serviceFindsAllDatabaseUpdates() {
 		List<Integer> updates = dbAdmService.getDatabaseUpdates();
+
+		final int NR_OF_UPDATES = 10;
 		
 		Assert.assertNotNull(updates);
-		Assert.assertEquals(8, updates.size());
-		Assert.assertEquals(1000, updates.get(0).intValue());
-		Assert.assertEquals(1001, updates.get(1).intValue());
-		Assert.assertEquals(1002, updates.get(2).intValue());
-		Assert.assertEquals(1003, updates.get(3).intValue());
-		Assert.assertEquals(1004, updates.get(4).intValue());
-		Assert.assertEquals(1005, updates.get(5).intValue());
-		Assert.assertEquals(1006, updates.get(6).intValue());
-		Assert.assertEquals(1007, updates.get(7).intValue());
+		Assert.assertEquals(NR_OF_UPDATES, updates.size());
+		for (int i = 0; i < NR_OF_UPDATES; i++) {
+			Assert.assertEquals(1000 + i, updates.get(i).intValue());
+		}
 	}
 	
 }
