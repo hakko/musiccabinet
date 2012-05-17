@@ -35,7 +35,12 @@ public class TagInfoClient extends AbstractWSClient {
 			public void quarantineWebserviceInvocation(
 					WebserviceInvocation webserviceInvocation) {
 			}
-			
+
+			@Override
+			public void blockWebserviceInvocation(
+					int artistId, WebserviceInvocation.Calltype callType) {
+			}
+
 			@Override
 			public boolean isWebserviceInvocationAllowed(
 					WebserviceInvocation webserviceInvocation) {
