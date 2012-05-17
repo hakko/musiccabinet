@@ -46,6 +46,14 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 		return artistInfo;
 	}
 	
+	public void setBioSummary(String path, String biosummary) throws ApplicationException {
+		Integer artistId = musicDirectoryDao.getArtistId(path);
+		if (artistId != null) {
+			webserviceHistoryDao.blockWebserviceInvocation(artistId, ARTIST_GET_INFO);
+			artistInfoDao.setBioSummary(artistId, biosummary);
+		}
+	}
+	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
 		List<Artist> artists = webserviceHistoryDao.
