@@ -7,10 +7,10 @@ import com.github.hakko.musiccabinet.domain.model.music.Track;
 public class WebserviceInvocation {
 
 	/*
-	 * This enum matches one-to-one with database table library.webservice_calltype.
+	 * This enum matches one-to-one with database table library.webservice_calltype on id.
 	 */
 	public enum Calltype { 
-		GET_SCROBBLED_TRACKS	(0, 7), 
+		GET_SCROBBLED_TRACKS	(0, 1), 
 		ARTIST_GET_SIMILAR		(1, 10), 
 		ARTIST_GET_TOP_TRACKS	(2, 10),
 		TRACK_GET_SIMILAR		(3, 10),
