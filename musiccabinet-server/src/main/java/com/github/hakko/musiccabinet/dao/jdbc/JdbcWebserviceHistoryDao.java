@@ -3,6 +3,7 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -27,15 +28,27 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	
 	@Override
 	public void logWebserviceInvocation(WebserviceInvocation wi) {
-		logWebserviceInvocation(wi, false);
+		logWebserviceInvocation(wi, new Date());
 	}
 
 	@Override
 	public void quarantineWebserviceInvocation(WebserviceInvocation wi) {
-		logWebserviceInvocation(wi, true);
+		Date oneMonthFromNow = new DateTime().plusMonths(1).toDate();
+		logWebserviceInvocation(wi, oneMonthFromNow);
+	}
+	
+	@Override
+	public void blockWebserviceInvocation(int artistId, WebserviceInvocation.Calltype callType) {
+		String deleteSql = "delete from library.webservice_history"
+			+ " where artist_id = ? and calltype_id = ?";
+		String insertSql = "insert into library.webservice_history"
+			+ " (artist_id, calltype_id, invocation_time) values (?, ?, 'infinity')";
+		
+		jdbcTemplate.update(deleteSql, artistId, callType.getDatabaseId());
+		jdbcTemplate.update(insertSql, artistId, callType.getDatabaseId());
 	}
 
-	private void logWebserviceInvocation(WebserviceInvocation wi, boolean quarantine) {
+	private void logWebserviceInvocation(WebserviceInvocation wi, Date invocationTime) {
 		Integer artistId = null, trackId = null, albumId = null;
 		if (wi.getTrack() != null) {
 			trackId = musicDao.getTrackId(wi.getTrack());
@@ -56,19 +69,12 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			deleteSql.append(" and track_id = " + trackId);
 		if (wi.getPage() != null)
 			deleteSql.append(" and page = " + wi.getPage());
-		jdbcTemplate.execute(deleteSql.toString());
 
-		String columns = "artist_id, album_id, track_id, calltype_id, page";
-		String values = artistId + ", " + albumId + ", " + trackId + ", " 
-				+ wi.getCallType().getDatabaseId() + ", " + wi.getPage();
-		if (quarantine) { // then log it as invoked one month from now
-			jdbcTemplate.update("insert into library.webservice_history (" + columns
-					+ ", invocation_time) values (" + values + ",?)", 
-					new DateTime().plusMonths(1).toDate());
-		} else {
-			jdbcTemplate.update("insert into library.webservice_history (" + columns
-					+ ") values (" + values + ")");
-		}
+		jdbcTemplate.update(deleteSql.toString());
+		jdbcTemplate.update("insert into library.webservice_history "
+				+ "(artist_id, album_id, track_id, calltype_id, page, invocation_time)"
+				+ "values (?, ?, ?, ?, ?,?)", artistId, albumId, trackId, 
+				wi.getCallType().getDatabaseId(), wi.getPage(), invocationTime);
 	}
 	
 	/*
@@ -137,6 +143,9 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 		boolean oldEnough;
 		if (lastInvocation == null) {
 			oldEnough = true;
+		} else if (lastInvocation.getTime() >> 32 == Integer.MAX_VALUE) {
+			// checks if invocation_time is close enough to 'infinity'.
+			oldEnough = false;
 		} else {
 			DateTime lastInvocationDateTime = new DateTime(lastInvocation.getTime());
 			Days daysBetween = Days.daysBetween(lastInvocationDateTime, new DateTime());
