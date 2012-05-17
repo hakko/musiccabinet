@@ -38,8 +38,11 @@ public class JdbcWebserviceHistoryDaoTest {
 	private JdbcWebserviceHistoryDao dao;
 
 	@Autowired
-	private JdbcMusicFileDao musicDao;
-	
+	private JdbcMusicFileDao musicFileDao;
+
+	@Autowired
+	private JdbcMusicDao musicDao;
+
 	@Before
 	public void setUp() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(dao, GET_ARTIST_ID);
@@ -217,9 +220,9 @@ public class JdbcWebserviceHistoryDaoTest {
 
 		MusicFile mf = new MusicFile("Madonna", "Jump", "/path/to/madonna/jump", 0L, 0L);
 		
-		musicDao.clearImport();
-		musicDao.addMusicFiles(Arrays.asList(mf));
-		musicDao.createMusicFiles();
+		musicFileDao.clearImport();
+		musicFileDao.addMusicFiles(Arrays.asList(mf));
+		musicFileDao.createMusicFiles();
 		
 		final Calltype INFO = ARTIST_GET_INFO, TOP_TRACKS = ARTIST_GET_TOP_TRACKS;
 		final Artist MADONNA = mf.getTrack().getArtist();
@@ -263,7 +266,25 @@ public class JdbcWebserviceHistoryDaoTest {
 				Date.class, artist.getName());
 		Assert.assertTrue(date.after(new Date()));
 	}
-	
+
+	@Test
+	public void blockLogsInvocationTimeInAnInfiniteFuture() {
+		Calltype TOP = Calltype.ARTIST_GET_TOP_TRACKS;
+		Artist artist = new Artist("Björn Olsson");
+		int artistId = musicDao.getArtistId(artist);
+
+		WebserviceInvocation wi = new WebserviceInvocation(TOP, artist);
+		assertTrue(dao.isWebserviceInvocationAllowed(wi));
+
+		dao.blockWebserviceInvocation(artistId, TOP);
+		assertFalse(dao.isWebserviceInvocationAllowed(wi));
+
+		dao.getJdbcTemplate().queryForObject(
+				"select 1 from library.webservice_history"
+				+ " where artist_id = ? and calltype_id = ? and invocation_time = 'infinity'",
+				Integer.class, artistId, TOP.getDatabaseId());
+	}
+
 	@Test (expected = IllegalArgumentException.class)
 	public void artistNullThrowsException() {
 		Calltype SIMILAR = Calltype.TRACK_GET_SIMILAR;

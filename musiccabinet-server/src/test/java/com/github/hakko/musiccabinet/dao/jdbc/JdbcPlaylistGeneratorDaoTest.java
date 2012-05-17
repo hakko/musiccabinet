@@ -128,7 +128,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 		Assert.assertNotNull(ts);
 		Assert.assertEquals(2, ts.size());
 	}
-
+	
 	private int prepareTestdataForArtist() throws ApplicationException {
 		ArtistSimilarityParser asParser = new ArtistSimilarityParserImpl(
 				new ResourceUtil(CHER_SIMILAR_ARTISTS).getInputStream());
@@ -150,7 +150,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 		musicFileDao.addMusicFiles(musicFiles);
 		musicFileDao.createMusicFiles();
 
-		int artistId = musicDao.getArtistId(asParser.getArtist().getName());
+		int artistId = musicDao.getArtistId(asParser.getArtist());
 		
 		playlistGeneratorDao.updateSearchIndex();
 

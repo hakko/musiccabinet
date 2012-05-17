@@ -101,7 +101,7 @@ public class JdbcArtistRecommendationDaoTest {
 		
 		playlistGeneratorService.updateSearchIndex();
 
-		cherId = musicDao.getArtistId(cher.getName());
+		cherId = musicDao.getArtistId(cher);
 
 		musicDirectoryDao.clearImport();
 		List<MusicDirectory> musicDirectories = new ArrayList<MusicDirectory>();

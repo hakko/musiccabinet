@@ -39,7 +39,6 @@ public class JdbcArtistInfoDaoTest {
 			"http://userserve-ak.last.fm/serve/126/44442235.png";
 	private static final String ABBA_BIO_SUMMARY =
 			"ABBA was a <a href=\"http://www.last.fm/tag/pop\" class=\"bbcode_tag\" rel=\"tag\">pop</a> music group formed in Stockholm, Sweden in November 1970. The band consisted of <a href=\"http://www.last.fm/music/Anni-Frid+Lyngstad\" class=\"bbcode_artist\">Anni-Frid Lyngstad</a> (<a href=\"http://www.last.fm/music/Frida\" class=\"bbcode_artist\">Frida</a>), <a href=\"http://www.last.fm/music/Bj%C3%B6rn+Ulvaeus\" class=\"bbcode_artist\">Bj&ouml;rn Ulvaeus</a>, <a href=\"http://www.last.fm/music/Benny+Andersson\" class=\"bbcode_artist\">Benny Andersson</a>, and <a href=\"http://www.last.fm/music/Agnetha+F%C3%A4ltskog\" class=\"bbcode_artist\">Agnetha F&auml;ltskog</a>. (See also <a href=\"http://www.last.fm/music/Bj%25C3%25B6rn%2BUlvaeus%2B%2526%2BBenny%2BAndersson\" class=\"bbcode_artist\">Bj&ouml;rn Ulvaeus &amp; Benny Andersson</a>, as well as Benny's previous band <a href=\"http://www.last.fm/music/Hep+Stars\" class=\"bbcode_artist\">Hep Stars</a>.)  They topped the charts worldwide from 1972 to 1982 with eight studio albums, achieving twenty-six #1 singles and numerous awards. They also won the 1974 Eurovision Song Contest with <a title=\"ABBA &ndash; Waterloo\" href=\"http://www.last.fm/music/ABBA/_/Waterloo\" class=\"bbcode_track\">Waterloo</a>.  ";
-
 	
 	@Autowired
 	private JdbcArtistInfoDao dao;
@@ -62,7 +61,7 @@ public class JdbcArtistInfoDaoTest {
 
 		// re-create artists
 		for (ArtistInfo ai : new ArtistInfo[]{aiAbba, aiCher, aiTina}) {
-			musicDao.getArtistId(ai.getArtist().getName());
+			musicDao.getArtistId(ai.getArtist());
 		}
 		
 	}
@@ -108,13 +107,29 @@ public class JdbcArtistInfoDaoTest {
 	public void biographyAndImageUrlAreReturnedAsInfo() throws ApplicationException {
 		deleteArtistInfos();
 
-		int abbaId = musicDao.getArtistId(aiAbba.getArtist().getName());
+		int abbaId = musicDao.getArtistId(aiAbba.getArtist());
 
 		dao.createArtistInfo(Arrays.asList(aiAbba));
 		ArtistInfo dbAbba = dao.getArtistInfo(abbaId);
 		
 		Assert.assertEquals(ABBA_IMAGE_URL, dbAbba.getLargeImageUrl());
 		Assert.assertEquals(ABBA_BIO_SUMMARY, dbAbba.getBioSummary());
+	}
+
+	@Test
+	public void bioSummaryCanBeUpdated() {
+		deleteArtistInfos();
+
+		int abbaId = musicDao.getArtistId(aiAbba.getArtist());
+
+		String biography = "new ABBA biography";
+
+		dao.createArtistInfo(Arrays.asList(aiAbba));
+		dao.setBioSummary(abbaId, biography);
+		
+		ArtistInfo dbAbba = dao.getArtistInfo(abbaId);
+		
+		Assert.assertEquals(biography, dbAbba.getBioSummary());
 	}
 	
 	private void deleteArtists() {
