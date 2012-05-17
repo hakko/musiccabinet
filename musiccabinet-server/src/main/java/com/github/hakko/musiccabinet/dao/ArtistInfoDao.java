@@ -12,4 +12,6 @@ public interface ArtistInfoDao {
 	ArtistInfo getArtistInfo(int artistId) throws ApplicationException;
 	ArtistInfo getArtistInfo(Artist artist) throws ApplicationException;
 	
+	void setBioSummary(int artistId, String biosummary);
+	
 }
