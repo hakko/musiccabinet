@@ -16,13 +16,10 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 import com.github.hakko.musiccabinet.dao.ArtistInfoDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
-import com.github.hakko.musiccabinet.log.Logger;
 
 public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-
-	private static final Logger LOG = Logger.getLogger(JdbcArtistInfoDao.class);
 	
 	@Override
 	public void createArtistInfo(List<ArtistInfo> artistInfos) {
@@ -38,7 +35,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	}
 	
 	private void batchInsert(List<ArtistInfo> artistInfos) {
-		String sql = "insert into music.artistinfo_import (artist_name, smallImageUrl, mediumImageUrl, largeImageUrl, extraLargeImageUrl, listeners, playcount, biosummary, biocontent) values (?,?,?,?,?,?,?,?,?)";
+		String sql = "insert into music.artistinfo_import (artist_name, smallimageurl, mediumimageurl, largeimageurl, extralargeimageurl, listeners, playcount, biosummary, biocontent) values (?,?,?,?,?,?,?,?,?)";
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batchUpdate.setBatchSize(1000);
 		batchUpdate.declareParameter(new SqlParameter("artist_name", Types.VARCHAR));
@@ -62,13 +59,13 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	}
 
 	private void updateLibrary() {
-		jdbcTemplate.execute("select music.update_artistinfo_from_import()");
+		jdbcTemplate.execute("select music.update_artistinfo()");
 	}
 
 	@Override
 	public ArtistInfo getArtistInfo(int artistId) {
 		String sql = 
-				"select ai.largeImageUrl, ai.biosummary from music.artistinfo ai" + 
+				"select ai.largeimageurl, ai.biosummary from music.artistinfo ai" + 
 				" where ai.artist_id = " + artistId;
 		ArtistInfo artistInfo = null;
 		
@@ -86,7 +83,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 
 			});
 		} catch (DataAccessException e) {
-			LOG.warn("There's no artist info for artist " + artistId, e);
+			// some artists lack artist info
 		}
 
 		return artistInfo;
@@ -95,7 +92,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	@Override
 	public ArtistInfo getArtistInfo(final Artist artist) {
 		String sql = 
-				"select ai.smallImageUrl, ai.mediumImageUrl, ai.largeImageUrl, ai.extraLargeImageUrl, ai.listeners, ai.playcount, ai.biosummary, ai.biocontent from music.artistinfo ai" + 
+				"select ai.smallimageurl, ai.mediumimageurl, ai.largeimageurl, ai.extralargeimageurl, ai.listeners, ai.playcount, ai.biosummary, ai.biocontent from music.artistinfo ai" + 
 				" inner join music.artist a on ai.artist_id = a.id" +
 				" where a.artist_name = upper(?)";
 		ArtistInfo artistInfo = jdbcTemplate.queryForObject(sql, new Object[]{artist.getName()}, 
@@ -121,6 +118,12 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 		return artistInfo;
 	}
 
+	@Override
+	public void setBioSummary(int artistId, String biography) {
+		String sql = "update music.artistinfo set biosummary = ? where artist_id = ?";
+		jdbcTemplate.update(sql, biography, artistId);
+	}
+	
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
