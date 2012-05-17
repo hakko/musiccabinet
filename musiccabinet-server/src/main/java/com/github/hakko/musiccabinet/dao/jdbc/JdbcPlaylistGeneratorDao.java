@@ -202,5 +202,5 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
-	
+
 }
