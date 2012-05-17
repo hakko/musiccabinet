@@ -49,7 +49,7 @@ public class JdbcMusicDirectoryDao implements MusicDirectoryDao, JdbcTemplateDao
 
 	@Override
 	public void createMusicDirectories() {
-		jdbcTemplate.execute("select library.update_musicdirectory_from_import()");
+		jdbcTemplate.execute("select library.update_musicdirectory()");
 	}
 	
 	@Override

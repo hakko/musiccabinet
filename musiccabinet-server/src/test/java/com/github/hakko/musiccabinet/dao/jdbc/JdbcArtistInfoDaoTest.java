@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTINFO_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTINFO;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +48,7 @@ public class JdbcArtistInfoDaoTest {
 
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_ARTISTINFO_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_ARTISTINFO);
 		
 		aiAbba = new ArtistInfoParserImpl(new ResourceUtil(
 				AI_ABBA_FILE).getInputStream()).getArtistInfo();

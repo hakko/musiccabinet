@@ -1,4 +1,4 @@
-create function music.update_artistrelation_from_import() returns int as $$
+create function music.update_artistrelation() returns int as $$
 begin
 
 	-- create missing artist(s)

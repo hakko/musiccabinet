@@ -59,12 +59,12 @@ public class JdbcMusicFileDao implements MusicFileDao, JdbcTemplateDao {
 
 	@Override
 	public void createMusicFiles() {
-		jdbcTemplate.execute("select library.update_musicfile_from_import()");
+		jdbcTemplate.execute("select library.update_musicfile()");
 	}
 	
 	@Override
 	public void createMusicFileInternalIds() {
-		jdbcTemplate.execute("select library.update_musicfile_external_ids()");
+		jdbcTemplate.execute("select library.update_musicfile_extid()");
 	}
 
 

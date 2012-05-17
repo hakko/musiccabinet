@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_TRACKPLAYCOUNT_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_TRACKPLAYCOUNT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -36,7 +36,7 @@ public class JdbcTrackPlayCountDaoTest {
 
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_TRACKPLAYCOUNT_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_TRACKPLAYCOUNT);
 	}
 	
 	@Test

@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICFILE_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICFILE;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,7 +46,7 @@ public class JdbcMusicFileDaoTest {
 
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICFILE_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICFILE);
 	}
 	
 	@Test

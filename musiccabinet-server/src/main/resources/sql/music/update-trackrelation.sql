@@ -1,4 +1,4 @@
-create function music.update_trackrelation_from_import() returns int as $$
+create function music.update_trackrelation() returns int as $$
 begin
 
 	-- create missing artist(s)

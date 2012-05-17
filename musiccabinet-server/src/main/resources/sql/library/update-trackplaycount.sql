@@ -1,4 +1,4 @@
-create function library.update_trackplaycount_from_import() returns int as $$
+create function library.update_trackplaycount() returns int as $$
 begin
 
 	-- create missing artist(s)

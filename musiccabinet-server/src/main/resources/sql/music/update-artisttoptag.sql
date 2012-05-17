@@ -1,4 +1,4 @@
-create function music.update_artisttoptag_from_import() returns int as $$
+create function music.update_artisttoptag() returns int as $$
 declare
 	artistid int;
 begin

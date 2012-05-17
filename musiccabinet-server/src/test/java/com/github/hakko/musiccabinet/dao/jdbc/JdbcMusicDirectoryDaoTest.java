@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICDIRECTORY_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICDIRECTORY;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,7 @@ public class JdbcMusicDirectoryDaoTest {
 	
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICDIRECTORY_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICDIRECTORY);
 	}
 	
 	@Test

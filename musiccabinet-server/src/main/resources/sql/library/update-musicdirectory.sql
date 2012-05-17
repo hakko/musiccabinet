@@ -1,4 +1,4 @@
-create function library.update_musicdirectory_from_import() returns int as $$
+create function library.update_musicdirectory() returns int as $$
 begin
 
 	-- create missing artist(s)
@@ -50,8 +50,9 @@ begin
 		where library.musicdirectory.path = library.musicdirectory_import.path;
 
 	-- add new directories to personal library.
+	-- (distinct, as media folder may appear twice in index file)
 	insert into library.musicdirectory (artist_id, album_id, path)
-	select artist_id, album_id, path from library.musicdirectory_import
+	select distinct artist_id, album_id, path from library.musicdirectory_import
 		where not exists (select 1 from library.musicdirectory
 			where path = library.musicdirectory_import.path);
 

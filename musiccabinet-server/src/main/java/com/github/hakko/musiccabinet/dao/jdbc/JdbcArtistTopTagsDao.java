@@ -55,7 +55,7 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 	}
 
 	private void updateTopTags() {
-		jdbcTemplate.execute("select music.update_artisttoptag_from_import()");
+		jdbcTemplate.execute("select music.update_artisttoptag()");
 	}
 	
 	@Override

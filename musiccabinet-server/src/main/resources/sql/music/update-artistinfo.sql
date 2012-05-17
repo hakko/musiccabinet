@@ -1,4 +1,4 @@
-create function music.update_artistinfo_from_import() returns int as $$
+create function music.update_artistinfo() returns int as $$
 begin
 
 	-- update all import rows to correct artist id

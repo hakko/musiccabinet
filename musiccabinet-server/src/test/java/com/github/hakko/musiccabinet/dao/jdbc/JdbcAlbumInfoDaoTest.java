@@ -1,7 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ALBUMINFO_FROM_IMPORT;
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICDIRECTORY_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ALBUMINFO;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICDIRECTORY;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,8 +56,8 @@ public class JdbcAlbumInfoDaoTest {
 
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_ALBUMINFO_FROM_IMPORT);
-		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICDIRECTORY_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_ALBUMINFO);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICDIRECTORY);
 		
 		aiNirvana = new AlbumInfoParserImpl(new ResourceUtil(
 				AI_NIRVANA_FILE).getInputStream()).getAlbumInfo();

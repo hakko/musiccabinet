@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTRELATION_FROM_IMPORT;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTRELATION;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -43,7 +43,7 @@ public class JdbcArtistRelationDaoTest {
 
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
-		PostgreSQLUtil.loadFunction(dao, UPDATE_ARTISTRELATION_FROM_IMPORT);
+		PostgreSQLUtil.loadFunction(dao, UPDATE_ARTISTRELATION);
 		
 		PostgreSQLUtil.truncateTables(dao);
 	}

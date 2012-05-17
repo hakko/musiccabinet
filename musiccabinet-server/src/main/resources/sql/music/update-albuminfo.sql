@@ -1,4 +1,4 @@
-create function music.update_albuminfo_from_import() returns int as $$
+create function music.update_albuminfo() returns int as $$
 begin
 
 	-- assumes that artists and albums already exist
@@ -26,13 +26,14 @@ begin
 		where music.albuminfo_import.album_id = music.albuminfo.album_id
 		and music.albuminfo_import.album_id is not null;
 
-	-- add new album infos.
+	-- add new album infos, for existing albums.
 	insert into music.albuminfo (album_id, smallimageurl, mediumimageurl, 
 		largeimageurl, extralargeimageurl, listeners, playcount)
 	select album_id, smallimageurl, mediumimageurl, 
 		largeimageurl, extralargeimageurl, listeners, playcount
 	from music.albuminfo_import
-		where not exists (select 1 from music.albuminfo
+		where album_id is not null and not exists (
+			select 1 from music.albuminfo
 			where album_id = music.albuminfo_import.album_id);
 
 	return 0;

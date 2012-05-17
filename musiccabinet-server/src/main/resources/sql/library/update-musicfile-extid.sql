@@ -1,4 +1,4 @@
-create function library.update_musicfile_external_ids() returns int as $$
+create function library.update_musicfile_extid() returns int as $$
 begin
 
 	-- update all import rows to correct artist id

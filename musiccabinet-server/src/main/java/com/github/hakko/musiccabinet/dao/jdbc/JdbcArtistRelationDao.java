@@ -56,7 +56,7 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 	}
 
 	private void updateLibrary() {
-		jdbcTemplate.execute("select music.update_artistrelation_from_import()");
+		jdbcTemplate.execute("select music.update_artistrelation()");
 	}
 	
 	@Override

@@ -50,7 +50,7 @@ public class JdbcTrackPlayCountDao implements TrackPlayCountDao, JdbcTemplateDao
 	}
 
 	private void updateLibrary() {
-		jdbcTemplate.execute("select library.update_trackplaycount_from_import()");
+		jdbcTemplate.execute("select library.update_trackplaycount()");
 	}
 
 	@Override

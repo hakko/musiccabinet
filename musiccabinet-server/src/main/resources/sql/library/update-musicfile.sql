@@ -1,4 +1,4 @@
-create function library.update_musicfile_from_import() returns int as $$
+create function library.update_musicfile() returns int as $$
 begin
 
 	-- create missing artist(s)
@@ -51,8 +51,9 @@ begin
 		where library.musicfile.path = library.musicfile_import.path;
 		
 	-- add new tracks to personal library.
+	-- (distinct, as media folder may appear twice in index file)
 	insert into library.musicfile (track_id, path, created, last_modified)
-	select track_id, path, created, last_modified from library.musicfile_import
+	select distinct track_id, path, created, last_modified from library.musicfile_import
 		where not exists (select 1 from library.musicfile
 			where path = library.musicfile_import.path);
 

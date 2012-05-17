@@ -58,7 +58,7 @@ public class JdbcTrackRelationDao implements TrackRelationDao, JdbcTemplateDao {
 	}
 
 	private void updateLibrary() {
-		jdbcTemplate.execute("select music.update_trackrelation_from_import()");
+		jdbcTemplate.execute("select music.update_trackrelation()");
 	}
 	
 	@Override

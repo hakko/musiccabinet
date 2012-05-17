@@ -1,4 +1,4 @@
-create function music.update_taginfo_from_import() returns int as $$
+create function music.update_taginfo() returns int as $$
 begin
 
 	-- update all import rows to correct tag id
