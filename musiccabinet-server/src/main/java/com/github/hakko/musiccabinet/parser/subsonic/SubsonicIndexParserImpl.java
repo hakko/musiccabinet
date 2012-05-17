@@ -110,13 +110,23 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
     		return;
     	}
         
-        long created = Long.parseLong(tokens[1]);
-        long lastModified = Long.parseLong(tokens[2]);
+        long created = parseLong(tokens[1]);
+        long lastModified = parseLong(tokens[2]);
         String path = tokens[3];
         String artistName = tokens[5];
         String trackName = tokens[7];
 
         musicFiles.add(new MusicFile(artistName, trackName, path, created, lastModified));
+    }
+    
+    private long parseLong(String token) {
+    	long result = 0;
+    	try {
+    		result = Long.parseLong(token);
+    	} catch (NumberFormatException e) {
+    		LOG.warn("Could not parse " + token + " as a long!");
+    	}
+    	return result;
     }
 	
     /**
@@ -133,6 +143,14 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
     	if (!IS_ARTIST.equals(tokens[0]) && !IS_ALBUM.equals(tokens[0])) {
         	return;
         }
+
+    	/*
+    	 * Video files won't have an album name. Just ignore them.
+    	 */
+    	if (IS_ALBUM.equals(tokens[0]) && tokens.length < 7) {
+    		LOG.warn("Can't add album from line " + line + "!");
+    		return;
+    	}
     	
     	String path = tokens[3];
     	String artistName = tokens[5];
