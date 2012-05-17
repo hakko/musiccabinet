@@ -16,6 +16,10 @@ public interface WebserviceHistoryDao {
 	// offline or so, probably a weird artist tag with loads of guest artists etc).
 	// Quarantine it to prevent it from being invoked again in a month.
 	void quarantineWebserviceInvocation(WebserviceInvocation webserviceInvocation);
+
+	// Block a certain WebserviceInvocation from ever happening again,
+	// by logging it as being executed in an infinite future.
+	void blockWebserviceInvocation(int artistId, WebserviceInvocation.Calltype callType);
 	
 	boolean isWebserviceInvocationAllowed(WebserviceInvocation webserviceInvocation);
 	
