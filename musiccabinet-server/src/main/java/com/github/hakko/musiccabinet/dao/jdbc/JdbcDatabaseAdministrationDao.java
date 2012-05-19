@@ -52,6 +52,9 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 	private String host;
 	private int port;
 	private String database;
+
+	private static final com.github.hakko.musiccabinet.log.Logger LOG = 
+			com.github.hakko.musiccabinet.log.Logger.getLogger(JdbcDatabaseAdministrationDao.class);
 	
 	/*
 	 * Verify that a postgresql server is running.
@@ -70,9 +73,13 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 	@Override
 	public boolean isRDBMSRunning() {
 		boolean running = false;
+		LOG.debug("Assume database is down.");
 		try {
+			LOG.debug("Connect socket to host" + host + ", port " + port + ".");
 			Socket socket = new Socket(host, port);
+			LOG.debug("Open socket output stream.");
 			PrintWriter pw = new PrintWriter(socket.getOutputStream());
+			LOG.debug("Print 0 0 0 42 0 3 0 0 u s e r 0 p o s t g r es 0 etc.");
 			pw.print(new char[]{
 					(char) 0, (char) 0, (char) 0, (char) 42, (char) 0, (char) 3, (char) 0, (char) 0, 
 					'u', 's', 'e', 'r', (char) 0, 
@@ -80,11 +87,16 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 					'd', 'a', 't', 'a', 'b', 'a', 's', 'e', (char) 0, 
 					't', 'e', 'm', 'p', 'l', 'a', 't', 'e', '1', (char) 0, (char) 0});
 			pw.flush();
+			LOG.debug("Open socket input stream.");
 			InputStreamReader isr = new InputStreamReader(socket.getInputStream());
+			LOG.debug("Read one character.");
 			char response = (char) isr.read();
+			LOG.debug("Character returned was " + response + ".");
 			running = response == 'R';
 			socket.close();
+			LOG.debug("Close socket, running = " + running);
 		} catch (IOException e) {
+			LOG.warn("Couldn't connect to Postgres service!", e);
 			// expected if database is down, or we've connected to something that's not postgre
 		}
 		return running;
