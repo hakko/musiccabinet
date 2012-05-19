@@ -1,5 +1,8 @@
 package com.github.hakko.musiccabinet.domain.model.aggr;
 
+import java.util.Arrays;
+import java.util.List;
+
 /*
  * ArtistRecommendation doesn't map to a single database table but is rather aggregated
  * from music.artist, music.artistinfo and relational tables.
@@ -8,16 +11,16 @@ public class ArtistRecommendation {
 
 	private String artistName;
 	private String imageUrl;
-	private String path;
+	private List<String> paths;
 	
 	public ArtistRecommendation(String artistName, String path) {
-		this(artistName, null, path);
+		this(artistName, null, Arrays.asList(path));
 	}
 
-	public ArtistRecommendation(String artistName, String imageUrl, String path) {
+	public ArtistRecommendation(String artistName, String imageUrl, List<String> paths) {
 		this.artistName = artistName;
 		this.imageUrl = imageUrl;
-		this.path = path;
+		this.paths = paths;
 	}
 
 	public String getArtistName() {
@@ -36,12 +39,12 @@ public class ArtistRecommendation {
 		this.imageUrl = imageUrl;
 	}
 
-	public String getPath() {
-		return path;
+	public List<String> getPaths() {
+		return paths;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setPaths(List<String> paths) {
+		this.paths = paths;
 	}
 	
 }

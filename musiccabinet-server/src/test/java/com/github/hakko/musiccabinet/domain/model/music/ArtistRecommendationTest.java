@@ -15,7 +15,9 @@ public class ArtistRecommendationTest {
 		ArtistRecommendation ar = new ArtistRecommendation(artistName, path);
 		
 		Assert.assertEquals(new Artist(artistName), new Artist(ar.getArtistName()));
-		Assert.assertEquals(ar.getPath(), path);
+		Assert.assertNotNull(ar.getPaths());
+		Assert.assertEquals(1, ar.getPaths().size());
+		Assert.assertEquals(path, ar.getPaths().get(0));
 	}
 	
 }

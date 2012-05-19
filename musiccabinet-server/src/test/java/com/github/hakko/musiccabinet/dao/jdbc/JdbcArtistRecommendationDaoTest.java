@@ -111,6 +111,7 @@ public class JdbcArtistRecommendationDaoTest {
 					artist.getName(), "/path/to/" + artist.getName()));
 			artistInfos.add(new ArtistInfo(artist, "/image/for/" + artist.getName()));
 		}
+		musicDirectories.add(new MusicDirectory(cyndi.getName(), "/another/path/to/cyndi"));
 		musicDirectoryDao.addMusicDirectories(musicDirectories);
 		musicDirectoryDao.createMusicDirectories();
 
@@ -156,6 +157,17 @@ public class JdbcArtistRecommendationDaoTest {
 		Assert.assertFalse(artists.contains(cher));
 		Assert.assertFalse(artists.contains(celine));
 		Assert.assertFalse(artists.contains(kylie));
+	}
+
+	@Test
+	public void artistCanHaveMultipleRootPaths() {
+		List<ArtistRecommendation> artistRecommendations = 
+				artistRecommendationDao.getRecommendedArtistsInLibrary(cherId, 10);
+		for (ArtistRecommendation ar : artistRecommendations) {
+			if (ar.getArtistName().equals(cyndi.getName())) {
+				Assert.assertEquals(2, ar.getPaths().size());
+			}
+		}
 	}
 	
 	@Test

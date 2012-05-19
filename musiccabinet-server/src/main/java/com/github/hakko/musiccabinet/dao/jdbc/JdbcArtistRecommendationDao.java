@@ -2,6 +2,7 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -25,10 +26,13 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	 */
 	@Override
 	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(int artistId, int amount) {
-		String sql = "select a.artist_name_capitalization, ai.largeimageurl, md.path from music.artistrelation ar"
+		String sql = "select a.artist_name_capitalization, ai.largeimageurl, md.paths from music.artistrelation ar"
 			+ " inner join music.artist a on ar.target_id = a.id"
 			+ " inner join music.artistinfo ai on ar.target_id = ai.artist_id"
-			+ " inner join library.musicdirectory md on ar.target_id = md.artist_id and md.album_id is null"
+			+ " inner join (select artist_id, array_agg(path) as paths"
+			+ "		from library.musicdirectory"
+			+ "		where album_id is null group by artist_id) md"
+			+ "		on ar.target_id = md.artist_id"
 			+ " where ar.source_id = " + artistId + " and exists"
 			+ " (select 1 from library.artisttoptrackplaycount where artist_id = ar.target_id)"
 			+ " order by weight desc limit " + amount;
@@ -39,8 +43,8 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 			public ArtistRecommendation mapRow(ResultSet rs, int rowNum) throws SQLException {
 				String artistName = rs.getString(1);
 				String imageUrl = rs.getString(2);
-				String path = rs.getString(3);
-				return new ArtistRecommendation(artistName, imageUrl, path);
+				List<String> paths = Arrays.asList((String[]) rs.getArray(3).getArray());
+				return new ArtistRecommendation(artistName, imageUrl, paths);
 			}
 		});
 
@@ -84,11 +88,14 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	@Override
 	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(String tagName, int offset, int length) {
 		String sql = 
-				"select a.artist_name_capitalization, ai.largeimageurl, md.path from music.artisttoptag att"
+				"select a.artist_name_capitalization, ai.largeimageurl, md.paths from music.artisttoptag att"
 				+ " inner join music.tag t on t.id = att.tag_id"
 				+ " inner join music.artist a on a.id = att.artist_id"
 				+ " inner join music.artistinfo ai on ai.artist_id = att.artist_id"
-				+ " inner join library.musicdirectory md on md.artist_id = att.artist_id and md.album_id is null"
+				+ " inner join (select artist_id, array_agg(path) as paths"
+				+ "		from library.musicdirectory"
+				+ "		where album_id is null group by artist_id) md"
+				+ "		on att.artist_id = md.artist_id"
 				+ " where t.tag_name = ?"
 				+ " order by (att.tag_count-1)/10 desc, ai.listeners desc"
 				+ " limit " + length + " offset " + offset;
@@ -99,8 +106,8 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 			public ArtistRecommendation mapRow(ResultSet rs, int rowNum) throws SQLException {
 				String artistName = rs.getString(1);
 				String imageUrl = rs.getString(2);
-				String path = rs.getString(3);
-				return new ArtistRecommendation(artistName, imageUrl, path);
+				List<String> paths = Arrays.asList((String[]) rs.getArray(3).getArray());
+				return new ArtistRecommendation(artistName, imageUrl, paths);
 			}
 		});
 		
