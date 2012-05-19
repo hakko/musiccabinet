@@ -94,7 +94,7 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	 * 
 	 */
 	@Override
-	public List<PlaylistItem> getPlaylistForArtist(int artistId) {
+	public List<PlaylistItem> getPlaylistForArtist(int artistId, int artistCount, int totalCount) {
 		String sql =
 			  "select a.artist_name_capitalization, mf.path from ("
 			+ "	select * from ("
@@ -103,8 +103,8 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 			+ "   inner join (select source_id, target_id, weight from music.artistrelation union all select " + artistId + ", " + artistId + ", 1) ar" 
 			+ "	    on ar.target_id = att.artist_id and ar.source_id = " + artistId
 			+ "  ) ranked_tracks"
-			+ "  where ranked_tracks.artist_rank <= 3"
-			+ "  order by random() * ranked_tracks.artist_weight * ranked_tracks.artist_weight desc limit 25"
+			+ "  where ranked_tracks.artist_rank <= " + artistCount
+			+ "  order by random() * ranked_tracks.artist_weight * ranked_tracks.artist_weight desc limit " + totalCount
 			+ " ) selected_tracks"
 			+ " inner join library.musicfile mf on selected_tracks.music_file_id = mf.id" 
 			+ " inner join music.track t on mf.track_id = t.id" 
@@ -124,47 +124,51 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	}
 	
 	@Override
-	public List<String> getTopTracksForArtist(int artistId) {
+	public List<String> getTopTracksForArtist(int artistId, int totalCount) {
 		String sql = 
 			"select mf.path from library.artisttoptrackplaycount att" 
 			+ " inner join library.musicfile mf on att.music_file_id = mf.id"
 			+ " where att.artist_id = " + artistId
 			+ " order by rank"
-			+ " limit 20";
+			+ " limit " + totalCount;
 		
 		return jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	@Override
-	public List<String> getPlaylistForTags(String[] tags) {
+	public List<PlaylistItem> getPlaylistForTags(String[] tags, int artistCount, int totalCount) {
 		if (tags == null || tags.length == 0) {
 			throw new IllegalArgumentException("At least one tag must be specified!");
 		}
 
 		String sql = 
-			"select path from library.musicfile mf where id in ("
-			+ "	 select ranked_files.music_file_id from ("
-			+ "	  select att.music_file_id, att.artist_id, rank() over" 
-			+ "	  (partition by att.artist_id order by (random()*(110 - rank + (play_count/3))) desc) as artist_rank from library.artisttoptrackplaycount att"
-			+ "	  where att.artist_id in ("
-			+ "	   select att.artist_id from music.tag tag" 
-			+ "	   inner join music.artisttoptag att on att.tag_id = tag.id" 
-			+ "	   where tag.tag_name in (" + getParameters(tags.length) + ")"
-			+ "	   group by att.artist_id"
-			+ "	   order by sum(tag_count)*sum(tag_count)*random() desc"
-			+ "	   limit 25"
-			+ "	  )"
-			+ "	 ) ranked_files where ranked_files.artist_rank = 1"
-			+ "	)";
+				"select a.artist_name_capitalization, mf.path from ("
+				+ "		select * from ("
+				+ "	  select att.music_file_id, att.artist_id, tag.tag_count as tag_weight, rank() over" 
+				+ "	  (partition by att.artist_id order by (random()*(110 - rank + (play_count/3))) desc) as artist_rank from library.artisttoptrackplaycount att"
+				+ "	   inner join (select toptag.artist_id, sum(tag_count) as tag_count from music.artisttoptag toptag"
+				+ "			inner join music.tag tag on toptag.tag_id = tag.id"
+				+ "			where tag.tag_name in (" + getParameters(tags.length) + ")"
+				+ "			group by toptag.artist_id) tag"
+				+ "		on tag.artist_id = att.artist_id"
+				+ "	  ) ranked_tracks"
+				+ "	  where ranked_tracks.artist_rank <= " + artistCount
+				+ "	  order by random() * ranked_tracks.tag_weight * ranked_tracks.tag_weight desc limit " + totalCount
+				+ "	 ) selected_tracks"
+				+ "	 inner join library.musicfile mf on selected_tracks.music_file_id = mf.id" 
+				+ "	 inner join music.track t on mf.track_id = t.id"
+				+ "	 inner join music.artist a on t.artist_id = a.id";
 
 		// jdbcTemplate.queryForList(sql, String.class, tags) isn't backwards compatible with 2.5.6
 		
-		List<String> playlist = jdbcTemplate.query(sql, tags, 
-				new RowMapper<String>() {
+		List<PlaylistItem> playlist = jdbcTemplate.query(sql, tags,
+				new RowMapper<PlaylistItem>() {
 			@Override
-			public String mapRow(ResultSet rs, int rowNum)
-			throws SQLException {
-				return rs.getString(1);
+			public PlaylistItem mapRow(ResultSet rs, int rowNum)
+					throws SQLException {
+				String artistName = rs.getString(1);
+				String path = rs.getString(2);
+				return new PlaylistItem(artistName, path);
 			}
 		});
 		
