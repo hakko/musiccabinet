@@ -83,7 +83,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 	public void addCherRelationsAndTopTracksAndGetPlaylist() throws ApplicationException {
 		int artistId = prepareTestdataForArtist();
 		
-		List<PlaylistItem> ts = playlistGeneratorDao.getPlaylistForArtist(artistId);
+		List<PlaylistItem> ts = playlistGeneratorDao.getPlaylistForArtist(artistId, 3, 20);
 		
 		Assert.assertNotNull(ts);
 		Assert.assertEquals(3, ts.size());
@@ -93,7 +93,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 	public void getTopTracks() throws ApplicationException {
 		int artistId = prepareTestdataForArtist();
 		
-		List<String> ts = playlistGeneratorDao.getTopTracksForArtist(artistId);
+		List<String> ts = playlistGeneratorDao.getTopTracksForArtist(artistId, 20);
 		
 		Assert.assertNotNull(ts);
 		Assert.assertEquals(20, ts.size());

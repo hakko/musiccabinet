@@ -10,10 +10,10 @@ public interface PlaylistGeneratorDao {
 	 * Appropriate ws calls should be made beforehand.
 	 */
 	List<PlaylistItem> getPlaylistForTrack(int trackId);
-	List<PlaylistItem> getPlaylistForArtist(int artistId);
-	List<String> getTopTracksForArtist(int artistId);
+	List<PlaylistItem> getPlaylistForArtist(int artistId, int artistCount, int totalCount);
+	List<String> getTopTracksForArtist(int artistId, int totalCount);
 	
-	List<String> getPlaylistForTags(String[] tags);
+	List<PlaylistItem> getPlaylistForTags(String[] tags, int artistCount, int totalCount);
 	
 	void updateSearchIndex();
 	boolean isSearchIndexCreated();

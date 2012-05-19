@@ -53,9 +53,9 @@ public class PlaylistGeneratorService {
 		return playlistGeneratorDao.isSearchIndexCreated();
 	}
 	
-	public List<String> getPlaylistForArtist(String path) throws ApplicationException {
+	public List<String> getPlaylistForArtist(String path, int artistCount, int totalCount) throws ApplicationException {
 		int artistId = musicDirectoryDao.getArtistId(path);
-		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForArtist(artistId);
+		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForArtist(artistId, artistCount, totalCount);
 		Collections.shuffle(result);
 		distributeArtists(result);
 		List<String> trackPaths = new ArrayList<String>();
@@ -80,15 +80,20 @@ public class PlaylistGeneratorService {
 		return trackPaths;
 	}
 	
-	public List<String> getTopTracksForArtist(String path) throws ApplicationException {
+	public List<String> getTopTracksForArtist(String path, int totalCount) throws ApplicationException {
 		int artistId = musicDirectoryDao.getArtistId(path);
-		return playlistGeneratorDao.getTopTracksForArtist(artistId);
+		return playlistGeneratorDao.getTopTracksForArtist(artistId, totalCount);
 	}
 	
-	public List<String> getTopTracksForTags(String[] tags) {
-		List<String> result = playlistGeneratorDao.getPlaylistForTags(tags);
+	public List<String> getTopTracksForTags(String[] tags, int artistCount, int totalCount) {
+		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForTags(tags, artistCount, totalCount);
 		Collections.shuffle(result);
-		return result;
+		distributeArtists(result);
+		List<String> trackPaths = new ArrayList<String>();
+		for (PlaylistItem pli : result) {
+			trackPaths.add(pli.getPath());
+		}
+		return trackPaths;
 	}
 	
 	/*

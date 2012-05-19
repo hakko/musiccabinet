@@ -102,7 +102,7 @@ public class PlaylistGeneratorServiceTest {
 	@Test
 	public void invokeGetPlaylistForArtist() throws ApplicationException {
 		List<String> playlist = 
-			playlistGeneratorService.getPlaylistForArtist(musicDirectory.getPath());
+			playlistGeneratorService.getPlaylistForArtist(musicDirectory.getPath(), 3, 20);
 		
 		Assert.assertNotNull(playlist);
 		Assert.assertEquals(1, playlist.size());
@@ -122,7 +122,7 @@ public class PlaylistGeneratorServiceTest {
 	@Test
 	public void invokeGetTopTracksForArtist() throws ApplicationException {
 		List<String> playlist = 
-			playlistGeneratorService.getTopTracksForArtist(musicDirectory.getPath());
+			playlistGeneratorService.getTopTracksForArtist(musicDirectory.getPath(), 25);
 		
 		Assert.assertNotNull(playlist);
 		Assert.assertEquals(1, playlist.size());
@@ -131,7 +131,7 @@ public class PlaylistGeneratorServiceTest {
 	
 	@Test
 	public void invokeGetTopTracksForTags() {
-		playlistGeneratorService.getTopTracksForTags(new String[]{"indie", "pop"});
+		playlistGeneratorService.getTopTracksForTags(new String[]{"indie", "pop"}, 1, 25);
 	}
 	
 	@Test
