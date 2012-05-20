@@ -14,7 +14,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.dao.MusicDao;
+import com.github.hakko.musiccabinet.dao.LastFmUserDao;
 import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
+import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
@@ -25,6 +27,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 
 	private JdbcTemplate jdbcTemplate;
 	private MusicDao musicDao;
+	private LastFmUserDao lastFmUserDao;
 	
 	@Override
 	public void logWebserviceInvocation(WebserviceInvocation wi) {
@@ -49,13 +52,15 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	}
 
 	private void logWebserviceInvocation(WebserviceInvocation wi, Date invocationTime) {
-		Integer artistId = null, trackId = null, albumId = null;
+		Integer artistId = null, trackId = null, albumId = null, userId = null;
 		if (wi.getTrack() != null) {
 			trackId = musicDao.getTrackId(wi.getTrack());
 		} else if (wi.getAlbum() != null) {
 			albumId = musicDao.getAlbumId(wi.getAlbum());
 		} else if (wi.getArtist() != null) {
 			artistId = musicDao.getArtistId(wi.getArtist());
+		} else if (wi.getUser() != null) {
+			userId = lastFmUserDao.getLastFmUserId(wi.getUser().getLastFmUser());
 		}
 		
 		StringBuilder deleteSql = new StringBuilder(
@@ -67,13 +72,15 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			deleteSql.append(" and album_id = " + albumId);
 		if (trackId != null)
 			deleteSql.append(" and track_id = " + trackId);
+		if (userId != null)
+			deleteSql.append(" and lastfmuser_id = " + userId);
 		if (wi.getPage() != null)
 			deleteSql.append(" and page = " + wi.getPage());
 
 		jdbcTemplate.update(deleteSql.toString());
 		jdbcTemplate.update("insert into library.webservice_history "
-				+ "(artist_id, album_id, track_id, calltype_id, page, invocation_time)"
-				+ "values (?, ?, ?, ?, ?,?)", artistId, albumId, trackId, 
+				+ "(artist_id, album_id, track_id, lastfmuser_id, calltype_id, page, invocation_time)"
+				+ "values (?, ?, ?, ?, ?, ?, ?)", artistId, albumId, trackId, userId, 
 				wi.getCallType().getDatabaseId(), wi.getPage(), invocationTime);
 	}
 	
@@ -85,14 +92,16 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	 */
 	@Override
 	public boolean isWebserviceInvocationAllowed(WebserviceInvocation wi) {
-		if (wi.getPage() != null) {
-			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getPage());
-		} else if (wi.getTrack() != null) {
+		if (wi.getTrack() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getTrack());
 		} else if (wi.getAlbum() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getAlbum());
 		} else if (wi.getArtist() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getArtist());
+		} else if (wi.getUser() != null && wi.getPage() != null) {
+			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getUser(), wi.getPage());
+		} else if (wi.getPage() != null) {
+			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getPage());
 		} else {
 			 // for compiler compliance, actually unreachable
 			return false;
@@ -136,6 +145,16 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			+ " and music.artist.artist_name = upper(?) and music.album.album_name = upper(?)";
 		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{
 				album.getArtist().getName(), album.getName()}, Timestamp.class);
+		return isWebserviceInvocationAllowed(callType, lastInvocation);
+	}
+
+	protected boolean isWebserviceInvocationAllowed(Calltype callType, LastFmUser user, short page) {
+		String sql = "select max(invocation_time) from library.webservice_history h"
+			+ " inner join library.lastfmuser u on h.lastfmuser_id = u.id"
+			+ " where calltype_id = " + callType.getDatabaseId()
+			+ " and u.lastfm_user = upper(?) and h.page = ?";
+		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{
+				user.getLastFmUser(), page}, Timestamp.class);
 		return isWebserviceInvocationAllowed(callType, lastInvocation);
 	}
 
@@ -229,6 +248,10 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 
 	public void setMusicDao(MusicDao musicDao) {
 		this.musicDao = musicDao;
+	}
+
+	public void setLastFmUserDao(LastFmUserDao lastFmUserDao) {
+		this.lastFmUserDao = lastFmUserDao;
 	}
 	
 }

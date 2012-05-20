@@ -16,7 +16,8 @@ public class WebserviceInvocation {
 		TRACK_GET_SIMILAR		(3, 10),
 		ARTIST_GET_TOP_TAGS		(4, 10),
 		ARTIST_GET_INFO			(5, 15),
-		ALBUM_GET_INFO			(6, 15);
+		ALBUM_GET_INFO			(6, 15),
+		USER_GET_TOP_ARTISTS	(7, 7);
 		
 		private final int databaseId;
 		private final int daysToCache;
@@ -38,6 +39,7 @@ public class WebserviceInvocation {
 	private Artist artist;
 	private Album album;
 	private Track track;
+	private LastFmUser user;
 	private Calltype callType;
 	private Short page;
 	
@@ -69,6 +71,15 @@ public class WebserviceInvocation {
 		this.callType = callType;
 		this.track = track;
 	}
+	
+	public WebserviceInvocation(Calltype callType, LastFmUser user, short days) {
+		if (user == null) {
+			throw new IllegalArgumentException("Cannot create WebserviceInvocation for user null!");
+		}
+		this.callType = callType;
+		this.user = user;
+		this.page = days;
+	}
 
 	public Artist getArtist() {
 		return artist;
@@ -80,6 +91,10 @@ public class WebserviceInvocation {
 
 	public Track getTrack() {
 		return track;
+	}
+	
+	public LastFmUser getUser() {
+		return user;
 	}
 
 	public Calltype getCallType() {
@@ -101,6 +116,9 @@ public class WebserviceInvocation {
 		}
 		if (track != null) {
 			sb.append(", " + track);
+		}
+		if (user != null) {
+			sb.append(", " + user);
 		}
 		if (page != null) {
 			sb.append(", page " + page);

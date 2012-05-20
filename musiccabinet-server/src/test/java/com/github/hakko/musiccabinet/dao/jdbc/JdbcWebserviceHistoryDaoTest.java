@@ -2,6 +2,9 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_ARTIST_ID;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_TRACK_ID;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_LASTFMUSER_ID;
+import static com.github.hakko.musiccabinet.domain.model.library.Period.OVERALL;
+import static com.github.hakko.musiccabinet.domain.model.library.Period.SIX_MONTHS;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_INFO;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
 import static org.junit.Assert.assertFalse;
@@ -24,6 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
@@ -47,6 +51,7 @@ public class JdbcWebserviceHistoryDaoTest {
 	public void setUp() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(dao, GET_ARTIST_ID);
 		PostgreSQLUtil.loadFunction(dao, GET_TRACK_ID);
+		PostgreSQLUtil.loadFunction(dao, GET_LASTFMUSER_ID);
 	}
 	
 	@Test
@@ -212,7 +217,60 @@ public class JdbcWebserviceHistoryDaoTest {
 			assertTrue(isAllowed == cacheIsInvalid);
 		}
 	}
+
+	@Test
+	public void importUserRelatedDataNotPossibleTwice() {
+		Calltype TOP_ARTISTS = Calltype.USER_GET_TOP_ARTISTS;
+		LastFmUser user = new LastFmUser("arnathalon");
+		WebserviceInvocation topArtists = new WebserviceInvocation(TOP_ARTISTS, user, OVERALL.getDays());
+		
+		deleteWebserviceInvocations();
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists));
+		dao.logWebserviceInvocation(topArtists);
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists));
+	}
+
+	@Test
+	public void periodIsSignificantForAllowance() {
+		Calltype TOP_ARTISTS = Calltype.USER_GET_TOP_ARTISTS;
+		LastFmUser user = new LastFmUser("arnathalon");
+		WebserviceInvocation topArtists1 = new WebserviceInvocation(TOP_ARTISTS, user, OVERALL.getDays());
+		WebserviceInvocation topArtists2 = new WebserviceInvocation(TOP_ARTISTS, user, SIX_MONTHS.getDays());
+
+		deleteWebserviceInvocations();
+
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists2));
+
+		dao.logWebserviceInvocation(topArtists1);
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists2));
+
+		dao.logWebserviceInvocation(topArtists2);
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
+	}
 	
+	@Test
+	public void differentUsersDontInterfere() {
+		Calltype TOP_ARTISTS = Calltype.USER_GET_TOP_ARTISTS;
+		LastFmUser user1 = new LastFmUser("user1");
+		LastFmUser user2 = new LastFmUser("user2");
+
+		WebserviceInvocation topArtists1 = new WebserviceInvocation(TOP_ARTISTS, user1, OVERALL.getDays());
+		WebserviceInvocation topArtists2 = new WebserviceInvocation(TOP_ARTISTS, user2, OVERALL.getDays());
+		
+		deleteWebserviceInvocations();
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists2));
+
+		dao.logWebserviceInvocation(topArtists2);
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
+	}
+
 	@Test
 	public void identifiesArtistsWithoutInvocations() {
 		deleteMusicFiles();

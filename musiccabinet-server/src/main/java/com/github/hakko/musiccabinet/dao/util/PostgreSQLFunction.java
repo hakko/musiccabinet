@@ -31,6 +31,7 @@ public enum PostgreSQLFunction {
 		"sql/music/update-taginfo.sql"),
 		
 	/* Library schema */
+	GET_LASTFMUSER_ID("library", "get_lastfmuser_id", "sql/library/get-lastfmuser-id.sql"),
 	UPDATE_MUSICFILE("library", "update_musicfile", 
 		"sql/library/update-musicfile.sql"),
 	UPDATE_MUSICFILE_EXTERNAL_IDS("library", "update_musicfile_extid", 
@@ -38,7 +39,9 @@ public enum PostgreSQLFunction {
 	UPDATE_MUSICDIRECTORY("library", "update_musicdirectory", 
 		"sql/library/update-musicdirectory.sql"),
 	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 
-		"sql/library/update-trackplaycount.sql");
+		"sql/library/update-trackplaycount.sql"),
+	UPDATE_USER_TOP_ARTISTS("library", "update_usertopartists", 
+		"sql/library/update-usertopartists.sql");
 
 	private final String schema;
 	private final String functionName;
