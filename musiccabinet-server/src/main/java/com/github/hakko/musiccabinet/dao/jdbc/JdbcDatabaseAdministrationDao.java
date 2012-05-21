@@ -73,13 +73,9 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 	@Override
 	public boolean isRDBMSRunning() {
 		boolean running = false;
-		LOG.debug("Assume database is down.");
 		try {
-			LOG.debug("Connect socket to host" + host + ", port " + port + ".");
 			Socket socket = new Socket(host, port);
-			LOG.debug("Open socket output stream.");
 			PrintWriter pw = new PrintWriter(socket.getOutputStream());
-			LOG.debug("Print 0 0 0 42 0 3 0 0 u s e r 0 p o s t g r es 0 etc.");
 			pw.print(new char[]{
 					(char) 0, (char) 0, (char) 0, (char) 42, (char) 0, (char) 3, (char) 0, (char) 0, 
 					'u', 's', 'e', 'r', (char) 0, 
@@ -87,14 +83,12 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 					'd', 'a', 't', 'a', 'b', 'a', 's', 'e', (char) 0, 
 					't', 'e', 'm', 'p', 'l', 'a', 't', 'e', '1', (char) 0, (char) 0});
 			pw.flush();
-			LOG.debug("Open socket input stream.");
 			InputStreamReader isr = new InputStreamReader(socket.getInputStream());
-			LOG.debug("Read one character.");
 			char response = (char) isr.read();
-			LOG.debug("Character returned was " + response + ".");
-			running = response == 'R';
+			if (!(running = response == 'R')) {
+				LOG.warn("Expected Postgresql server to return R, got " + response + ".");
+			}
 			socket.close();
-			LOG.debug("Close socket, running = " + running);
 		} catch (IOException e) {
 			LOG.warn("Couldn't connect to Postgres service!", e);
 			// expected if database is down, or we've connected to something that's not postgre
@@ -129,6 +123,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 			passwordCorrect = true;
 		} catch (SQLException e) {
 			// expected for wrong password
+			LOG.warn("Password validation failed.", e);
 		}
 		return passwordCorrect;
 	}
@@ -140,13 +135,17 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 	 * more than one session is connected.
 	 */
 	@Override
-	public void createEmptyDatabase() {
+	public void createEmptyDatabase() throws ApplicationException {
 		String createSql = "create database \"" + database + "\" with"
 				+ " owner=postgres"
 				+ " template=template0"
 				+ " encoding='UTF8'"
 				+ " connection limit=-1;";
-		initialJdbcTemplate.execute(createSql);
+		try {
+			initialJdbcTemplate.execute(createSql);
+		} catch (DataAccessException e) {
+			throw new ApplicationException("Could not create database!", e);
+		}
 	}
 
 	@Override

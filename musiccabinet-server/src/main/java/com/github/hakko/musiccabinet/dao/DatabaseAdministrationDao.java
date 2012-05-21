@@ -7,7 +7,7 @@ public interface DatabaseAdministrationDao {
 	boolean isRDBMSRunning(); // checks if postgresql service is running
 	boolean isDatabaseCreated();
 	boolean isPasswordCorrect(String password);
-	void createEmptyDatabase();
+	void createEmptyDatabase() throws ApplicationException;
 	void forcePasswordUpdate(String password) throws ApplicationException;
 	
 	int getDatabaseVersion();
