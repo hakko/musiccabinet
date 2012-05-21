@@ -192,7 +192,8 @@ public class JdbcAlbumInfoDao implements AlbumInfoDao, JdbcTemplateDao {
 				+ " inner join music.artist art on alb.artist_id = art.id"
 				+ " where not exists ("
 				+ " select 1 from music.albuminfo ai "
-				+ " inner join music.album alb on ai.album_id = alb.id where alb.artist_id = art.id)";
+				+ " inner join music.album alb on ai.album_id = alb.id where alb.artist_id = art.id)"
+				+ " order by art.id limit 3000";
 
 		List<Album> albums = jdbcTemplate.query(sql, new RowMapper<Album>() {
 			@Override

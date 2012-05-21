@@ -175,7 +175,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 
 	/*
 	 * Group artists in local library by last update time from last.fm, and return
-	 * the 1/30th that were updated longest ago.
+	 * the 1/30th, but maximum 1000 artists, that were updated longest ago.
 	 */
 	protected List<Artist> getArtistsWithOldestInvocations(Calltype callType) {
 		String sql = "select a.artist_name_capitalization from ("
@@ -186,7 +186,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			+ " and ntile.ntile = 1"
 			+ " where a.id in "
 			+ " (select t.artist_id from library.musicfile mf "
-			+ "  inner join music.track t on mf.track_id = t.id)";
+			+ "  inner join music.track t on mf.track_id = t.id)"
+			+ " order by artist_id limit 1000";
 		
 		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
 			@Override
@@ -200,6 +201,9 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 
 	/*
 	 * Return artists found in local library, who's never been looked up from last.fm.
+	 * 
+	 * Sets an upper limit of 3000 artists, meaning larger libraries will have to run
+	 * the search index multiple times to get fully updated.
 	 */
 	protected List<Artist> getArtistsWithNoInvocations(Calltype callType) {
 		String sql = "select artist_name_capitalization from music.artist where id in ("
@@ -207,7 +211,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 				+ " inner join music.track t on mf.track_id = t.id"
 				+ " where not exists ("
 				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
-				+ " and calltype_id = " + callType.getDatabaseId() + "))";
+				+ " and calltype_id = " + callType.getDatabaseId() + ")"
+				+ " order by t.artist_id limit 3000)";
 		
 		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
 			@Override
