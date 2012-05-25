@@ -96,7 +96,7 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 				+ "		from library.musicdirectory"
 				+ "		where album_id is null group by artist_id) md"
 				+ "		on att.artist_id = md.artist_id"
-				+ " where t.tag_name = ?"
+				+ " where t.tag_name = ? and att.tag_count > 25"
 				+ " order by (att.tag_count-1)/10 desc, ai.listeners desc"
 				+ " limit " + length + " offset " + offset;
 
