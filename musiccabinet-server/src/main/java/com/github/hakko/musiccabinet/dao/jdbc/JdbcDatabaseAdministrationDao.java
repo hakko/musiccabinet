@@ -85,7 +85,8 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 			pw.flush();
 			InputStreamReader isr = new InputStreamReader(socket.getInputStream());
 			char response = (char) isr.read();
-			if (!(running = response == 'R')) {
+			running = true;
+			if (response != 'R') {
 				LOG.warn("Expected Postgresql server to return R, got " + response + ".");
 			}
 			socket.close();
