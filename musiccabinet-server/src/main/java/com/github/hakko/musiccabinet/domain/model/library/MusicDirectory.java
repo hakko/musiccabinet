@@ -59,5 +59,10 @@ public class MusicDirectory {
           .append(path, md.path)
           .isEquals();
 	}
+
+	@Override
+	public String toString() {
+		return "directory " + path + " (" + artistName + ", " + albumName + ")";
+	}
 	
 }
