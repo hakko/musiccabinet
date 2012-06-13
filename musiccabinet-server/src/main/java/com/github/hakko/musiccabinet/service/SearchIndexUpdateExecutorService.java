@@ -77,6 +77,8 @@ public class SearchIndexUpdateExecutorService {
 				updateService.updateSearchIndex();
 			} catch (ApplicationException e) {
 				LOG.warn(updateService + " failed!", e);
+			} catch (Throwable t) {
+				LOG.error(updateService + " failed with an unexpected error.", t);
 			}
 			if (activeThreads.decrementAndGet() == 0) {
 				scheduler.shutdown();
