@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.parser.lastfm;
 
 import static junit.framework.Assert.assertEquals;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -13,6 +14,9 @@ public class ArtistInfoParserTest {
 	
 	private static final String ARTIST_INFO_FILE = 
 		"last.fm/xml/artistinfo.abba.xml";
+
+	private static final String EMPTY_ARTIST_INFO_FILE = 
+			"last.fm/xml/artistinfo.empty.xml";
 
 	// constant values below are copied from file above
 	
@@ -34,6 +38,7 @@ public class ArtistInfoParserTest {
 	@Test
 	public void testdataOnClasspath() {
 		new ResourceUtil(ARTIST_INFO_FILE);
+		new ResourceUtil(EMPTY_ARTIST_INFO_FILE);
 	}
 	
 	@Test
@@ -55,6 +60,16 @@ public class ArtistInfoParserTest {
 		
 		assertEquals(BIO_SUMMARY, artistInfo.getBioSummary());
 		assertEquals(BIO_CONTENT, artistInfo.getBioContent());
+	}
+
+	@Test
+	public void emptyFileReturnsEmptyInfo() throws ApplicationException {
+		ArtistInfoParser parser = new ArtistInfoParserImpl(
+				new ResourceUtil(EMPTY_ARTIST_INFO_FILE).getInputStream());
+		
+		ArtistInfo artistInfo = parser.getArtistInfo();
+		
+		Assert.assertNull(artistInfo);
 	}
 
 }

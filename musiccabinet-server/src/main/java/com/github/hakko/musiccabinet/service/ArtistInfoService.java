@@ -69,7 +69,13 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 					StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 					ArtistInfoParser aiParser = 
 						new ArtistInfoParserImpl(stringUtil.getInputStream());
-					artistInfos.add(aiParser.getArtistInfo());
+					if (aiParser.getArtistInfo() != null) {
+						artistInfos.add(aiParser.getArtistInfo());
+					} else {
+						LOG.warn("Artist info response for " + artist 
+								+ " not parsed correctly. Response was " 
+								+ wsResponse.getResponseBody());
+					}
 					
 					if (artistInfos.size() == BATCH_SIZE) {
 						artistInfoDao.createArtistInfo(artistInfos);
