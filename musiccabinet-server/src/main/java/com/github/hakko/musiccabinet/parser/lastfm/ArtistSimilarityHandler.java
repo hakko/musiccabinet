@@ -2,7 +2,7 @@ package com.github.hakko.musiccabinet.parser.lastfm;
 
 import static com.github.hakko.musiccabinet.parser.lastfm.ArtistSimilarityHandler.State.MATCH;
 import static com.github.hakko.musiccabinet.parser.lastfm.ArtistSimilarityHandler.State.NAME;
-import static java.lang.Float.parseFloat;
+import static org.apache.commons.lang.math.NumberUtils.toFloat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ public class ArtistSimilarityHandler extends DefaultHandler {
 			if (state == NAME) {
 				currentArtistRelation.setTarget(new Artist(chars));
 			} else if (state == MATCH) {
-				currentArtistRelation.setMatch(parseFloat(chars));
+				currentArtistRelation.setMatch(toFloat(chars));
 			}
 			state = null;
 		}

@@ -4,7 +4,7 @@ import static com.github.hakko.musiccabinet.parser.lastfm.TrackSimilarityHandler
 import static com.github.hakko.musiccabinet.parser.lastfm.TrackSimilarityHandler.State.MATCH;
 import static com.github.hakko.musiccabinet.parser.lastfm.TrackSimilarityHandler.State.NAME;
 import static com.github.hakko.musiccabinet.parser.lastfm.TrackSimilarityHandler.State.TRACK;
-import static java.lang.Float.parseFloat;
+import static org.apache.commons.lang.math.NumberUtils.toFloat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +81,7 @@ public class TrackSimilarityHandler extends DefaultHandler {
 					currentTrackRelation.getTarget().getArtist().setName(chars);
 				}
 			} else if (state == MATCH) {
-				currentTrackRelation.setMatch(parseFloat(chars));
+				currentTrackRelation.setMatch(toFloat(chars));
 			}
 			state = null;
 		}

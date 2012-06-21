@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.service;
 
+import static org.apache.commons.lang.math.NumberUtils.toInt;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,7 +119,7 @@ public class DatabaseAdministrationService {
     		LOG.warn("Could not load database updates list!", e);
     	}
     	for (Object key : props.keySet()) {
-    		updates.add(Integer.parseInt(key.toString()));
+    		updates.add(toInt(key.toString()));
     	}
     	Collections.sort(updates);
     	return updates;

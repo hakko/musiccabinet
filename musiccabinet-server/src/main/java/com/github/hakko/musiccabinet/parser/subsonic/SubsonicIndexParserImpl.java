@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.parser.subsonic;
 
 import static com.github.hakko.musiccabinet.configuration.CharSet.UTF8;
+import static org.apache.commons.lang.math.NumberUtils.toLong;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -110,8 +111,8 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
     		return;
     	}
         
-        long created = parseLong(tokens[1]);
-        long lastModified = parseLong(tokens[2]);
+        long created = toLong(tokens[1]);
+        long lastModified = toLong(tokens[2]);
         String path = tokens[3];
         String artistName = tokens[5];
         String trackName = tokens[7];
@@ -119,16 +120,6 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
         musicFiles.add(new MusicFile(artistName, trackName, path, created, lastModified));
     }
     
-    private long parseLong(String token) {
-    	long result = 0;
-    	try {
-    		result = Long.parseLong(token);
-    	} catch (NumberFormatException e) {
-    		LOG.warn("Could not parse " + token + " as a long!");
-    	}
-    	return result;
-    }
-	
     /**
 	 * Parses a single line representing a directory from a Subsonic index file, version 14.
 	 * 

@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.parser.lastfm;
 
+import static org.apache.commons.lang.math.NumberUtils.toInt;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -61,9 +63,9 @@ public class AlbumInfoHandler extends DefaultHandler {
 					albumInfo.setExtraLargeImageUrl(validateUrl(chars));
 				}
 			} else if (TAG_LISTENERS.equals(qName)) {
-				albumInfo.setListeners(Integer.parseInt(chars));
+				albumInfo.setListeners(toInt(chars));
 			} else if (TAG_PLAY_COUNT.equals(qName)) {
-				albumInfo.setPlayCount(Integer.parseInt(chars));
+				albumInfo.setPlayCount(toInt(chars));
 				parsing = false;
 			}
 		}

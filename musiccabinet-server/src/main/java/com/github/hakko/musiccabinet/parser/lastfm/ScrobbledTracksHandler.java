@@ -5,8 +5,8 @@ import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler
 import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler.State.NAME;
 import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler.State.PLAY_COUNT;
 import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler.State.TRACK;
-import static java.lang.Integer.parseInt;
 import static java.lang.Short.parseShort;
+import static org.apache.commons.lang.math.NumberUtils.toInt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class ScrobbledTracksHandler extends DefaultHandler {
 					currentTrackPlayCount.getTrack().getArtist().setName(chars);
 				}
 			} else if (state == PLAY_COUNT) {
-				currentTrackPlayCount.setPlayCount(parseInt(chars));
+				currentTrackPlayCount.setPlayCount(toInt(chars));
 			}
 			state = null;
 		}

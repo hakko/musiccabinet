@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static org.apache.commons.lang.math.NumberUtils.toInt;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -233,7 +235,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		int i3 = url.indexOf("/", i2);
 		
 		host = url.substring(i1, i2);
-		port = Integer.parseInt(url.substring(i2 + 1, i3));
+		port = toInt(url.substring(i2 + 1, i3));
 		database = url.substring(i3 + 1);
 	}
 

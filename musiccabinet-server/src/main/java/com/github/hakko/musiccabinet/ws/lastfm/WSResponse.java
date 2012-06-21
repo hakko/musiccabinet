@@ -1,7 +1,7 @@
 package com.github.hakko.musiccabinet.ws.lastfm;
 
 import static com.github.hakko.musiccabinet.ws.lastfm.StatusCode.isLastfmRecoverable;
-import static java.lang.Integer.parseInt;
+import static org.apache.commons.lang.math.NumberUtils.toInt;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -144,7 +144,7 @@ public class WSResponse {
 			throw new ApplicationException("Response from Last.fm not properly formed!");
 		}
 		
-		errorCode = parseInt(responseBody.substring(errorCodeStart, errorCodeEnd));
+		errorCode = toInt(responseBody.substring(errorCodeStart, errorCodeEnd));
 		errorMessage = responseBody.substring(errorMsgStart, errorMsgEnd);
 		errorRecoverable = isLastfmRecoverable(errorCode);
 	}
