@@ -64,7 +64,7 @@ public class UserTopArtistsService extends SearchIndexUpdateService {
 
 	@Override
 	public String getUpdateDescription() {
-		return "user top artists";
+		return "user top artist periods";
 	}
 
 	public List<ArtistRecommendation> getUserTopArtists(LastFmUser user, Period period, int offset, int limit) {
