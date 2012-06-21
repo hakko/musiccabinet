@@ -3,13 +3,13 @@ begin
 
 	-- create missing user(s)
 	insert into library.lastfmuser (lastfm_user, lastfm_user_capitalization)
-	select distinct upper(lastfm_user), lastfm_user from library.usertopartist_import
+	select distinct on (upper(lastfm_user)) upper(lastfm_user), lastfm_user from library.usertopartist_import
 		where not exists (select 1 from library.lastfmuser
 			where lastfm_user = upper(library.usertopartist_import.lastfm_user));
 
 	-- create missing artist(s)
 	insert into music.artist (artist_name, artist_name_capitalization)
-	select distinct upper(artist_name), artist_name from library.usertopartist_import
+	select distinct on (upper(artist_name)) upper(artist_name), artist_name from library.usertopartist_import
 		where not exists (select 1 from music.artist 
 			where artist_name = upper(library.usertopartist_import.artist_name));
 
