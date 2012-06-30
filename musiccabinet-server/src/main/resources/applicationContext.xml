@@ -27,58 +27,64 @@
 		<property name="databaseAdministrationDao" ref="databaseAdministrationDao" />	
 	</bean>
 
-	<bean id="throttleService" class="com.github.hakko.musiccabinet.service.ThrottleService">
+	<bean id="throttleService" class="com.github.hakko.musiccabinet.service.lastfm.ThrottleService">
 	</bean>
 
-	<bean id="artistInfoService" class="com.github.hakko.musiccabinet.service.ArtistInfoService">
+	<bean id="artistInfoService" class="com.github.hakko.musiccabinet.service.lastfm.ArtistInfoService">
 		<property name="artistInfoClient" ref="artistInfoClient" />
 		<property name="artistInfoDao" ref="artistInfoDao" />
 		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
 		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
 	</bean>	
 
-	<bean id="albumInfoService" class="com.github.hakko.musiccabinet.service.AlbumInfoService">
+	<bean id="albumInfoService" class="com.github.hakko.musiccabinet.service.lastfm.AlbumInfoService">
 		<property name="albumInfoClient" ref="albumInfoClient" />
 		<property name="albumInfoDao" ref="albumInfoDao" />
 		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
 	</bean>	
 
-	<bean id="artistRelationService" class="com.github.hakko.musiccabinet.service.ArtistRelationService">
+	<bean id="artistRelationService" class="com.github.hakko.musiccabinet.service.lastfm.ArtistRelationService">
 		<property name="artistSimilarityClient" ref="artistSimilarityClient" />
 		<property name="artistRelationDao" ref="artistRelationDao" />
 		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
 	</bean>	
 
-	<bean id="artistTopTracksService" class="com.github.hakko.musiccabinet.service.ArtistTopTracksService">
+	<bean id="artistTopTracksService" class="com.github.hakko.musiccabinet.service.lastfm.ArtistTopTracksService">
 		<property name="artistTopTracksClient" ref="artistTopTracksClient" />
 		<property name="artistTopTracksDao" ref="artistTopTracksDao" />
 		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
 	</bean>	
 
-	<bean id="artistTopTagsService" class="com.github.hakko.musiccabinet.service.ArtistTopTagsService">
+	<bean id="artistTopTagsService" class="com.github.hakko.musiccabinet.service.lastfm.ArtistTopTagsService">
 		<property name="artistTopTagsClient" ref="artistTopTagsClient" />
 		<property name="artistTopTagsDao" ref="artistTopTagsDao" />
 		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
 	</bean>	
 
-	<bean id="trackRelationService" class="com.github.hakko.musiccabinet.service.TrackRelationService">
+	<bean id="trackRelationService" class="com.github.hakko.musiccabinet.service.lastfm.TrackRelationService">
 		<property name="trackSimilarityClient" ref="trackSimilarityClient" />
 		<property name="trackRelationDao" ref="trackRelationDao" />
 		<property name="musicFileDao" ref="musicFileDao" />
 	</bean>
 	
-	<bean id="scrobbledTracksService" class="com.github.hakko.musiccabinet.service.ScrobbledTracksService">
+	<bean id="scrobbledTracksService" class="com.github.hakko.musiccabinet.service.lastfm.ScrobbledTracksService">
 		<property name="scrobbledTracksClient" ref="scrobbledTracksClient" />
 		<property name="trackPlayCountDao" ref="trackPlayCountDao" />
 	</bean>
 
-	<bean id="tagService" class="com.github.hakko.musiccabinet.service.TagService">
+	<bean id="tagInfoService" class="com.github.hakko.musiccabinet.service.lastfm.TagInfoService">
+		<property name="tagInfoClient" ref="tagInfoClient" />
+		<property name="tagInfoDao" ref="tagInfoDao" />
 		<property name="tagDao" ref="tagDao" />
 	</bean>
 
-	<bean id="tagInfoService" class="com.github.hakko.musiccabinet.service.TagInfoService">
-		<property name="tagInfoClient" ref="tagInfoClient" />
-		<property name="tagInfoDao" ref="tagInfoDao" />
+	<bean id="userTopArtistsService" class="com.github.hakko.musiccabinet.service.lastfm.UserTopArtistsService">
+		<property name="userTopArtistsClient" ref="userTopArtistsClient" />
+		<property name="userTopArtistsDao" ref="userTopArtistsDao" />
+		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
+	</bean>
+
+	<bean id="tagService" class="com.github.hakko.musiccabinet.service.TagService">
 		<property name="tagDao" ref="tagDao" />
 	</bean>
 
@@ -87,7 +93,7 @@
 		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
 	</bean>
 
-	<bean id="searchIndexUpdateExecutorService" class="com.github.hakko.musiccabinet.service.SearchIndexUpdateExecutorService">
+	<bean id="searchIndexUpdateExecutorService" class="com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateExecutorService">
 		<property name="throttleService" ref="throttleService" />
 	</bean>
 
@@ -106,12 +112,6 @@
 		<property name="musicFileDao" ref="musicFileDao" />
 		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
 		<property name="trackRelationService" ref="trackRelationService" />
-	</bean>
-
-	<bean id="userTopArtistsService" class="com.github.hakko.musiccabinet.service.UserTopArtistsService">
-		<property name="userTopArtistsClient" ref="userTopArtistsClient" />
-		<property name="userTopArtistsDao" ref="userTopArtistsDao" />
-		<property name="webserviceHistoryDao" ref="webserviceHistoryDao" />
 	</bean>
 	
 	
