@@ -48,7 +48,7 @@ public class JdbcTrackRelationDaoTest {
 	
 	@Test
 	public void createAndValidateTrackRelations() {
-		deleteTrackRelations();
+		deletePreviousTestdata();
 
 		dao.createTrackRelations(sourceTrack1, Arrays.asList(tr1, tr2, tr3, tr4));
 		dao.createTrackRelations(sourceTrack2, Arrays.asList(tr5, tr6, tr7));
@@ -71,7 +71,7 @@ public class JdbcTrackRelationDaoTest {
 
 	@Test
 	public void createAndValidateUpdatedTrackRelation() {
-		deleteTrackRelations();
+		deletePreviousTestdata();
 
 		dao.createTrackRelations(sourceTrack1, Arrays.asList(tr1, tr2, tr3, tr4));
 		dao.createTrackRelations(sourceTrack2, Arrays.asList(tr5, tr6, tr7));
@@ -98,8 +98,8 @@ public class JdbcTrackRelationDaoTest {
 		}
 	}
 
-	private void deleteTrackRelations() {
-		dao.getJdbcTemplate().execute("truncate music.trackrelation cascade");
+	private void deletePreviousTestdata() {
+		dao.getJdbcTemplate().execute("truncate music.artist cascade");
 	}
 	
 }
