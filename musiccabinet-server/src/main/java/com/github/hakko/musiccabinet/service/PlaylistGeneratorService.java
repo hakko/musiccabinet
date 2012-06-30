@@ -12,6 +12,7 @@ import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
+import com.github.hakko.musiccabinet.service.lastfm.TrackRelationService;
 
 /*
  * Exposes methods to generate playlists of relevant tracks, based on either an artist,

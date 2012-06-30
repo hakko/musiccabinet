@@ -1,4 +1,4 @@
-package com.github.hakko.musiccabinet.service;
+package com.github.hakko.musiccabinet.service.lastfm;
 
 import com.github.hakko.musiccabinet.dao.MusicFileDao;
 import com.github.hakko.musiccabinet.dao.TrackRelationDao;
