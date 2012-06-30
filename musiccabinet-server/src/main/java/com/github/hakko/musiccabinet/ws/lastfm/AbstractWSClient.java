@@ -26,7 +26,7 @@ import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
-import com.github.hakko.musiccabinet.service.ThrottleService;
+import com.github.hakko.musiccabinet.service.lastfm.ThrottleService;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
 
 /*
