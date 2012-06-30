@@ -1,4 +1,4 @@
-package com.github.hakko.musiccabinet.service;
+package com.github.hakko.musiccabinet.service.lastfm;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,6 +19,7 @@ import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.lastfm.TrackRelationService;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
 import com.github.hakko.musiccabinet.ws.lastfm.TrackSimilarityClient;
 import com.github.hakko.musiccabinet.ws.lastfm.WSResponse;
