@@ -2,11 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:si="http://www.springframework.org/schema/integration"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation=
 	"http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/aop
-	http://www.springframework.org/schema/aop/spring-aop.xsd">
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task.xsd">
 
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -20,11 +26,71 @@
 		</property>
 	</bean>
 
+	<!-- TASK EXECUTOR -->
+
+	<task:executor id="taskExecutor" pool-size="5"/>
+
+	<!-- INTEGRATION CHANNELS -->
+	<si:channel id="libraryPresenceChannel">
+       <si:queue capacity="10" />
+	</si:channel>
+
+	<si:channel id="libraryMetadataChannel">
+       <si:queue capacity="10"/>
+	</si:channel>
+
+	<si:channel id="libraryAdditionChannel">
+       <si:queue capacity="10"/>
+	</si:channel>
+
+	<si:channel id="libraryDeletionChannel">
+       <si:queue capacity="10"/>
+	</si:channel>
+
 
 	<!--  SERVICES -->
 
 	<bean id="databaseAdministrationService" class="com.github.hakko.musiccabinet.service.DatabaseAdministrationService">
 		<property name="databaseAdministrationDao" ref="databaseAdministrationDao" />	
+	</bean>
+
+	<bean id="libraryScannerService" class="com.github.hakko.musiccabinet.service.library.LibraryScannerService">
+		<property name="libraryPresenceChannel" ref="libraryPresenceChannel" />
+		<property name="taskExecutor" ref="taskExecutor" />
+		<property name="libraryPresenceService" ref="libraryPresenceService" />
+		<property name="libraryMetadataService" ref="libraryMetadataService" />
+		<property name="libraryAdditionService" ref="libraryAdditionService" />
+		<property name="libraryDeletionService" ref="libraryDeletionService" />
+	</bean>
+
+	<bean id="libraryPresenceService" class="com.github.hakko.musiccabinet.service.library.LibraryPresenceService">
+		<property name="libraryPresenceChannel" ref="libraryPresenceChannel" />
+		<property name="libraryMetadataChannel" ref="libraryMetadataChannel" />
+		<property name="libraryDeletionChannel" ref="libraryDeletionChannel" />
+		<property name="libraryPresenceDao" ref="libraryPresenceDao" />
+	</bean>
+
+	<bean id="libraryMetadataService" class="com.github.hakko.musiccabinet.service.library.LibraryMetadataService">
+		<property name="libraryMetadataChannel" ref="libraryMetadataChannel" />
+		<property name="libraryAdditionChannel" ref="libraryAdditionChannel" />
+		<property name="audioTagService" ref="audioTagService" />
+	</bean>
+
+	<bean id="libraryAdditionService" class="com.github.hakko.musiccabinet.service.library.LibraryAdditionService">
+		<property name="libraryAdditionChannel" ref="libraryAdditionChannel" />
+		<property name="libraryAdditionDao" ref="libraryAdditionDao" />
+	</bean>
+
+	<bean id="libraryBrowserService" class="com.github.hakko.musiccabinet.service.LibraryBrowserService">
+		<property name="libraryBrowserDao" ref="libraryBrowserDao" />
+	</bean>
+
+	<bean id="audioTagService" class="com.github.hakko.musiccabinet.service.library.AudioTagService">
+	</bean>
+
+	<bean id="libraryDeletionService" class="com.github.hakko.musiccabinet.service.library.LibraryDeletionService">
+		<property name="libraryDeletionChannel" ref="libraryDeletionChannel" />
+		<property name="libraryDeletionDao" ref="libraryDeletionDao" />
 	</bean>
 
 	<bean id="throttleService" class="com.github.hakko.musiccabinet.service.lastfm.ThrottleService">
@@ -100,7 +166,6 @@
 	<bean id="subsonicIndexService" class="com.github.hakko.musiccabinet.service.SubsonicIndexService">
 		<property name="musicFileDao" ref="musicFileDao" />
 		<property name="musicDirectoryDao" ref="musicDirectoryDao" />
-		<property name="playlistGeneratorDao" ref="playlistGeneratorDao" />
 	</bean>
 
 	<bean id="itunesMusicLibraryService" class="com.github.hakko.musiccabinet.service.ItunesMusicLibraryService">
@@ -162,6 +227,22 @@
 
 
 	<!--  DAOs  -->
+
+	<bean id="libraryPresenceDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryPresenceDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="libraryAdditionDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryAdditionDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="libraryDeletionDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryDeletionDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="libraryBrowserDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryBrowserDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
 
 	<bean id="musicDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicDao">
 		<property name="dataSource" ref="dataSource" />
@@ -254,6 +335,10 @@
 
 		<property name="testConnectionOnCheckout" value="true" />
 		<property name="acquireRetryAttempts" value="1" />
+
+		<property name="minPoolSize" value="25" />
+		<property name="maxPoolSize" value="40" />
+		<property name="initialPoolSize" value="25" />
 	</bean>
 
 	<bean id="initialDataSource" destroy-method="close"
@@ -262,6 +347,9 @@
 		<property name="jdbcUrl" value="${musiccabinet.jdbc.initialurl}" />
 		<property name="user" value="${musiccabinet.jdbc.username}" />
 		<property name="password" value="${musiccabinet.jdbc.password}" />
+		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="1" />
+		<property name="initialPoolSize" value="1" />
 	</bean>
 	
 </beans>

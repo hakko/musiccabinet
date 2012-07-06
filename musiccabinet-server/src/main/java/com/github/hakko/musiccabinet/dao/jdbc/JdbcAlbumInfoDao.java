@@ -162,7 +162,7 @@ public class JdbcAlbumInfoDao implements AlbumInfoDao, JdbcTemplateDao {
 				+ " inner join library.musicdirectory md on md.album_id = alb.id"
 				+ " where md.path in (" + getParameters(paths.size()) + ")";
 
-		final Map<String, AlbumInfo> albumInfos = new HashMap<String, AlbumInfo>();
+		final Map<String, AlbumInfo> albumInfos = new HashMap<>();
 		try {
 			jdbcTemplate.query(sql, paths.toArray(), new RowCallbackHandler() {
 				@Override

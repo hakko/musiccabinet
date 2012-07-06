@@ -24,7 +24,7 @@ public abstract class AbstractSAXParserImpl {
 
 	protected void parseFromStream(InputStream source, DefaultHandler handler) 
 	throws ApplicationException {
-		try {
+		try (InputStream autoClosingStream = source) {
 			SAXParser saxParser = getSAXParser();
 			saxParser.parse(source, handler);
 		} catch (IOException e) {

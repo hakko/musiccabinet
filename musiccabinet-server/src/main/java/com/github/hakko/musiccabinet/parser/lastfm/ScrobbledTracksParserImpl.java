@@ -10,7 +10,7 @@ import com.github.hakko.musiccabinet.parser.AbstractSAXParserImpl;
 
 public class ScrobbledTracksParserImpl extends AbstractSAXParserImpl implements ScrobbledTracksParser {
 	
-	private List<TrackPlayCount> trackPlayCounts = new ArrayList<TrackPlayCount>();
+	private List<TrackPlayCount> trackPlayCounts = new ArrayList<>();
 	private short page;
 	private short totalPages;
 	

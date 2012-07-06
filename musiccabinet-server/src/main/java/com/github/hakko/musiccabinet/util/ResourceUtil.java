@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 /*
  * Utility class for reading content from bundled resources.
  */
-public class ResourceUtil {
+public class ResourceUtil implements AutoCloseable {
 
 	private InputStream inputStream;
 	private String charSet;
@@ -55,7 +55,7 @@ public class ResourceUtil {
 	 */
 	public String getContent() throws IllegalArgumentException {		
 		String resourceContent;
-		try {
+		try (ResourceUtil resourceUtil = this) {
 			resourceContent = getContentFromInputStream();
 		} catch (IOException e) {
 			throw new IllegalArgumentException(
@@ -79,6 +79,10 @@ public class ResourceUtil {
 			sb.append(chunk, 0, charsRead);
 		}
 		return sb.toString();
+	}
+	
+	public void close() throws IOException {
+		this.inputStream.close();
 	}
 	
 }

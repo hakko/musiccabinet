@@ -1,10 +1,10 @@
 package com.github.hakko.musiccabinet.service.lastfm;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -31,13 +31,13 @@ public class SearchIndexUpdateExecutorService {
 	private ThrottleService throttleService;
 
 	private ScheduledExecutorService scheduler;
-	private AtomicInteger activeThreads = new AtomicInteger();
+	private CountDownLatch activeThreads;
 	
 	private Logger LOG = Logger.getLogger(SearchIndexUpdateExecutorService.class);
 	
 	public void updateSearchIndex(List<? extends SearchIndexUpdateService> updateServices) {
 		final int threads = updateServices.size();
-		activeThreads.set(threads);
+		activeThreads = new CountDownLatch(threads);
 		
 		scheduler = Executors.newScheduledThreadPool(threads + 1);
 		scheduler.scheduleAtFixedRate(new Throttler(), 0, 1, TimeUnit.MINUTES);
@@ -47,9 +47,10 @@ public class SearchIndexUpdateExecutorService {
 		}
 		
 		try {
-			while (!scheduler.awaitTermination(1, TimeUnit.SECONDS));
+			activeThreads.await();
 		} catch (InterruptedException e) {
 		}
+		scheduler.shutdown();
 	}
 
 	// used to send allowance to invoke last.fm calls, five per second.
@@ -79,9 +80,8 @@ public class SearchIndexUpdateExecutorService {
 				LOG.warn(updateService + " failed!", e);
 			} catch (Throwable t) {
 				LOG.error(updateService + " failed with an unexpected error.", t);
-			}
-			if (activeThreads.decrementAndGet() == 0) {
-				scheduler.shutdown();
+			} finally {
+				activeThreads.countDown();
 			}
 		}
 		

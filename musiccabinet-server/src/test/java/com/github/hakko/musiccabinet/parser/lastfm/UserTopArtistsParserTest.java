@@ -30,11 +30,6 @@ public class UserTopArtistsParserTest {
 			);
 	
 	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(USER_TOP_ARTISTS_FILE);
-	}
-	
-	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {
 		UserTopArtistsParser parser = new UserTopArtistsParserImpl(
 				new ResourceUtil(USER_TOP_ARTISTS_FILE).getInputStream());

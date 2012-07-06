@@ -26,7 +26,7 @@ public class SearchIndexUpdateExecutorServiceTest {
 
 	@Test
 	public void parallellUpdatesGetThrottled() {
-		List<SearchIndexUpdateService> updateServices = new ArrayList<SearchIndexUpdateService>();
+		List<SearchIndexUpdateService> updateServices = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			updateServices.add(new TestUpdateService());
 		}

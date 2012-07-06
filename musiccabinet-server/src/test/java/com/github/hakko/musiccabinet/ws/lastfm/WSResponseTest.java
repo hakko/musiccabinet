@@ -37,14 +37,6 @@ public class WSResponseTest {
 	}
 	
 	@Test
-	public void testdataOnClasspath() {
-		for (String resource : Arrays.asList(TOP_TRACKS_RESOURCE, 
-				FAILED_TRACK_RESOURCE, FAILED_KEY_RESOURCE)) {
-			new ResourceUtil(resource);
-		}
-	}
-	
-	@Test
 	public void unallowedCallGetsWrappedNicely() {
 		WSResponse response = new WSResponse();
 		

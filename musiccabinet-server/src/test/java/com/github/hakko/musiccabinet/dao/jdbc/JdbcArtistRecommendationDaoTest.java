@@ -70,7 +70,7 @@ public class JdbcArtistRecommendationDaoTest {
 	public void createTestData() throws ApplicationException {
 		PostgreSQLUtil.truncateTables(artistRecommendationDao);
 
-		List<ArtistRelation> artistRelations = new ArrayList<ArtistRelation>();
+		List<ArtistRelation> artistRelations = new ArrayList<>();
 		for (Artist targetArtist : Arrays.asList(madonna, cyndi, celine, kylie)) {
 			artistRelations.add(new ArtistRelation(targetArtist, 0.33f));
 		}
@@ -90,7 +90,7 @@ public class JdbcArtistRecommendationDaoTest {
 				new Track(kylie, "Love At First Sight")));
 		
 		musicFileDao.clearImport();
-		List<MusicFile> musicFiles = new ArrayList<MusicFile>();
+		List<MusicFile> musicFiles = new ArrayList<>();
 		for (Track track : Arrays.asList(track1, track2, track3)) {
 			MusicFile mf = new MusicFile(track.getArtist().getName(), 
 					track.getName(), "/path/to/" + track.getName(), 0L, 0L);
@@ -104,8 +104,8 @@ public class JdbcArtistRecommendationDaoTest {
 		cherId = musicDao.getArtistId(cher);
 
 		musicDirectoryDao.clearImport();
-		List<MusicDirectory> musicDirectories = new ArrayList<MusicDirectory>();
-		List<ArtistInfo> artistInfos = new ArrayList<ArtistInfo>();
+		List<MusicDirectory> musicDirectories = new ArrayList<>();
+		List<ArtistInfo> artistInfos = new ArrayList<>();
 		for (Artist artist : Arrays.asList(madonna, cyndi, celine, kylie)) {
 			musicDirectories.add(new MusicDirectory(
 					artist.getName(), "/path/to/" + artist.getName()));
@@ -126,7 +126,7 @@ public class JdbcArtistRecommendationDaoTest {
 		Assert.assertNotNull(recommendedArtistNames);
 		Assert.assertEquals(2, recommendedArtistNames.size());
 
-		List<Artist> artists = new ArrayList<Artist>();
+		List<Artist> artists = new ArrayList<>();
 		for (String artistName : recommendedArtistNames) {
 			artists.add(new Artist(artistName));
 		}

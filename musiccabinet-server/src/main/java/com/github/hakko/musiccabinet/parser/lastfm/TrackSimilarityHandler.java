@@ -23,7 +23,7 @@ public class TrackSimilarityHandler extends DefaultHandler {
 	private String artistName; // artist name this similarity is based on
 	private String trackName; // track name this similarity is based on
 	private Track sourceTrack; // track assembled from artist+track name
-	private List<TrackRelation> trackRelations = new ArrayList<TrackRelation>();
+	private List<TrackRelation> trackRelations = new ArrayList<>();
 	private TrackRelation currentTrackRelation; // used internally while parsing
 
 	private State scope; // stores if we're currently reading a track or an artist
@@ -31,7 +31,7 @@ public class TrackSimilarityHandler extends DefaultHandler {
 	private StringBuilder characterData; // used to assemble xml text passed by parser
 
 	// maps start tag to respective state, for tags where we read xml text() data
-	private static Map<String, State> xmlToStateMap = new HashMap<String, State>();
+	private static Map<String, State> xmlToStateMap = new HashMap<>();
 	
 	private static final String TAG_SIMILAR_TRACKS = "similartracks";
 	private static final String TAG_ARTIST = "artist";

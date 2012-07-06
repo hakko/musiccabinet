@@ -23,7 +23,7 @@ public class ArtistSimilarityClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ARTIST_GET_SIMILAR, artist);
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_ARTIST, artist.getName()));
 		

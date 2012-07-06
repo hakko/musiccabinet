@@ -17,7 +17,7 @@ public class ArtistTopTagsHandler extends DefaultHandler {
 	
 	private String artistName; // artist name this similarity is based on
 	private Artist sourceArtist; // artist based on artist name
-	private List<Tag> topTags = new ArrayList<Tag>();
+	private List<Tag> topTags = new ArrayList<>();
 	private Tag currentTag; // used internally while parsing
 
 	private State state; // stores state based on latest encountered start tag

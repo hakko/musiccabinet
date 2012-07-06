@@ -78,18 +78,18 @@ public class JdbcUserTopArtistsDaoTest {
 	}
 	
 	private void createArtistMetaData() {
-		Set<Artist> artists = new HashSet<Artist>();
+		Set<Artist> artists = new HashSet<>();
 		for (UserTopArtists uta : Arrays.asList(arnOverall, arn6month, sys3month)) {
 			for (Artist artist : uta.getArtists()) {
 				artists.add(artist);
 			}
 		}
-		List<MusicDirectory> musicDirectories = new ArrayList<MusicDirectory>();
+		List<MusicDirectory> musicDirectories = new ArrayList<>();
 		for (Artist artist : artists) {
 			musicDirectories.add(new MusicDirectory(
 					artist.getName(), "/path/to/" + artist.getName()));
 		}
-		List<ArtistInfo> artistInfos = new ArrayList<ArtistInfo>();
+		List<ArtistInfo> artistInfos = new ArrayList<>();
 		for (Artist artist : artists) {
 			artistInfos.add(new ArtistInfo(artist, "/url/to/" + artist.getName()));
 		}

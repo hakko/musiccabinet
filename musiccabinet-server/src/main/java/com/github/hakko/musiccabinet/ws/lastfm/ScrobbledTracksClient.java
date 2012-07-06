@@ -21,7 +21,7 @@ public class ScrobbledTracksClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(GET_SCROBBLED_TRACKS, page);
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_USER, user));
 		params.add(new BasicNameValuePair(PARAM_PAGE, Short.toString(page)));

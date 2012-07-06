@@ -54,11 +54,6 @@ public class ArtistTopTagsServiceTest {
 	
 	private static final String CHER_TOP_TAGS = "last.fm/xml/toptags.cher.xml";
 	private static final String artistName = "cher";
-	
-	@Test
-	public void testdataFoundOnClasspath() {
-		new ResourceUtil(CHER_TOP_TAGS);
-	}
 
 	@Test
 	public void artistTopTagsServiceConfigured() {
@@ -93,7 +88,7 @@ public class ArtistTopTagsServiceTest {
 	public void tagsWithLowTagCountGetStripped() {
 		final String folk = "folk", psychedelic = "psychedelic", disco = "disco";
 		
-		List<Tag> tags = new ArrayList<Tag>();
+		List<Tag> tags = new ArrayList<>();
 		tags.add(new Tag(folk, (short) 99));
 		tags.add(new Tag(psychedelic, (short) 84));
 		tags.add(new Tag(disco, (short) 0));

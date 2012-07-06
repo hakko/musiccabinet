@@ -14,11 +14,6 @@ public class ArtistSimilarityParserTest {
 	
 	private static final String ARTIST_SIMILARITY_FILE = 
 		"last.fm/xml/similarartists.cher.xml";
-
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(ARTIST_SIMILARITY_FILE);
-	}
 	
 	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {

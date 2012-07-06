@@ -56,7 +56,7 @@ public class TagInfoClient extends AbstractWSClient {
 	}
 	
 	public WSResponse getTagInfo(String tagName) throws ApplicationException {
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_TAG, tagName));
 		

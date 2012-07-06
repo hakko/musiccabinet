@@ -25,7 +25,7 @@ public class ScrobbledTracksHandler extends DefaultHandler {
 
 	private short page;
 	private short totalPages;
-	private List<TrackPlayCount> trackPlayCounts = new ArrayList<TrackPlayCount>();
+	private List<TrackPlayCount> trackPlayCounts = new ArrayList<>();
 	private TrackPlayCount currentTrackPlayCount; // used internally while parsing
 
 	private State scope; // stores if we're currently reading a track or an artist
@@ -33,7 +33,7 @@ public class ScrobbledTracksHandler extends DefaultHandler {
 	private StringBuilder characterData; // used to assemble xml text passed by parser
 
 	// maps start tag to respective state, for tags where we read xml text() data
-	private static Map<String, State> xmlToStateMap = new HashMap<String, State>();
+	private static Map<String, State> xmlToStateMap = new HashMap<>();
 	
 	private static final String TAG_TRACKS = "tracks";
 	private static final String ATTR_PAGE = "page";

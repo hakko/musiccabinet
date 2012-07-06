@@ -86,7 +86,7 @@ public class JdbcArtistTopTagsDaoTest {
 		dao.createTopTags(cherArtist, cherTopTags);
 		dao.createTopTags(rihannaArtist, rihannaTopTags);
 		
-		rihannaTopTags = new ArrayList<Tag>();
+		rihannaTopTags = new ArrayList<>();
 		rihannaTopTags.add(new Tag("dance", (short) 22));
 		rihannaTopTags.add(new Tag("r&b", (short) 8));
 		dao.createTopTags(rihannaArtist, rihannaTopTags);

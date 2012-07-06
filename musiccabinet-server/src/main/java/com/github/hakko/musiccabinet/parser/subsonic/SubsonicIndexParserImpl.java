@@ -62,8 +62,8 @@ public class SubsonicIndexParserImpl implements SubsonicIndexParser {
 	public boolean readBatch() throws ApplicationException {
 		String line;
 		int lines = 0;
-		musicFiles = new ArrayList<MusicFile>();
-		musicDirectories = new ArrayList<MusicDirectory>();
+		musicFiles = new ArrayList<>();
+		musicDirectories = new ArrayList<>();
 		
 		try {
 			while ((line = fileReader.readLine()) != null) {

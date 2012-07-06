@@ -39,7 +39,7 @@ public class TrackTest {
 	
 	@Test (expected = IllegalArgumentException.class)
 	public void trackNameIsNullsafe() {
-		new Track("madonna", null);
+		new Track("madonna", (String) null);
 	}
 
 	@Test (expected = IllegalArgumentException.class)

@@ -23,11 +23,6 @@ public class SubsonicIndexParserTest {
 	private static final String LIBRARY_INDEX_FILE = 
 		"subsonic/subsonic15.index";
 
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(LIBRARY_INDEX_FILE);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test (expected = ApplicationException.class)
 	public void corruptStreamThrowsException() throws IOException, ApplicationException {

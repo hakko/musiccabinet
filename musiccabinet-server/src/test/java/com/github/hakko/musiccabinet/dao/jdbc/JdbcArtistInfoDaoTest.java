@@ -70,7 +70,7 @@ public class JdbcArtistInfoDaoTest {
 	public void createAndValidateArtistInfos() throws ApplicationException {
 		deleteArtistInfos();
 
-		List<ArtistInfo> artistInfos = new ArrayList<ArtistInfo>();
+		List<ArtistInfo> artistInfos = new ArrayList<>();
 		artistInfos.add(aiAbba);
 		artistInfos.add(aiCher);
 		

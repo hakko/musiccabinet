@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.parser.itunes;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.Assert;
@@ -14,11 +15,6 @@ public class ItunesMusicLibraryParserTest {
 	
 	private static final String ITUNES_INDEX_FILE = 
 		"iTunes/iTunes Music Library.xml";
-
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(ITUNES_INDEX_FILE);
-	}
 	
 	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {

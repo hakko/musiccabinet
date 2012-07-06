@@ -59,8 +59,4 @@ public class SubsonicIndexService {
 		this.musicDirectoryDao = musicDirectoryDao;
 	}
 	
-	public void setPlaylistGeneratorDao(PlaylistGeneratorDao playlistGeneratorDao) {
-		this.playlistGeneratorDao = playlistGeneratorDao;
-	}
-	
 }

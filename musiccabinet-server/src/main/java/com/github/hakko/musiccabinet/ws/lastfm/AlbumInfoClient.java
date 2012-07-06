@@ -23,7 +23,7 @@ public class AlbumInfoClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ALBUM_GET_INFO, album);
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_ARTIST, album.getArtist().getName()));
 		params.add(new BasicNameValuePair(PARAM_ALBUM, album.getName()));

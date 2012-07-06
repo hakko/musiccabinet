@@ -12,7 +12,7 @@ import com.github.hakko.musiccabinet.parser.AbstractSAXParserImpl;
 public class TrackSimilarityParserImpl extends AbstractSAXParserImpl implements TrackSimilarityParser {
 	
 	private Track track;
-	private List<TrackRelation> trackRelations = new ArrayList<TrackRelation>();
+	private List<TrackRelation> trackRelations = new ArrayList<>();
 	
 	public TrackSimilarityParserImpl(InputStream source) throws ApplicationException {
 		loadTrackSimilarity(source);

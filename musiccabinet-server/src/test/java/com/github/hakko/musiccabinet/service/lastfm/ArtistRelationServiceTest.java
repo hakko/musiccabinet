@@ -54,11 +54,6 @@ public class ArtistRelationServiceTest {
 	private static final String artistName = "cher";
 	
 	@Test
-	public void testdataFoundOnClasspath() {
-		new ResourceUtil(CHER_ARTIST_RELATIONS);
-	}
-	
-	@Test
 	public void artistRelationServiceConfigured() {
 		Assert.assertNotNull(artistRelationService);
 		Assert.assertNotNull(artistRelationService.artistRelationDao);

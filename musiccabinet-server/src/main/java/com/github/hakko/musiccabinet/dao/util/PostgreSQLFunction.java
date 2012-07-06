@@ -41,8 +41,14 @@ public enum PostgreSQLFunction {
 	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 
 		"sql/library/update-trackplaycount.sql"),
 	UPDATE_USER_TOP_ARTISTS("library", "update_usertopartists", 
-		"sql/library/update-usertopartists.sql");
+		"sql/library/update-usertopartists.sql"),
+		
+	ADD_TO_LIBRARY("library", "add_to_library",
+		"sql/library/add-to-library.sql"),
+	DELETE_FROM_LIBRARY("library", "delete_from_library",
+		"sql/library/delete-from-library.sql");
 
+	
 	private final String schema;
 	private final String functionName;
 	private final String URI;

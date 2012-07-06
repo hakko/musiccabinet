@@ -137,7 +137,7 @@ public class PlaylistGeneratorServiceTest {
 	
 	@Test
 	public void noAdjacentArtistsInPlaylist() {
-		List<PlaylistItem> ts = new ArrayList<PlaylistItem>();
+		List<PlaylistItem> ts = new ArrayList<>();
 		ts.add(new PlaylistItem("A", "P1"));
 		ts.add(new PlaylistItem("A", "P2"));
 		ts.add(new PlaylistItem("A", "P3"));

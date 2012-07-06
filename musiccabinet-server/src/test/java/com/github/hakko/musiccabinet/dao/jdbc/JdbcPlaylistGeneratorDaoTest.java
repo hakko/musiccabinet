@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,13 +61,6 @@ public class JdbcPlaylistGeneratorDaoTest {
 	private static final String CHER_SIMILAR_TRACKS = 
 		"last.fm/xml/similartracks.cher.believe.xml";
 
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(CHER_SIMILAR_ARTISTS);
-		new ResourceUtil(CHER_TOP_TRACKS);
-		new ResourceUtil(CHER_SIMILAR_TRACKS);
-	}
-
 	@Before
 	public void clearTopTracksAndRelations() throws ApplicationException {
 		PostgreSQLUtil.truncateTables(playlistGeneratorDao);
@@ -108,7 +102,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 				tsParser.getTrack(), tsParser.getTrackRelations());
 		
 		musicFileDao.clearImport();
-		List<MusicFile> musicFiles = new ArrayList<MusicFile>();
+		List<MusicFile> musicFiles = new ArrayList<>();
 		for (TrackRelation tr : tsParser.getTrackRelations()) {
 			String artistName = tr.getTarget().getArtist().getName();
 			if ("Madonna".equals(artistName)) {
@@ -141,7 +135,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 				attParser.getArtist(), attParser.getTopTracks());
 		
 		musicFileDao.clearImport();
-		List<MusicFile> musicFiles = new ArrayList<MusicFile>();
+		List<MusicFile> musicFiles = new ArrayList<>();
 		for (Track topTrack : attParser.getTopTracks()) {
 			MusicFile mf = new MusicFile(topTrack.getArtist().getName(), 
 					topTrack.getName(), "/path/to/" + topTrack.getName(), 0L, 0L);

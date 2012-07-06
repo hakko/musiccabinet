@@ -59,7 +59,7 @@ public class PlaylistGeneratorService {
 		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForArtist(artistId, artistCount, totalCount);
 		Collections.shuffle(result);
 		distributeArtists(result);
-		List<String> trackPaths = new ArrayList<String>();
+		List<String> trackPaths = new ArrayList<>();
 		for (PlaylistItem pli : result) {
 			trackPaths.add(pli.getPath());
 		}
@@ -74,7 +74,7 @@ public class PlaylistGeneratorService {
 		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForTrack(trackId);
 		Collections.shuffle(result);
 		distributeArtists(result);
-		List<String> trackPaths = new ArrayList<String>();
+		List<String> trackPaths = new ArrayList<>();
 		for (PlaylistItem pli : result) {
 			trackPaths.add(pli.getPath());
 		}
@@ -90,7 +90,7 @@ public class PlaylistGeneratorService {
 		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForTags(tags, artistCount, totalCount);
 		Collections.shuffle(result);
 		distributeArtists(result);
-		List<String> trackPaths = new ArrayList<String>();
+		List<String> trackPaths = new ArrayList<>();
 		for (PlaylistItem pli : result) {
 			trackPaths.add(pli.getPath());
 		}

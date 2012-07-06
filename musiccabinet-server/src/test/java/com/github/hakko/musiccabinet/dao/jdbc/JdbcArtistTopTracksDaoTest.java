@@ -88,7 +88,7 @@ public class JdbcArtistTopTracksDaoTest {
 		dao.createTopTracks(cherArtist, cherTopTracks);
 		dao.createTopTracks(rihannaArtist, rihannaTopTracks);
 		
-		rihannaTopTracks = new ArrayList<Track>();
+		rihannaTopTracks = new ArrayList<>();
 		rihannaTopTracks.add(new Track("Rihanna", "Umbrella"));
 		rihannaTopTracks.add(new Track("Rihanna", "Don't Stop The Music"));
 		dao.createTopTracks(rihannaArtist, rihannaTopTracks);

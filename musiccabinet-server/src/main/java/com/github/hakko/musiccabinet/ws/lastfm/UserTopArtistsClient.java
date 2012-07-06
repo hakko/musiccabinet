@@ -24,7 +24,7 @@ public class UserTopArtistsClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(USER_GET_TOP_ARTISTS, user, period.getDays());
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_USER, user.getLastFmUser()));
 		params.add(new BasicNameValuePair(PARAM_PERIOD, period.getDescription()));

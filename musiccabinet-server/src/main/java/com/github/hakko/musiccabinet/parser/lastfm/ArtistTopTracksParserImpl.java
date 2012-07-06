@@ -12,7 +12,7 @@ import com.github.hakko.musiccabinet.parser.AbstractSAXParserImpl;
 public class ArtistTopTracksParserImpl extends AbstractSAXParserImpl implements ArtistTopTracksParser {
 	
 	private Artist artist;
-	private List<Track> topTracks = new ArrayList<Track>();
+	private List<Track> topTracks = new ArrayList<>();
 	
 	public ArtistTopTracksParserImpl(InputStream source) throws ApplicationException {
 		loadTopTrack(source);

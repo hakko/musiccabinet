@@ -33,7 +33,7 @@ public class TagInfoService extends SearchIndexUpdateService {
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
 		
-		List<TagInfo> tagInfos = new ArrayList<TagInfo>();
+		List<TagInfo> tagInfos = new ArrayList<>();
 		Set<String> tags = getTagsForUpdate();
 		
 		setTotalOperations(tags.size());
@@ -61,7 +61,7 @@ public class TagInfoService extends SearchIndexUpdateService {
 	}
 
 	protected Set<String> getTagsForUpdate() {
-		Set<String> tags = new HashSet<String>();
+		Set<String> tags = new HashSet<>();
 		for (TagOccurrence tagOccurrence : tagDao.getAvailableTags()) {
 			tags.add(tagOccurrence.getTag());
 		}

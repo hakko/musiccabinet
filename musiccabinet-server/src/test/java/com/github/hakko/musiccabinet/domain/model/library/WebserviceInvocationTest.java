@@ -11,7 +11,7 @@ public class WebserviceInvocationTest {
 
 	@Test
 	public void validateEnum() {
-		Set<Integer> databaseIds = new HashSet<Integer>();
+		Set<Integer> databaseIds = new HashSet<>();
 		
 		for (WebserviceInvocation.Calltype callType : WebserviceInvocation.Calltype.values()) {
 			Assert.assertFalse(databaseIds.contains(callType.getDatabaseId()));

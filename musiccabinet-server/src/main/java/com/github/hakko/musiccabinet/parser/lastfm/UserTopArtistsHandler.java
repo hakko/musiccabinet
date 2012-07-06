@@ -11,7 +11,7 @@ import com.github.hakko.musiccabinet.domain.model.music.Artist;
 
 public class UserTopArtistsHandler extends DefaultHandler {
 	
-	private List<Artist> artists = new ArrayList<Artist>();
+	private List<Artist> artists = new ArrayList<>();
 	
 	 // indicates if we're interested in found data, to skip similar artists/tags/bio
 	private StringBuilder characterData; // used to assemble xml text passed by parser

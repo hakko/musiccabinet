@@ -195,6 +195,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 
 	@Override
 	public void loadDatabaseUpdate(int versionNumber, String statements) {
+		System.out.println("Load version number " + versionNumber);
 		for (String statement : StringUtils.split(statements, ';')) {
 			jdbcTemplate.execute(statement);
 		}

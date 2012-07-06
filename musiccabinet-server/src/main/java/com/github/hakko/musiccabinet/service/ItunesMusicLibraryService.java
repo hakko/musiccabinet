@@ -40,7 +40,7 @@ public class ItunesMusicLibraryService {
 		musicFileDao.clearImport();
 		new ItunesMusicLibraryParserImpl(source, new ItunesMusicLibraryParserCallback() {
 			
-			private List<MusicFile> musicFiles = new ArrayList<MusicFile>();
+			private List<MusicFile> musicFiles = new ArrayList<>();
 
 			@Override
 			public void endOfMusicFiles() {

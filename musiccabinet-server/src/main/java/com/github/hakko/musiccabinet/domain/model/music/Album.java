@@ -6,7 +6,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class Album {
 
 	private Artist artist;
+	private int id;
 	private String name;
+	private short year;
+	private String coverArtFile;
+	private String coverArtEmbeddedFile;
+	private String coverArtURL;
 	
 	public Album() {
 		setArtist(new Artist());
@@ -27,6 +32,16 @@ public class Album {
 		setName(albumName);
 	}
 	
+	public Album(int id, String name, short year, String coverArtFile, 
+			String coverArtEmbeddedFile, String coverArtURL) {
+		this.id = id;
+		this.name = name;
+		this.year = year;
+		this.coverArtFile = coverArtFile;
+		this.coverArtEmbeddedFile = coverArtEmbeddedFile;
+		this.coverArtURL = coverArtURL;
+	}
+	
 	public Artist getArtist() {
 		return artist;
 	}
@@ -38,6 +53,26 @@ public class Album {
 		this.artist = artist;
 	}
 	
+	public int getId() {
+		return id;
+	}
+	
+	public short getYear() {
+		return year;
+	}
+	
+	public String getCoverArtFile() {
+		return coverArtFile;
+	}
+
+	public String getCoverArtEmbeddedFile() {
+		return coverArtEmbeddedFile;
+	}
+
+	public String getCoverArtURL() {
+		return coverArtURL;
+	}
+
 	public String getName() {
 		return name;
 	}

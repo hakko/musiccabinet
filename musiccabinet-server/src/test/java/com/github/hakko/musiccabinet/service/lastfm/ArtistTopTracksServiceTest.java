@@ -53,11 +53,6 @@ public class ArtistTopTracksServiceTest {
 	
 	private static final String CHER_TOP_TRACKS = "last.fm/xml/toptracks.cher.xml";
 	private static final String artistName = "cher";
-	
-	@Test
-	public void testdataFoundOnClasspath() {
-		new ResourceUtil(CHER_TOP_TRACKS);
-	}
 
 	@Test
 	public void artistTopTracksServiceConfigured() {

@@ -14,7 +14,7 @@ begin
 
 	-- create missing track(s)
 	insert into music.track (artist_id, track_name, track_name_capitalization)
-	select distinct artist_id, upper(track_name), track_name from library.trackplaycount_import
+	select distinct on (artist_id, upper(track_name)) artist_id, upper(track_name), track_name from library.trackplaycount_import
 		where not exists (select 1 from music.track
 			where artist_id = library.trackplaycount_import.artist_id and
 				  track_name = upper(library.trackplaycount_import.track_name));

@@ -111,10 +111,10 @@ public class DatabaseAdministrationService {
      * previous one (relying on a schema, adding/removing a column of a table etc).
      */
     protected List<Integer> getDatabaseUpdates() {
-    	List<Integer> updates = new ArrayList<Integer>();
+    	List<Integer> updates = new ArrayList<>();
     	Properties props = new Properties();
-    	try {
-    		props.load(new ResourceUtil(VERSION_PROPERTIES).getInputStream());
+    	try (ResourceUtil resourceUtil = new ResourceUtil(VERSION_PROPERTIES)) {
+    		props.load(resourceUtil.getInputStream());
     	} catch (IOException e) {
     		LOG.warn("Could not load database updates list!", e);
     	}

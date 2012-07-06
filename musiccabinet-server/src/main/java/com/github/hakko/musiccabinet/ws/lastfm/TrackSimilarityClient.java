@@ -20,7 +20,7 @@ public class TrackSimilarityClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(TRACK_GET_SIMILAR, track);
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_ARTIST, track.getArtist().getName()));
 		params.add(new BasicNameValuePair(PARAM_TRACK, track.getName()));

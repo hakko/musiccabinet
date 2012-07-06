@@ -14,11 +14,6 @@ public class ScrobbledTracksParserTest {
 	
 	private static final String LIBRARY_TRACKS_FILE = 
 		"last.fm/xml/tracks.ftparea.xml";
-
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(LIBRARY_TRACKS_FILE);
-	}
 	
 	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {

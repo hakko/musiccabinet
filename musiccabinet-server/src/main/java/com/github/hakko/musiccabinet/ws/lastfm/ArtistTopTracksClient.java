@@ -20,7 +20,7 @@ public class ArtistTopTracksClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ARTIST_GET_TOP_TRACKS, artist);
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_ARTIST, artist.getName()));
 		// tried adding autocorrect=1, but even simple misspellings didn't get corrected

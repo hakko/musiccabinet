@@ -18,7 +18,7 @@ public class ArtistTopTracksHandler extends DefaultHandler {
 	
 	private String artistName; // artist name this similarity is based on
 	private Artist sourceArtist; // artist based on artist name
-	private List<Track> topTracks = new ArrayList<Track>();
+	private List<Track> topTracks = new ArrayList<>();
 	private Track currentTrack; // used internally while parsing
 
 	private State scope; // stores if we're currently reading a track or an artist

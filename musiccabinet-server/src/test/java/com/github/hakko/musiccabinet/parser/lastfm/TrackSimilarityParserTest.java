@@ -14,11 +14,6 @@ public class TrackSimilarityParserTest {
 	
 	private static final String TRACK_SIMILARITY_FILE = 
 		"last.fm/xml/similartracks.cher.believe.xml";
-
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(TRACK_SIMILARITY_FILE);
-	}
 	
 	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {

@@ -3,10 +3,13 @@ package com.github.hakko.musiccabinet.domain.model.music;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.github.hakko.musiccabinet.domain.model.library.MetaData;
+
 public class Track {
 
 	private Artist artist;
 	private String name;
+	private MetaData metaData;
 	
 	public Track() {
 		setArtist(new Artist());
@@ -20,6 +23,12 @@ public class Track {
 	public Track(String artistName, String trackName) {
 		setArtist(new Artist(artistName));
 		setName(trackName);
+	}
+	
+	public Track(String trackName, MetaData metaData) {
+		this.artist = new Artist(metaData.getArtist());
+		this.name = trackName;
+		this.metaData = metaData;
 	}
 	
 	public Artist getArtist() {
@@ -42,6 +51,10 @@ public class Track {
 			throw new IllegalArgumentException("Track name cannot be set to null.");
 		}
 		this.name = name;
+	}
+	
+	public MetaData getMetaData() {
+		return metaData;
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package com.github.hakko.musiccabinet.parser.lastfm;
 
 import static junit.framework.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import com.github.hakko.musiccabinet.domain.model.music.AlbumInfo;
@@ -27,11 +29,6 @@ public class AlbumInfoParserTest {
 	
 	private static final int LISTENERS = 1869409;
 	private static final int PLAY_COUNT = 29066127;
-
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(ALBUM_INFO_FILE);
-	}
 	
 	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {

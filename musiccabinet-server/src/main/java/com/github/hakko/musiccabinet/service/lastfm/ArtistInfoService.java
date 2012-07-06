@@ -59,7 +59,7 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 		List<Artist> artists = webserviceHistoryDao.
 				getArtistsScheduledForUpdate(ARTIST_GET_INFO);
 		
-		List<ArtistInfo> artistInfos = new ArrayList<ArtistInfo>(artists.size());
+		List<ArtistInfo> artistInfos = new ArrayList<>(artists.size());
 		setTotalOperations(artists.size());
 		
 		for (Artist artist : artists) {

@@ -34,7 +34,6 @@ public class SubsonicIndexServiceTest {
 		Assert.assertNotNull(libraryIndexService);
 		Assert.assertNotNull(libraryIndexService.musicFileDao);
 		Assert.assertNotNull(libraryIndexService.musicDirectoryDao);
-		Assert.assertNotNull(libraryIndexService.playlistGeneratorDao);
 	}
 	
 	@Test

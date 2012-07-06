@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Artist {
 
+	private int id;
 	private String name;
 	
 	public Artist() {
@@ -13,6 +14,15 @@ public class Artist {
 	
 	public Artist(String name) {
 		setName(name);
+	}
+	
+	public Artist(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 	public final String getName() {

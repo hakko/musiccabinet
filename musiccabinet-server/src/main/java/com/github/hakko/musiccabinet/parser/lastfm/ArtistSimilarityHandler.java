@@ -19,14 +19,14 @@ import com.github.hakko.musiccabinet.domain.model.music.ArtistRelation;
 public class ArtistSimilarityHandler extends DefaultHandler {
 	
 	private String artistName; // artist name this similarity is based on
-	private List<ArtistRelation> artistRelations = new ArrayList<ArtistRelation>();
+	private List<ArtistRelation> artistRelations = new ArrayList<>();
 	private ArtistRelation currentArtistRelation; // used internally while parsing
 
 	private State state; // stores state based on latest encountered start tag
 	private StringBuilder characterData; // used to assemble xml text passed by parser
 
 	// maps start tag to respective state, for tags where we read xml text() data
-	private static Map<String, State> xmlToStateMap = new HashMap<String, State>();
+	private static Map<String, State> xmlToStateMap = new HashMap<>();
 	
 	private static final String TAG_SIMILAR_ARTISTS = "similarartists";
 	private static final String TAG_ARTIST = "artist";

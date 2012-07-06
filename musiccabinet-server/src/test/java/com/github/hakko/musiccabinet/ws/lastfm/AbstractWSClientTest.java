@@ -2,7 +2,6 @@ package com.github.hakko.musiccabinet.ws.lastfm;
 
 import static com.github.hakko.musiccabinet.configuration.CharSet.UTF8;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.API_KEY;
-import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.API_KEY_RESOURCE;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.HOST;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.HTTP;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.PARAM_API_KEY;
@@ -44,14 +43,6 @@ public class AbstractWSClientTest {
 		"last.fm/xml/similartracks.cher.believe.xml";
 	private static final String FAILED_KEY_RESOURCE =
 		"last.fm/xml/failed-key.xml";
-	
-	@Test
-	public void testdataFoundOnClasspath() {
-		for (String resource : Arrays.asList(API_KEY_RESOURCE,
-				SIMILAR_TRACKS_RESOURCE, FAILED_KEY_RESOURCE)) {
-			new ResourceUtil(resource);
-		}
-	}
 	
 	@Test
 	public void validateURIBuilder() throws ApplicationException {
@@ -209,7 +200,7 @@ public class AbstractWSClientTest {
 		
 		WebserviceInvocation invocation = mock(WebserviceInvocation.class);
 		
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		
 		TestWSClient testClient = new TestWSClient(invocation, params);
 		testClient.setWebserviceHistoryDao(historyDao);

@@ -14,11 +14,6 @@ public class ArtistTopTagsParserTest {
 	
 	private static final String TOP_TAGS_FILE = 
 		"last.fm/xml/toptags.cher.xml";
-
-	@Test
-	public void testdataOnClasspath() {
-		new ResourceUtil(TOP_TAGS_FILE);
-	}
 	
 	@Test
 	public void resourceFileCorrectlyParsed() throws ApplicationException {

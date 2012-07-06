@@ -79,7 +79,7 @@ public class JdbcAlbumInfoDaoTest {
 	public void createAndValidateArtistInfos() throws ApplicationException {
 		deleteAlbumInfos();
 
-		List<AlbumInfo> albumInfos = new ArrayList<AlbumInfo>();
+		List<AlbumInfo> albumInfos = new ArrayList<>();
 		albumInfos.add(aiNirvana);
 		albumInfos.add(aiHurts);
 		
@@ -158,7 +158,7 @@ public class JdbcAlbumInfoDaoTest {
 		assertNotNull(dbInfos);
 		assertEquals(3, dbInfos.size());
 
-		Set<String> dbAlbumNames = new HashSet<String>();
+		Set<String> dbAlbumNames = new HashSet<>();
 		for (AlbumInfo dbInfo : dbInfos) {
 			assertEquals(dbInfo.getAlbum().getArtist(), aiNirvana.getAlbum().getArtist());
 			dbAlbumNames.add(dbInfo.getAlbum().getName());
@@ -196,13 +196,13 @@ public class JdbcAlbumInfoDaoTest {
 		dao.createAlbumInfo(Arrays.asList(aiNirvana, aiSchuller, aiNirvana2, aiHurts));
 		
 		Assert.assertEquals(4, dirs.size());
-		Map<String, String> pathToAlbumName = new HashMap<String, String>();
+		Map<String, String> pathToAlbumName = new HashMap<>();
 		for (MusicDirectory dir : dirs) {
 			pathToAlbumName.put(dir.getPath(), dir.getAlbumName());
 		}
 
 		Map<String, AlbumInfo> albumInfos = dao.getAlbumInfosForPaths(
-				new ArrayList<String>(pathToAlbumName.keySet()));
+				new ArrayList<>(pathToAlbumName.keySet()));
 
 		for (String path : pathToAlbumName.keySet()) {
 			Assert.assertTrue(albumInfos.containsKey(path));
@@ -237,7 +237,7 @@ public class JdbcAlbumInfoDaoTest {
 	}
 
 	private List<MusicDirectory> createMusicDirectories(AlbumInfo... albumInfos) {
-		List<MusicDirectory> musicDirectories = new ArrayList<MusicDirectory>();
+		List<MusicDirectory> musicDirectories = new ArrayList<>();
 		for (AlbumInfo ai : albumInfos) {
 			String artistName = ai.getAlbum().getArtist().getName();
 			String albumName = ai.getAlbum().getName();
@@ -249,5 +249,5 @@ public class JdbcAlbumInfoDaoTest {
 		musicDirectoryDao.createMusicDirectories();
 		return musicDirectories;
 	}
-	
+
 }

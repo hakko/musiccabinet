@@ -45,7 +45,7 @@ public class AlbumInfoService extends SearchIndexUpdateService {
 	protected void updateSearchIndex() throws ApplicationException {
 		List<Album> albums = albumInfoDao.getAlbumsWithoutInfo();
 		
-		List<AlbumInfo> albumInfos = new ArrayList<AlbumInfo>();
+		List<AlbumInfo> albumInfos = new ArrayList<>();
 		setTotalOperations(albums.size());
 		
 		for (Album album : albums) {

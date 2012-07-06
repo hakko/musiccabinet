@@ -14,7 +14,7 @@ begin
 
 	-- create missing track(s)
 	insert into music.track (artist_id, track_name, track_name_capitalization)
-	select distinct target_artist_id, upper(target_track_name), target_track_name
+	select distinct on (target_artist_id, upper(target_track_name)) target_artist_id, upper(target_track_name), target_track_name
 	from music.trackrelation_import
 		where not exists (select 1 from music.track
 			where artist_id = music.trackrelation_import.target_artist_id and

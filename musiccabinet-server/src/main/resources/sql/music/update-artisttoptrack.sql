@@ -7,7 +7,7 @@ begin
 
 	-- create missing tracks(s)
 	insert into music.track (artist_id, track_name, track_name_capitalization)
-	select distinct artist_id, upper(track_name), track_name from music.artisttoptrack_import
+	select distinct on (artist_id, upper(track_name)) artist_id, upper(track_name), track_name from music.artisttoptrack_import
 		where not exists (select 1 from music.track 
 			where upper(music.artisttoptrack_import.track_name) = music.track.track_name
 			  and music.artisttoptrack_import.artist_id = music.track.artist_id);
