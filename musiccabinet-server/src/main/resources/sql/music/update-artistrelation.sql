@@ -3,7 +3,7 @@ begin
 
 	-- create missing artist(s)
 	insert into music.artist (artist_name, artist_name_capitalization)
-	select distinct upper(target_artist_name), target_artist_name from music.artistrelation_import
+	select distinct on (upper(target_artist_name)) upper(target_artist_name), target_artist_name from music.artistrelation_import
 		where not exists (select 1 from music.artist 
 			where artist_name = upper(music.artistrelation_import.target_artist_name));
 
