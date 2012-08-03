@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.hakko.musiccabinet.dao.UserTopArtistsDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.domain.model.aggr.UserTopArtists;
 import com.github.hakko.musiccabinet.domain.model.library.Period;
@@ -25,7 +24,7 @@ public class UserTopArtistsService extends SearchIndexUpdateService {
 
 	protected UserTopArtistsClient userTopArtistsClient;
 	protected UserTopArtistsDao userTopArtistsDao;
-	protected WebserviceHistoryDao webserviceHistoryDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 
 	private List<LastFmUser> users = new ArrayList<>();
 	
@@ -52,7 +51,7 @@ public class UserTopArtistsService extends SearchIndexUpdateService {
 						userTopArtists.add(new UserTopArtists(user, period, parser.getArtists()));
 					}
 				} catch (ApplicationException e) {
-					LOG.warn("Fetching top artist for " + user.getLastFmUser() 
+					LOG.warn("Fetching top artist for " + user.getLastFmUsername() 
 							+ ", " + period.getDescription() + " failed.", e);
 				}
 				addFinishedOperation();
@@ -80,9 +79,10 @@ public class UserTopArtistsService extends SearchIndexUpdateService {
 	public void setUserTopArtistsDao(UserTopArtistsDao userTopArtistsDao) {
 		this.userTopArtistsDao = userTopArtistsDao;
 	}
-	
-	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {
-		this.webserviceHistoryDao = webserviceHistoryDao;
+
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 
 }

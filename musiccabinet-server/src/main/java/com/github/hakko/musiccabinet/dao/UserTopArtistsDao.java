@@ -7,6 +7,8 @@ import com.github.hakko.musiccabinet.domain.model.aggr.UserTopArtists;
 import com.github.hakko.musiccabinet.domain.model.library.Period;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 
+// TODO : consolidate into a general recommendation dao?
+
 public interface UserTopArtistsDao {
 
 	void createUserTopArtists(List<UserTopArtists> userTopArtists);

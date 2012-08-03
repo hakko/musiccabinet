@@ -1,0 +1,3 @@
+create table library.starredartist (lastfmuser_id integer references library.lastfmuser (id) not null, added timestamp default now() not null, artist_id integer references music.artist (id) not null);
+create table library.starredalbum (lastfmuser_id integer references library.lastfmuser (id) not null, added timestamp default now() not null, album_id integer references music.album (id) not null);
+create table library.starredtrack (lastfmuser_id integer references library.lastfmuser (id) not null, added timestamp default now() not null, album_id integer references music.album (id) not null, track_id integer references music.track (id) not null);

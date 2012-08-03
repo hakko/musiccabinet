@@ -14,6 +14,7 @@ public class ArtistInfo {
 	private int playCount;
 	private String bioSummary;
 	private String bioContent;
+	private boolean isInSearchIndex;
 	
 	public ArtistInfo() {
 	}
@@ -93,6 +94,14 @@ public class ArtistInfo {
 
 	public void setBioContent(String bioContent) {
 		this.bioContent = bioContent;
+	}
+
+	public boolean isInSearchIndex() {
+		return isInSearchIndex;
+	}
+
+	public void setInSearchIndex(boolean isInSearchIndex) {
+		this.isInSearchIndex = isInSearchIndex;
 	}
 
 	@Override

@@ -1,10 +1,10 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 
 import java.util.Set;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,10 +98,8 @@ public class JdbcLibraryDaoTest {
 
 	@Test
 	public void storesFile() {
-		int size = 14;
-		long now = System.currentTimeMillis();
 		String d = "/d";
-		File f = new File(d, "f1", new DateTime(now), size);
+		File f = getFile(d, "f1");
 
 		additionDao.addSubdirectories(null, set(d));
 		additionDao.addFiles(d, set(f));
@@ -112,12 +110,10 @@ public class JdbcLibraryDaoTest {
 
 	@Test
 	public void storesFiles() {
-		int size = 14;
-		long now = System.currentTimeMillis();
 		String d1 = "/d1", d2 = "/d1/d2";
-		File f1 = new File(d1, "f1", new DateTime(now), size);
-		File f2a = new File(d2, "f2a", new DateTime(now), size);
-		File f2b = new File(d2, "f2b", new DateTime(now), size);
+		File f1 = getFile(d1, "f1");
+		File f2a = getFile(d2, "f2a");
+		File f2b = getFile(d2, "f2b");
 
 		additionDao.addSubdirectories(null, set(d1));
 		additionDao.addSubdirectories(d1, set(d2));
@@ -131,12 +127,10 @@ public class JdbcLibraryDaoTest {
 
 	@Test
 	public void deletesDirectoryWithFiles() {
-		int size = 14;
-		long now = System.currentTimeMillis();
 		String d1 = "/d1", d2 = "/d1/d2", d3 = "/d1/d2/d3";
-		File f1 = new File(d1, "f1", new DateTime(now), size);
-		File f2 = new File(d2, "f2", new DateTime(now), size);
-		File f3 = new File(d3, "f3", new DateTime(now), size);
+		File f1 = getFile(d1, "f1");
+		File f2 = getFile(d2, "f2");
+		File f3 = getFile(d3, "f3");
 
 		additionDao.addSubdirectories(null, set(d1));
 		additionDao.addSubdirectories(d1, set(d2));

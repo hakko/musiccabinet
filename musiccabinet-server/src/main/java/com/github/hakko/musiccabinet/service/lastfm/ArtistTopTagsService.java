@@ -4,9 +4,9 @@ import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvoc
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTagsDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -24,20 +24,20 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 
 	protected ArtistTopTagsClient artistTopTagsClient;
 	protected ArtistTopTagsDao artistTopTagsDao;
-	protected WebserviceHistoryDao webserviceHistoryDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 
 	private static final Logger LOG = Logger.getLogger(ArtistTopTagsService.class);
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		List<Artist> artists = webserviceHistoryDao.
-				getArtistsScheduledForUpdate(ARTIST_GET_TOP_TAGS);
+		Set<String> artistNames = webserviceHistoryService.
+				getArtistNamesScheduledForUpdate(ARTIST_GET_TOP_TAGS);
 		
-		setTotalOperations(artists.size());
+		setTotalOperations(artistNames.size());
 		
-		for (Artist artist : artists) {
+		for (String artistName : artistNames) {
 			try {
-				WSResponse wsResponse = artistTopTagsClient.getTopTags(artist);
+				WSResponse wsResponse = artistTopTagsClient.getTopTags(new Artist(artistName));
 				if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 					StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 					ArtistTopTagsParser attParser =
@@ -47,7 +47,7 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 							attParser.getTopTags());
 				}
 			} catch (ApplicationException e) {
-				LOG.warn("Fetching top tags for " + artist.getName() + " failed.", e);
+				LOG.warn("Fetching top tags for " + artistName + " failed.", e);
 			}
 			addFinishedOperation();
 		}
@@ -82,8 +82,9 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 		this.artistTopTagsDao = artistTopTagsDao;
 	}
 
-	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {
-		this.webserviceHistoryDao = webserviceHistoryDao;
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 	
 }

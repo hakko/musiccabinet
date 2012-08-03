@@ -2,7 +2,6 @@ package com.github.hakko.musiccabinet.service;
 
 import java.util.List;
 
-import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
 import com.github.hakko.musiccabinet.dao.ArtistRecommendationDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -20,22 +19,17 @@ import com.github.hakko.musiccabinet.exception.ApplicationException;
 public class ArtistRecommendationService {
 
 	protected ArtistRecommendationDao artistRecommendationDao;
-
-	protected MusicDirectoryDao musicDirectoryDao;
 	
-	public List<ArtistRecommendation> getRelatedArtistsInLibrary(String path, int amount) throws ApplicationException {
-		int artistId = musicDirectoryDao.getArtistId(path);
+	public List<ArtistRecommendation> getRelatedArtistsInLibrary(int artistId, int amount) throws ApplicationException {
 		return artistRecommendationDao.getRecommendedArtistsInLibrary(artistId, amount);
 	}
 	
-	public List<String> getRelatedArtistsNotInLibrary(String path, int amount) throws ApplicationException {
-		int artistId = musicDirectoryDao.getArtistId(path);
+	public List<String> getRelatedArtistsNotInLibrary(int artistId, int amount) throws ApplicationException {
 		return artistRecommendationDao.getRecommendedArtistsNotInLibrary(artistId, amount);
 	}
 	
 	// TODO : currently not used, should be, but display more nicely on a scale from "Poor" to "Good"
-	public int getMatchingSongs(String path) throws ApplicationException {
-		int artistId = musicDirectoryDao.getArtistId(path);
+	public int getMatchingSongs(int artistId) throws ApplicationException {
 		return artistRecommendationDao.getNumberOfRelatedSongs(artistId);
 	}
 
@@ -47,10 +41,6 @@ public class ArtistRecommendationService {
 	
 	public void setArtistRecommendationDao(ArtistRecommendationDao artistRecommendationDao) {
 		this.artistRecommendationDao = artistRecommendationDao;
-	}
-
-	public void setMusicDirectoryDao(MusicDirectoryDao musicDirectoryDao) {
-		this.musicDirectoryDao = musicDirectoryDao;
 	}
 	
 }

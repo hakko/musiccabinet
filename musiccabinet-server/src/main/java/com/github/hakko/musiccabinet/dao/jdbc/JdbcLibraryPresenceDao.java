@@ -3,6 +3,7 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -13,22 +14,10 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.github.hakko.musiccabinet.dao.LibraryPresenceDao;
 import com.github.hakko.musiccabinet.domain.model.library.File;
-import com.github.hakko.musiccabinet.log.Logger;
 
 public class JdbcLibraryPresenceDao implements LibraryPresenceDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-
-	private static final Logger LOG = Logger.getLogger(JdbcLibraryPresenceDao.class);
-
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-
-	@Override
-	public JdbcTemplate getJdbcTemplate() {
-		return jdbcTemplate;
-	}
 
 	@Override
 	public boolean exists(String directory) {
@@ -65,6 +54,24 @@ public class JdbcLibraryPresenceDao implements LibraryPresenceDao, JdbcTemplateD
 		});
 		
 		return files;
+	}
+	
+	@Override
+	public List<String> getRootDirectories() {
+		String sql = "select path from library.directory where parent_id is null";
+		
+		return jdbcTemplate.queryForList(sql, String.class);
+	}
+
+	@Override
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

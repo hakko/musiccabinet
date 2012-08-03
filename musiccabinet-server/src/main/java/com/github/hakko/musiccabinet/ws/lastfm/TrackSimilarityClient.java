@@ -2,7 +2,6 @@ package com.github.hakko.musiccabinet.ws.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.TRACK_GET_SIMILAR;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -12,7 +11,7 @@ import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class TrackSimilarityClient extends AbstractWSClient {
+public class TrackSimilarityClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "track.getsimilar";
 	
@@ -20,7 +19,7 @@ public class TrackSimilarityClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(TRACK_GET_SIMILAR, track);
 
-		List<NameValuePair> params = new ArrayList<>();
+		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_ARTIST, track.getArtist().getName()));
 		params.add(new BasicNameValuePair(PARAM_TRACK, track.getName()));

@@ -3,6 +3,7 @@ package com.github.hakko.musiccabinet.service.library;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,6 +37,83 @@ public class AudioTagServiceTest {
 		Assert.assertNotNull(fileHandle.getMetadata());
 		
 		validateTags(fileHandle.getMetadata());
+	}
+
+	/*
+	 * File id3v1+2.mp3 has different id3v1 and id3v2 tags. Assert v2 takes priority.
+	 */
+	@Test
+	public void prefersId3V2Tags() throws Exception {
+		java.io.File musicFile = new java.io.File(Thread.currentThread()
+				.getContextClassLoader().getResource("library/id3v1+2.mp3").toURI());
+	
+		Assert.assertTrue(musicFile.exists());
+		Assert.assertTrue(musicFile.canRead());
+		
+		File fileHandle = new File(musicFile.getParent(), musicFile.getName(), 
+				new DateTime(), 5717);
+		audioTagService.updateMetadata(fileHandle);
+		
+		Assert.assertEquals("V2 Title", fileHandle.getMetadata().getTitle());
+		Assert.assertEquals("V2 Album", fileHandle.getMetadata().getAlbum());
+		Assert.assertEquals("V2 Artist", fileHandle.getMetadata().getArtist());
+	}
+
+	@Test
+	public void readsMp3V1TagAsISO88591() throws Exception {
+		java.io.File musicFile = new java.io.File(Thread.currentThread()
+				.getContextClassLoader().getResource("library/id3v1.mp3").toURI());
+	
+		Assert.assertTrue(musicFile.exists());
+		Assert.assertTrue(musicFile.canRead());
+		
+		File fileHandle = new File(musicFile.getParent(), musicFile.getName(), 
+				new DateTime(), 5717);
+		audioTagService.updateMetadata(fileHandle);
+		
+		Assert.assertEquals("Å", fileHandle.getMetadata().getTitle());
+		Assert.assertEquals("Ä", fileHandle.getMetadata().getAlbum());
+		Assert.assertEquals("Ö", fileHandle.getMetadata().getArtist());
+	}
+
+	@Test
+	public void readsMp3V2TagAsUTF8() throws Exception {
+		java.io.File musicFile = new java.io.File(Thread.currentThread()
+				.getContextClassLoader().getResource("library/id3v2b.mp3").toURI());
+	
+		Assert.assertTrue(musicFile.exists());
+		Assert.assertTrue(musicFile.canRead());
+		
+		File fileHandle = new File(musicFile.getParent(), musicFile.getName(), 
+				new DateTime(), 5717);
+		audioTagService.updateMetadata(fileHandle);
+		
+		Assert.assertEquals("Title: Ǥ", fileHandle.getMetadata().getTitle());
+		Assert.assertEquals("Album: ȡ", fileHandle.getMetadata().getAlbum());
+		Assert.assertEquals("Artist: Ƕ", fileHandle.getMetadata().getArtist());
+	}
+
+	@Test
+	public void identifiesAudioFiles() {
+		Assert.assertTrue(audioTagService.isAudioFile("mp3"));
+		Assert.assertTrue(audioTagService.isAudioFile("MP3"));
+
+		Assert.assertFalse(audioTagService.isAudioFile("jpg"));
+		Assert.assertFalse(audioTagService.isAudioFile("PNG"));
+		Assert.assertFalse(audioTagService.isAudioFile(null));
+	}
+	
+	@Test
+	public void returnsEmbeddedArtwork() throws Exception {
+		String embeddedArtworkFile = "library/media3/Artist/Embedded artwork/Embedded artwork.mp3";
+		java.io.File musicFile = new java.io.File(Thread.currentThread()
+				.getContextClassLoader().getResource(embeddedArtworkFile).toURI());
+
+		Assert.assertTrue(musicFile.exists());
+		Assert.assertTrue(musicFile.canRead());
+		
+		Artwork artwork = audioTagService.getArtwork(musicFile);
+		Assert.assertNotNull(artwork);
 	}
 	
 	private void validateTags(MetaData metaData) {

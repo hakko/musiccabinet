@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.hakko.musiccabinet.dao.AlbumInfoDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.AlbumInfo;
-import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
 import com.github.hakko.musiccabinet.parser.lastfm.AlbumInfoParser;
@@ -26,19 +24,19 @@ public class AlbumInfoService extends SearchIndexUpdateService {
 
 	protected AlbumInfoClient albumInfoClient;
 	protected AlbumInfoDao albumInfoDao;
-	protected WebserviceHistoryDao webserviceHistoryDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 	
 	private static final int BATCH_SIZE = 1000;
 	
 	private static final Logger LOG = Logger.getLogger(AlbumInfoService.class);
 	
-	public List<AlbumInfo> getAlbumInfosForArtist(String artistName) {
-		return albumInfoDao.getAlbumInfosForArtist(new Artist(artistName));
+	public List<AlbumInfo> getAlbumInfosForArtist(int artistId) {
+		return albumInfoDao.getAlbumInfosForArtist(artistId);
 	}
 	
-	public Map<String, AlbumInfo> getAlbumInfosForPaths(List<String> paths) {
-		return paths.isEmpty() ? new HashMap<String, AlbumInfo>() :
-			albumInfoDao.getAlbumInfosForPaths(paths);
+	public Map<Integer, AlbumInfo> getAlbumInfosForAlbumIds(List<Integer> ids) {
+		return ids.isEmpty() ? new HashMap<Integer, AlbumInfo>() :
+			albumInfoDao.getAlbumInfosForIds(ids);
 	}
 	
 	@Override
@@ -86,8 +84,9 @@ public class AlbumInfoService extends SearchIndexUpdateService {
 		this.albumInfoDao = albumInfoDao;
 	}
 
-	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {
-		this.webserviceHistoryDao = webserviceHistoryDao;
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 
 }

@@ -1,17 +1,15 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ALBUMINFO;
-import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MUSICDIRECTORY;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -22,13 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.library.MusicDirectory;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.AlbumInfo;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.parser.lastfm.AlbumInfoParserImpl;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -50,14 +50,16 @@ public class JdbcAlbumInfoDaoTest {
 	
 	@Autowired
 	private JdbcAlbumInfoDao dao;
+
+	@Autowired
+	private MusicDao musicDao;
 	
 	@Autowired
-	private JdbcMusicDirectoryDao musicDirectoryDao;
-
+	private JdbcLibraryAdditionDao libraryAdditionDao;
+	
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(dao, UPDATE_ALBUMINFO);
-		PostgreSQLUtil.loadFunction(dao, UPDATE_MUSICDIRECTORY);
 		
 		aiNirvana = new AlbumInfoParserImpl(new ResourceUtil(
 				AI_NIRVANA_FILE).getInputStream()).getAlbumInfo();
@@ -71,8 +73,13 @@ public class JdbcAlbumInfoDaoTest {
 				AI_NIRVANA3_FILE).getInputStream()).getAlbumInfo();
 		
 		deleteArtists();
-
-		createMusicDirectories(aiNirvana, aiNirvana2, aiNirvana3, aiHurts, aiSchuller);
+		deleteLibraryTracks();
+		createLibraryTracks(aiNirvana, aiNirvana2, aiNirvana3, aiHurts, aiSchuller);
+		
+		for (AlbumInfo ai : asList(aiNirvana, aiHurts, aiSchuller)) {
+			ai.getAlbum().getArtist().setId(
+					musicDao.getArtistId(ai.getAlbum().getArtist()));
+		}
 	}
 	
 	@Test
@@ -115,8 +122,8 @@ public class JdbcAlbumInfoDaoTest {
 	@Test
 	public void allAlbumsWithoutInfoAreReturned() {
 		deleteAlbumInfos();
-		deleteMusicDirectories();
-		createMusicDirectories(aiNirvana, aiHurts, aiSchuller);
+		deleteLibraryTracks();
+		createLibraryTracks(aiNirvana, aiHurts, aiSchuller);
 		
 		List<Album> albums = dao.getAlbumsWithoutInfo();
 		Assert.assertNotNull(albums);
@@ -133,12 +140,13 @@ public class JdbcAlbumInfoDaoTest {
 	@Test
 	public void handlesAlbumWithIdenticalTitleByDifferentArtists() {
 		deleteAlbumInfos();
-		deleteMusicDirectories();
-		createMusicDirectories(aiHurts, aiSchuller);
+		deleteLibraryTracks();
+		createLibraryTracks(aiHurts, aiSchuller);
 		dao.createAlbumInfo(Arrays.asList(aiHurts, aiSchuller));
 		
 		for (AlbumInfo ai : Arrays.asList(aiHurts, aiSchuller)) {
-			List<AlbumInfo> dbInfos = dao.getAlbumInfosForArtist(ai.getAlbum().getArtist());
+			List<AlbumInfo> dbInfos = dao.getAlbumInfosForArtist(
+					ai.getAlbum().getArtist().getId());
 			Assert.assertNotNull(dbInfos);
 			Assert.assertEquals(1, dbInfos.size());
 			AlbumInfo dbInfo = dbInfos.get(0);
@@ -150,11 +158,12 @@ public class JdbcAlbumInfoDaoTest {
 	@Test
 	public void handlesMultipleAlbumsBySameArtist() {
 		deleteAlbumInfos();
-		deleteMusicDirectories();
-		createMusicDirectories(aiNirvana, aiNirvana2, aiNirvana3);
+		deleteLibraryTracks();
+		createLibraryTracks(aiNirvana, aiNirvana2, aiNirvana3);
 		dao.createAlbumInfo(Arrays.asList(aiNirvana, aiNirvana2, aiNirvana3));
 		
-		List<AlbumInfo> dbInfos = dao.getAlbumInfosForArtist(aiNirvana.getAlbum().getArtist());
+		List<AlbumInfo> dbInfos = dao.getAlbumInfosForArtist(
+				aiNirvana.getAlbum().getArtist().getId());
 		assertNotNull(dbInfos);
 		assertEquals(3, dbInfos.size());
 
@@ -168,54 +177,12 @@ public class JdbcAlbumInfoDaoTest {
 			Assert.assertTrue(dbAlbumNames.contains(ai.getAlbum().getName()));
 		}
 	}
-	
-	@Test
-	public void mapsPathToAlbumInfo() {
-		deleteAlbumInfos();
-		deleteMusicDirectories();
-		List<MusicDirectory> dirs = createMusicDirectories(aiNirvana);
-		dao.createAlbumInfo(Arrays.asList(aiNirvana));
-		
-		Assert.assertEquals(1, dirs.size());
-		String path = dirs.get(0).getPath();
-		
-		Map<String, AlbumInfo> albumInfos = dao.getAlbumInfosForPaths(asList(path));
-		
-		Assert.assertEquals(1, albumInfos.size());
-		Assert.assertTrue(albumInfos.containsKey(path));
-		Assert.assertNotNull(albumInfos.get(path));
-		Assert.assertEquals(aiNirvana.getAlbum().getName(),
-				albumInfos.get(path).getAlbum().getName());
-	}
-
-	@Test
-	public void mapsPathsToAlbumInfos() {
-		deleteAlbumInfos();
-		deleteMusicDirectories();
-		List<MusicDirectory> dirs = createMusicDirectories(aiNirvana, aiSchuller, aiNirvana2, aiHurts);
-		dao.createAlbumInfo(Arrays.asList(aiNirvana, aiSchuller, aiNirvana2, aiHurts));
-		
-		Assert.assertEquals(4, dirs.size());
-		Map<String, String> pathToAlbumName = new HashMap<>();
-		for (MusicDirectory dir : dirs) {
-			pathToAlbumName.put(dir.getPath(), dir.getAlbumName());
-		}
-
-		Map<String, AlbumInfo> albumInfos = dao.getAlbumInfosForPaths(
-				new ArrayList<>(pathToAlbumName.keySet()));
-
-		for (String path : pathToAlbumName.keySet()) {
-			Assert.assertTrue(albumInfos.containsKey(path));
-			Assert.assertEquals(pathToAlbumName.get(path), 
-					albumInfos.get(path).getAlbum().getName());
-		}
-	}
 
 	@Test
 	public void onlyPresentArtistsWithoutInfoAreReturned() {
 		deleteAlbumInfos();
-		deleteMusicDirectories();
-		createMusicDirectories(aiSchuller);
+		deleteLibraryTracks();
+		createLibraryTracks(aiSchuller);
 
 		List<Album> albums = dao.getAlbumsWithoutInfo();
 		Assert.assertNotNull(albums);
@@ -232,22 +199,18 @@ public class JdbcAlbumInfoDaoTest {
 		dao.getJdbcTemplate().execute("truncate music.albuminfo cascade");
 	}
 	
-	private void deleteMusicDirectories() {
-		dao.getJdbcTemplate().execute("truncate library.musicdirectory cascade");
-	}
-
-	private List<MusicDirectory> createMusicDirectories(AlbumInfo... albumInfos) {
-		List<MusicDirectory> musicDirectories = new ArrayList<>();
+	private void createLibraryTracks(AlbumInfo... albumInfos) {
+		List<File> files = new ArrayList<>();
 		for (AlbumInfo ai : albumInfos) {
 			String artistName = ai.getAlbum().getArtist().getName();
 			String albumName = ai.getAlbum().getName();
-			musicDirectories.add(new MusicDirectory(artistName, albumName,
-					"/path/to/" + artistName + "/" + albumName));
+			files.add(getFile(artistName, albumName, null));
 		}
-		musicDirectoryDao.clearImport();
-		musicDirectoryDao.addMusicDirectories(musicDirectories);
-		musicDirectoryDao.createMusicDirectories();
-		return musicDirectories;
+		UnittestLibraryUtil.submitFile(libraryAdditionDao, files);
+	}
+	
+	private void deleteLibraryTracks() {
+		libraryAdditionDao.getJdbcTemplate().execute("truncate library.file cascade");
 	}
 
 }

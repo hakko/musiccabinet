@@ -20,10 +20,6 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 
 	private JdbcTemplate jdbcTemplate;
 	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
 	@Override
 	public void createArtistRelations(Artist sourceArtist, List<ArtistRelation> artistRelations) {
 		if (artistRelations.size() > 0) {
@@ -34,7 +30,7 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 	}
 	
 	private void clearImportTable() {
-		jdbcTemplate.execute("delete from music.artistrelation_import");
+		jdbcTemplate.execute("truncate music.artistrelation_import");
 	}
 
 	private void batchInsert(Artist sourceArtist, List<ArtistRelation> ArtistRelations) {
@@ -147,6 +143,12 @@ public class JdbcArtistRelationDao implements ArtistRelationDao, JdbcTemplateDao
 			this.tagId = id;
 			this.tagCount = count;
 		}
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

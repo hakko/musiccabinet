@@ -23,10 +23,6 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
 	public void createTags(List<String> tags) {
 		String sql = "insert into music.tag (tag_name) select (?)"
 				+ " where not exists (select 1 from music.tag where tag_name = ?)";
@@ -80,7 +76,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	public void setTopTags(final List<String> topTags) {
 		assert(topTags != null && topTags.size() > 0);
 
-		jdbcTemplate.update("delete from library.toptag");
+		jdbcTemplate.update("truncate library.toptag");
 		
 		String sql = "insert into library.toptag (tag_id)"
 			+ " select id from music.tag where tag_name in ("
@@ -104,19 +100,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 			+ " inner join music.tag tag on tt.tag_id = tag.id"
 			+ " order by lower(tag.tag_name)";
 		
-		List<String> topTags = jdbcTemplate.query(sql, new RowMapper<String>() {
-			@Override
-			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return rs.getString(1);
-			}
-		});
-		
-		return topTags;
-	}
-	
-	@Override
-	public JdbcTemplate getJdbcTemplate() {
-		return jdbcTemplate;
+		return jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	/*
@@ -142,6 +126,17 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		});
 
 		return topTags;
+	}
+	
+	@Override
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

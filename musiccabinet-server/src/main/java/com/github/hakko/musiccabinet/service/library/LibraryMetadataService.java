@@ -6,6 +6,7 @@ import org.springframework.integration.Message;
 import org.springframework.integration.core.PollableChannel;
 
 import com.github.hakko.musiccabinet.domain.model.aggr.DirectoryContent;
+import com.github.hakko.musiccabinet.domain.model.aggr.SearchIndexUpdateProgress;
 import com.github.hakko.musiccabinet.domain.model.library.File;
 
 /*
@@ -22,10 +23,14 @@ public class LibraryMetadataService implements LibraryReceiverService {
 
 	private AudioTagService audioTagService;
 	
+	private SearchIndexUpdateProgress progress = new SearchIndexUpdateProgress("new files read for meta-data");
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receive() {
 		Message<DirectoryContent> message;
+		progress.reset();
+		progress.setFinishedOperations(0);
 		while (true) {
 			message = (Message<DirectoryContent>) libraryMetadataChannel.receive();
 			if (message == null || message.equals(FINISHED_MESSAGE)) {
@@ -34,10 +39,15 @@ public class LibraryMetadataService implements LibraryReceiverService {
 			} else {
 				for (File file : message.getPayload().getFiles()) {
 					audioTagService.updateMetadata(file);
+					progress.addFinishedOperation();
 				}
 				libraryAdditionChannel.send(message);
 			}
 		}
+	}
+
+	public SearchIndexUpdateProgress getUpdateProgress() {
+		return progress;
 	}
 
 	public void setLibraryMetadataChannel(PollableChannel libraryMetadataChannel) {

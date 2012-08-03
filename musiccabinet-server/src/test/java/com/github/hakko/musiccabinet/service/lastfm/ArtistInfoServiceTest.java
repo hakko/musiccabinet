@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.service.lastfm.ArtistInfoService;
@@ -15,7 +16,7 @@ import com.github.hakko.musiccabinet.service.lastfm.ArtistInfoService;
 /*
  * Doesn't actually do much testing, except invoking the service methods.
  * 
- * Detailed test are found in JdbcArtistInfoDaoTest.
+ * Detailed tests are found in JdbcArtistInfoDaoTest.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -23,21 +24,27 @@ public class ArtistInfoServiceTest {
 
 	@Autowired
 	private ArtistInfoService aiService;
+
+	@Autowired
+	private MusicDao musicDao;
 	
 	@Test
 	public void serviceConfigured() {
 		Assert.assertNotNull(aiService);
 		Assert.assertNotNull(aiService.artistInfoDao);
 		Assert.assertNotNull(aiService.artistInfoClient);
-		Assert.assertNotNull(aiService.musicDirectoryDao);
-		Assert.assertNotNull(aiService.webserviceHistoryDao);
+		Assert.assertNotNull(aiService.webserviceHistoryService);
 	}
 	
 	@Test
 	public void canInvokeService() throws ApplicationException {
-		ArtistInfo artistInfo = aiService.getArtistInfo("/path/leading/nowhere");
+		String artistName = "A Previously Unknown Artist";
+		int artistId = musicDao.getArtistId(artistName);
 		
-		Assert.assertNull(artistInfo);
+		ArtistInfo artistInfo = aiService.getArtistInfo(artistId);
+		
+		Assert.assertNotNull(artistInfo);
+		Assert.assertEquals(artistName, artistInfo.getArtist().getName());
 	}
 
 }

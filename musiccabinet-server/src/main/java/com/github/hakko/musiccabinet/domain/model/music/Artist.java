@@ -7,6 +7,7 @@ public class Artist {
 
 	private int id;
 	private String name;
+	private String sortName;
 	
 	public Artist() {
 		
@@ -24,6 +25,10 @@ public class Artist {
 	public int getId() {
 		return id;
 	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public final String getName() {
 		return name;
@@ -34,6 +39,14 @@ public class Artist {
 			throw new IllegalArgumentException("Artist name cannot be set to null.");
 		}
 		this.name = name;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.log;
 
+import static java.io.File.separator;
+
 import org.apache.commons.lang.exception.*;
 
 import java.io.*;
@@ -24,19 +26,29 @@ public class Logger {
 	private String category;
 
 	private static PrintWriter printWriter;
-
+	private static String logFileLocation;
+	
 	static {
 		String tmpDir = System.getProperty("java.io.tmpdir");
+		if (!tmpDir.endsWith(separator)) {
+			tmpDir = tmpDir + separator;
+		}
 		File logFile = new File(tmpDir, "musiccabinet.log");
 		try {
 			printWriter = new PrintWriter(logFile);
+			logFileLocation = tmpDir + "musiccabinet.log";
 		} catch (IOException e) {
 			System.err.println("Could not write to musiccabinet.log!");
 			e.printStackTrace(System.err);
 			printWriter = new PrintWriter(System.err);
+			logFileLocation = "stderr (" + tmpDir + " not accessible)";
 		}
 	}
-
+	
+	public static String getLogFileLocation() {
+		return logFileLocation;
+	}
+	
 	/**
 	 * Creates a logger for the given class.
 	 * 

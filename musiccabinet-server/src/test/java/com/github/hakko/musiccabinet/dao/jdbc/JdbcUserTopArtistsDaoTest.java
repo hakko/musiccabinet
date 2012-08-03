@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_USER_TOP_ARTISTS;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
@@ -22,7 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.domain.model.aggr.UserTopArtists;
-import com.github.hakko.musiccabinet.domain.model.library.MusicDirectory;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.library.Period;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
@@ -30,6 +31,7 @@ import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.parser.lastfm.UserTopArtistsParserImpl;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -50,9 +52,9 @@ public class JdbcUserTopArtistsDaoTest {
 	
 	@Autowired
 	private JdbcUserTopArtistsDao dao;
-
+	
 	@Autowired
-	private JdbcMusicDirectoryDao musicDirectoryDao;
+	private JdbcLibraryAdditionDao additionDao;
 	
 	@Autowired
 	private JdbcArtistInfoDao artistInfoDao;
@@ -84,19 +86,17 @@ public class JdbcUserTopArtistsDaoTest {
 				artists.add(artist);
 			}
 		}
-		List<MusicDirectory> musicDirectories = new ArrayList<>();
+		List<File> files = new ArrayList<>();
 		for (Artist artist : artists) {
-			musicDirectories.add(new MusicDirectory(
-					artist.getName(), "/path/to/" + artist.getName()));
+			files.add(getFile(artist.getName(), null, null));
 		}
 		List<ArtistInfo> artistInfos = new ArrayList<>();
 		for (Artist artist : artists) {
 			artistInfos.add(new ArtistInfo(artist, "/url/to/" + artist.getName()));
 		}
-		
-		musicDirectoryDao.clearImport();
-		musicDirectoryDao.addMusicDirectories(musicDirectories);
-		musicDirectoryDao.createMusicDirectories();
+
+		additionDao.getJdbcTemplate().execute("truncate library.file cascade");
+		UnittestLibraryUtil.submitFile(additionDao, files);
 		artistInfoDao.createArtistInfo(artistInfos);
 	}
 
@@ -168,7 +168,6 @@ public class JdbcUserTopArtistsDaoTest {
 		for (int i = 0; i < artists.size(); i++) {
 			String artistName = artists.get(i).getName();
 			assertEquals(artistName, recs.get(i).getArtistName());
-			assertEquals("/path/to/" + artistName, recs.get(i).getPaths().get(0));
 			assertEquals("/url/to/" + artistName, recs.get(i).getImageUrl());
 		}
 	}

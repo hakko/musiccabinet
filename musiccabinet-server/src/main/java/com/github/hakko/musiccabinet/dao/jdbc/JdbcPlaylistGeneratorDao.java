@@ -22,8 +22,14 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 
 	private JdbcTemplate jdbcTemplate;
 	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	@Override
+	public List<Integer> getTopTracksForArtist(int artistId, int totalCount) {
+		String sql = "select t.id from library.track t"
+			+ " inner join library.artisttoptrackplaycount att on att.track_id = t.id" 
+			+ " where att.artist_id = " + artistId
+			+ " order by rank limit " + totalCount;
+		
+		return jdbcTemplate.queryForList(sql, Integer.class);
 	}
 	
 	/*
@@ -34,33 +40,27 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	 * 
 	 * Select the top 25 highest ranked tracks that we have in library.
 	 * 
-	 * TODO : possible improvement: a view of trackrelation * musicfile 
+	 * TODO : possible improvement: a view of trackrelation * library.track 
 	 * 
 	 */
 	@Override
 	public List<PlaylistItem> getPlaylistForTrack(int trackId) {
-		String sql =
-			"select distinct on (t.id, tr.weight) a.artist_name_capitalization, mf.path" 
+		String sql = "select distinct on (t.id, tr.weight) a.id, lt.id" 
 			+ " from music.trackrelation tr"
 			+ " inner join music.track t on t.id = tr.target_id"
 			+ " inner join music.artist a on a.id = t.artist_id"
-			+ " inner join library.musicfile mf on mf.track_id = t.id"
+			+ " inner join library.track lt on lt.track_id = t.id"
 			+ " where tr.source_id = " + trackId 
 			+ " order by tr.weight desc, t.id"
 			+ " limit 25";
 
-		List<PlaylistItem> playlist = jdbcTemplate.query(sql, 
-				new RowMapper<PlaylistItem>() {
+		return jdbcTemplate.query(sql, new RowMapper<PlaylistItem>() {
 			@Override
 			public PlaylistItem mapRow(ResultSet rs, int rowNum)
 					throws SQLException {
-				String artistName = rs.getString(1);
-				String path = rs.getString(2);
-				return new PlaylistItem(artistName, path);
+				return new PlaylistItem(rs.getInt(1), rs.getInt(2));
 			}
 		});
-
-		return playlist;
 	}
 
 	/*
@@ -72,7 +72,7 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	 * (waiting for proper built-in postgresql support of materialized views...)
 	 * 
 	 * Use pre-calculated table library.artisttoptrackplaycount, that holds the
-	 * match of music.artisttoptrack * music.artistrelation * library.musicfile * 
+	 * match of music.artisttoptrack * music.artistrelation * library.track * 
 	 * library.trackplaycount (ids only).
 	 * 
 	 * Using this, pick the artists that will be eligible for being part of the final
@@ -95,44 +95,22 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	 */
 	@Override
 	public List<PlaylistItem> getPlaylistForArtist(int artistId, int artistCount, int totalCount) {
-		String sql =
-			  "select a.artist_name_capitalization, mf.path from ("
-			+ "	select * from ("
-			+ "  select att.music_file_id, att.artist_id, ar.weight as artist_weight, rank() over" 
+		String sql = "select artist_id, track_id from ("
+			+ "  select att.track_id, att.artist_id, ar.weight as artist_weight, rank() over" 
 			+ "  (partition by att.artist_id order by (random()*(110 - rank + (play_count/3))) desc) as artist_rank from library.artisttoptrackplaycount att"
 			+ "   inner join (select source_id, target_id, weight from music.artistrelation union all select " + artistId + ", " + artistId + ", 1) ar" 
 			+ "	    on ar.target_id = att.artist_id and ar.source_id = " + artistId
 			+ "  ) ranked_tracks"
 			+ "  where ranked_tracks.artist_rank <= " + artistCount
-			+ "  order by random() * ranked_tracks.artist_weight * ranked_tracks.artist_weight desc limit " + totalCount
-			+ " ) selected_tracks"
-			+ " inner join library.musicfile mf on selected_tracks.music_file_id = mf.id" 
-			+ " inner join music.track t on mf.track_id = t.id" 
-			+ " inner join music.artist a on t.artist_id = a.id";
+			+ "  order by random() * ranked_tracks.artist_weight * ranked_tracks.artist_weight desc limit " + totalCount;
 
-		RowMapper<PlaylistItem> rowMapper = new RowMapper<PlaylistItem>() {
+		return jdbcTemplate.query(sql, new RowMapper<PlaylistItem>() {
 			@Override
 			public PlaylistItem mapRow(ResultSet rs, int rowNum)
 					throws SQLException {
-				String artistName = rs.getString(1);
-				String path = rs.getString(2);
-				return new PlaylistItem(artistName, path);
+				return new PlaylistItem(rs.getInt(1), rs.getInt(2));
 			}
-		};
-
-		return jdbcTemplate.query(sql, rowMapper);
-	}
-	
-	@Override
-	public List<String> getTopTracksForArtist(int artistId, int totalCount) {
-		String sql = 
-			"select mf.path from library.artisttoptrackplaycount att" 
-			+ " inner join library.musicfile mf on att.music_file_id = mf.id"
-			+ " where att.artist_id = " + artistId
-			+ " order by rank"
-			+ " limit " + totalCount;
-		
-		return jdbcTemplate.queryForList(sql, String.class);
+		});
 	}
 
 	@Override
@@ -141,10 +119,8 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 			throw new IllegalArgumentException("At least one tag must be specified!");
 		}
 
-		String sql = 
-				"select a.artist_name_capitalization, mf.path from ("
-				+ "		select * from ("
-				+ "	  select att.music_file_id, att.artist_id, tag.tag_count as tag_weight, rank() over" 
+		String sql = "select artist_id, track_id from ("
+				+ "	  select att.track_id, att.artist_id, tag.tag_count as tag_weight, rank() over" 
 				+ "	  (partition by att.artist_id order by (random()*(110 - rank + (play_count/3))) desc) as artist_rank from library.artisttoptrackplaycount att"
 				+ "	   inner join (select toptag.artist_id, sum(tag_count) as tag_count from music.artisttoptag toptag"
 				+ "			inner join music.tag tag on toptag.tag_id = tag.id"
@@ -153,39 +129,31 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 				+ "		on tag.artist_id = att.artist_id"
 				+ "	  ) ranked_tracks"
 				+ "	  where ranked_tracks.artist_rank <= " + artistCount
-				+ "	  order by random() * ranked_tracks.tag_weight * ranked_tracks.tag_weight desc limit " + totalCount
-				+ "	 ) selected_tracks"
-				+ "	 inner join library.musicfile mf on selected_tracks.music_file_id = mf.id" 
-				+ "	 inner join music.track t on mf.track_id = t.id"
-				+ "	 inner join music.artist a on t.artist_id = a.id";
+				+ "	  order by random() * ranked_tracks.tag_weight * ranked_tracks.tag_weight desc"
+				+ " limit " + totalCount;
 
-		// jdbcTemplate.queryForList(sql, String.class, tags) isn't backwards compatible with 2.5.6
-		
-		List<PlaylistItem> playlist = jdbcTemplate.query(sql, tags,
-				new RowMapper<PlaylistItem>() {
+		return jdbcTemplate.query(sql, tags, new RowMapper<PlaylistItem>() {
 			@Override
 			public PlaylistItem mapRow(ResultSet rs, int rowNum)
 					throws SQLException {
-				String artistName = rs.getString(1);
-				String path = rs.getString(2);
-				return new PlaylistItem(artistName, path);
+				return new PlaylistItem(rs.getInt(1), rs.getInt(2));
 			}
 		});
-		
-		return playlist;
 	}
 
 	@Override
-	public void updateSearchIndex() {
-		jdbcTemplate.execute("delete from library.artisttoptrackplaycount");
-
+	public void updateSearchIndex() { // TODO : evaluate time consumed + optimize
+		String deleteSql = 
+				"truncate library.artisttoptrackplaycount";
+		
 		String insertSql =
-		  "insert into library.artisttoptrackplaycount (music_file_id, artist_id, rank, play_count)"
-		+ " select distinct on (mf.track_id) mf.id, att.artist_id, att.rank, coalesce(tpc.play_count, 0)"
-		+ " from music.artisttoptrack att"
-		+ " inner join library.musicfile mf on mf.track_id = att.track_id"
-		+ " left outer join library.trackplaycount tpc on tpc.track_id = mf.track_id";
-
+				"insert into library.artisttoptrackplaycount (track_id, artist_id, rank, play_count)"
+				+ " select distinct on (lt.track_id) lt.id, att.artist_id, att.rank, coalesce(tpc.play_count, 0)"
+				+ " from music.artisttoptrack att"
+				+ " inner join library.track lt on lt.track_id = att.track_id"
+				+ " left outer join library.trackplaycount tpc on tpc.track_id = lt.track_id";
+		
+		jdbcTemplate.execute(deleteSql);
 		jdbcTemplate.execute(insertSql);
 	}
 
@@ -205,6 +173,12 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

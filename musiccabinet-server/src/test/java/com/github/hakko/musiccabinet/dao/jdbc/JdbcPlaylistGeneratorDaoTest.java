@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import java.io.IOException;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +16,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.ArtistRelationDao;
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
+import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.MusicDao;
-import com.github.hakko.musiccabinet.dao.MusicFileDao;
 import com.github.hakko.musiccabinet.dao.TrackRelationDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.domain.model.music.TrackRelation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -31,6 +32,7 @@ import com.github.hakko.musiccabinet.parser.lastfm.ArtistTopTracksParserImpl;
 import com.github.hakko.musiccabinet.parser.lastfm.TrackSimilarityParser;
 import com.github.hakko.musiccabinet.parser.lastfm.TrackSimilarityParserImpl;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -52,7 +54,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 	private MusicDao musicDao;
 	
 	@Autowired
-	private MusicFileDao musicFileDao;
+	private LibraryAdditionDao additionDao;
 
 	private static final String CHER_SIMILAR_ARTISTS = 
 		"last.fm/xml/similarartists.cher.xml";
@@ -87,7 +89,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 	public void getTopTracks() throws ApplicationException {
 		int artistId = prepareTestdataForArtist();
 		
-		List<String> ts = playlistGeneratorDao.getTopTracksForArtist(artistId, 20);
+		List<Integer> ts = playlistGeneratorDao.getTopTracksForArtist(artistId, 20);
 		
 		Assert.assertNotNull(ts);
 		Assert.assertEquals(20, ts.size());
@@ -101,17 +103,14 @@ public class JdbcPlaylistGeneratorDaoTest {
 		trackRelationDao.createTrackRelations(
 				tsParser.getTrack(), tsParser.getTrackRelations());
 		
-		musicFileDao.clearImport();
-		List<MusicFile> musicFiles = new ArrayList<>();
+		List<File> files = new ArrayList<>();
 		for (TrackRelation tr : tsParser.getTrackRelations()) {
 			String artistName = tr.getTarget().getArtist().getName();
 			if ("Madonna".equals(artistName)) {
-				musicFiles.add(new MusicFile(artistName, tr.getTarget().getName(),
-						"/path/to/" + tr.getTarget().getName(), 0L, 0L));
+				files.add(getFile(artistName, null, tr.getTarget().getName()));
 			}
 		}
-		musicFileDao.addMusicFiles(musicFiles);
-		musicFileDao.createMusicFiles();
+		UnittestLibraryUtil.submitFile(additionDao, files);
 		
 		int trackId = musicDao.getTrackId(tsParser.getTrack().getArtist().getName(), 
 				tsParser.getTrack().getName());
@@ -134,15 +133,11 @@ public class JdbcPlaylistGeneratorDaoTest {
 		artistTopTracksDao.createTopTracks(
 				attParser.getArtist(), attParser.getTopTracks());
 		
-		musicFileDao.clearImport();
-		List<MusicFile> musicFiles = new ArrayList<>();
+		List<File> files = new ArrayList<>();
 		for (Track topTrack : attParser.getTopTracks()) {
-			MusicFile mf = new MusicFile(topTrack.getArtist().getName(), 
-					topTrack.getName(), "/path/to/" + topTrack.getName(), 0L, 0L);
-			musicFiles.add(mf);
+			files.add(UnittestLibraryUtil.getFile(topTrack));
 		}
-		musicFileDao.addMusicFiles(musicFiles);
-		musicFileDao.createMusicFiles();
+		UnittestLibraryUtil.submitFile(additionDao, files);
 
 		int artistId = musicDao.getArtistId(asParser.getArtist());
 		

@@ -23,7 +23,7 @@ begin
 		set parent_id = di.parent_id
 	from library.directory_import di where di.path = d.path;
 	
-	delete from library.directory_import;
+	truncate library.directory_import;
 
 	
 	-- update file import to correct directory id
@@ -95,8 +95,8 @@ begin
 	-- update preferred capitalization of all sort artists in library, if new/changed
 	update music.artist a set artist_name_capitalization = fht.artistsort_name
 	from library.file_headertag_import fht
-		where a.id = artist_id and (artist_name_capitalization is null 
-		or artist_name_capitalization != fht.artistsort_name);
+		where a.artist_name = upper(artistsort_name) and 
+		artist_name_capitalization != fht.artistsort_name;
 
 	-- create missing sort album artist(s)
 	insert into music.artist (artist_name, artist_name_capitalization)
@@ -108,14 +108,14 @@ begin
 	-- update preferred capitalization of all sort album artists in library, if new/changed
 	update music.artist a set artist_name_capitalization = fht.albumartistsort_name
 	from library.file_headertag_import fht
-		where a.id = artist_id and (artist_name_capitalization is null 
-		or artist_name_capitalization != fht.albumartistsort_name);
+		where a.artist_name = upper(albumartistsort_name) and 
+		artist_name_capitalization != fht.albumartistsort_name;
 
 	-- create missing composer(s)
 	insert into music.artist (artist_name, artist_name_capitalization)
 	select distinct on (upper(composer_name)) upper(composer_name), composer_name 
 	from library.file_headertag_import fht
-		where not exists (select 1 from music.artist 
+		where composer_name is not null and not exists (select 1 from music.artist 
 			where artist_name = upper(fht.composer_name));
 
 	-- update all import rows to correct composer id
@@ -126,8 +126,8 @@ begin
 	-- update preferred capitalization of all composers in library, if new/changed
 	update music.artist a set artist_name_capitalization = fht.composer_name
 	from library.file_headertag_import fht
-		where a.id = artist_id and (artist_name_capitalization is null 
-		or artist_name_capitalization != fht.composer_name);
+		where a.id = composer_id and
+		artist_name_capitalization != fht.composer_name;
 
 	-- create missing album(s)
 	insert into music.album (artist_id, album_name, album_name_capitalization)
@@ -159,6 +159,11 @@ begin
 	from music.track t
 		where fht.artist_id = t.artist_id and
 			  upper(fht.track_name) = t.track_name;
+
+	-- update preferred capitalization of all tracks in library, if new/changed
+	update music.track t set track_name_capitalization = fht.track_name
+	from library.file_headertag_import fht
+		where t.id = track_id and track_name_capitalization != fht.track_name;
 
 	-- create missing tag(s)
 	insert into music.tag (tag_name)
@@ -196,12 +201,33 @@ begin
 	);
 	
 	insert into library.track (track_id, album_id, file_id)
-	select track_id, album_id, file_id from library.filetag ft
+	select distinct on (coalesce(disc_nr, 0), coalesce(track_nr, 0), track_id, album_id) 
+		track_id, album_id, file_id from library.filetag ft
 	where not exists (
-		select 1 from library.track t 
-		where t.track_id = ft.track_id and t.album_id = ft.album_id 
-			and t.file_id = ft.file_id
+		select 1 from library.track ext 
+		inner join library.filetag exft on exft.file_id = ext.file_id
+		where ext.track_id = ft.track_id and ext.album_id = ft.album_id
+			and coalesce(exft.track_nr, 0) = coalesce(ft.track_nr, 0)
+			and coalesce(exft.disc_nr, 0) = coalesce(ft.disc_nr, 0)
 	);
+
+	-- update search tables text search index
+	update library.artist la
+		set artist_name_search = to_tsvector('english', artist_name)
+	from music.artist ma
+	where ma.id = la.artist_id and la.artist_name_search is null;
+
+	update library.album la
+		set album_name_search = to_tsvector('english', artist_name || ' ' || album_name)
+	from music.album malb
+	inner join music.artist mart on malb.artist_id = mart.id
+	where malb.id = la.album_id and la.album_name_search is null;
+
+	update library.track lt
+		set track_name_search = to_tsvector('english', artist_name || ' ' || album_name || ' ' || track_name)
+	from music.album malb, music.track mt 
+	inner join music.artist mart on mt.artist_id = mart.id
+	where mt.id = lt.track_id and malb.id = lt.album_id and lt.track_name_search is null;
 
 	-- set album year from file metadata
 	update library.album a set year = ft.year
@@ -242,8 +268,24 @@ begin
 	inner join music.artist a on a.artist_name = upper(fht.albumartistsort_name)
 	where not exists (select 1 from library.artistsort where artistsort_id = fht.artist_id);
 	
-	delete from library.file_headertag_import;
-	delete from library.file_import;
+	truncate library.file_headertag_import;
+	truncate library.file_import;
+	truncate library.directory_import;
+	
+	-- create set of unique first letters from artist names
+	truncate library.artistindex;
+	
+	insert into library.artistindex (ascii_code)
+	select distinct ascii(artist_name) from music.artist ma 
+	inner join library.artist la on la.artist_id = ma.id
+	where ascii(artist_name) <= 90;
+	
+	insert into library.artistindex (ascii_code)
+	select ascii('#') from music.artist ma 
+	inner join library.artist la on la.artist_id = ma.id
+	where ascii(artist_name) > 90 limit 1;
+	
+	perform library.update_statistics();
 	
 	return 0;
 

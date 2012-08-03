@@ -11,6 +11,7 @@ import org.springframework.integration.core.PollableChannel;
 
 import com.github.hakko.musiccabinet.dao.LibraryPresenceDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.DirectoryContent;
+import com.github.hakko.musiccabinet.domain.model.aggr.SearchIndexUpdateProgress;
 import com.github.hakko.musiccabinet.domain.model.library.File;
 
 /*
@@ -21,7 +22,7 @@ import com.github.hakko.musiccabinet.domain.model.library.File;
  * directories are
  *  (1) not changed (then left untouched)
  *  (2) newly added (then passed on to read meta data, then added to db)
- *  (3) delete (then passed to db for removal)
+ *  (3) deleted (then passed to db for removal)
  */
 public class LibraryPresenceService implements LibraryReceiverService {
 
@@ -30,11 +31,14 @@ public class LibraryPresenceService implements LibraryReceiverService {
 	protected PollableChannel libraryDeletionChannel; // producer of
 	
 	private LibraryPresenceDao libraryPresenceDao;
+	
+	private SearchIndexUpdateProgress progress = new SearchIndexUpdateProgress("directories found during search");
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receive() {
 		Message<DirectoryContent> message;
+		progress.reset();
 		while (true) {
 			message = (Message<DirectoryContent>) libraryPresenceChannel.receive();
 			if (message == null || message.equals(FINISHED_MESSAGE)) {
@@ -43,6 +47,7 @@ public class LibraryPresenceService implements LibraryReceiverService {
 				break;
 			} else {
 				compareDirectoryContent(message.getPayload());
+				progress.addFinishedOperation();
 			}
 		}
 	}
@@ -65,6 +70,10 @@ public class LibraryPresenceService implements LibraryReceiverService {
 				libraryDeletionChannel.send(msg(directory, dbSubDirs, dbFiles));
 			}
 		}
+	}
+
+	public SearchIndexUpdateProgress getUpdateProgress() {
+		return progress;
 	}
 
 	public void setLibraryPresenceDao(LibraryPresenceDao libraryDao) {

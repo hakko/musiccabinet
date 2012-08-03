@@ -3,6 +3,7 @@ package com.github.hakko.musiccabinet.service.library;
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
 import static java.io.File.separatorChar;
 import static java.lang.Thread.currentThread;
+import static junit.framework.Assert.assertEquals;
 
 import java.io.File;
 
@@ -44,9 +45,32 @@ public class LibraryScannerServiceTest {
 		String cd1 = album + separatorChar + "cd1";
 		String cd2 = album + separatorChar + "cd2";
 		
-		scannerService.add(media1);
+		scannerService.add(set(media1));
 		Assert.assertEquals(set(album), presenceDao.getSubdirectories(artist));
 		Assert.assertEquals(set(cd1, cd2), presenceDao.getSubdirectories(album));
 	}
+	
+	@Test
+	public void identifiesRootPaths() {
+		String previousFileSeparator = scannerService.fileSeparator;
+		scannerService.setFileSeparator("/");
+		
+		assertEquals(set("/a"), scannerService.getRootPaths(set("/a", "/a/b", "/a/b/c")));
 
+		assertEquals(set("/a"), scannerService.getRootPaths(set("/a/b/c", "/a/b", "/a")));
+		
+		assertEquals(set("/a", "/b"), scannerService.getRootPaths(set("/a", "/a/c", "/b", "/b/d")));
+
+		assertEquals(set("/a", "/b"), scannerService.getRootPaths(
+				set("/a", "/a/1", "/a/2", "/a/2/3/4/5", "/b")));
+		
+		assertEquals(set("/a", "/b"), scannerService.getRootPaths(
+				set("/b/1/2", "/b/1", "/b", "/b/2/1", "/a/1", "/a", "/a/1/2")));
+
+		assertEquals(set("/a", "/a2"), scannerService.getRootPaths(
+				set("/a", "/a/b", "/a2", "/a2/b", "/a2/b/c", "/a/a2", "/a2/a")));
+		
+		scannerService.setFileSeparator(previousFileSeparator);
+	}
+	
 }

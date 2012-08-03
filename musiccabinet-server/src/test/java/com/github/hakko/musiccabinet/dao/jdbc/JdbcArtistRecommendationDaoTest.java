@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,19 +18,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.github.hakko.musiccabinet.dao.ArtistInfoDao;
 import com.github.hakko.musiccabinet.dao.ArtistRelationDao;
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
+import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.MusicDao;
-import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
-import com.github.hakko.musiccabinet.dao.MusicFileDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
-import com.github.hakko.musiccabinet.domain.model.library.MusicDirectory;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistRelation;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.service.PlaylistGeneratorService;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -45,15 +46,12 @@ public class JdbcArtistRecommendationDaoTest {
 	
 	@Autowired
 	private MusicDao musicDao;
-	
-	@Autowired
-	private MusicFileDao musicFileDao;
-
-	@Autowired
-	private MusicDirectoryDao musicDirectoryDao;
 
 	@Autowired
 	private ArtistInfoDao artistInfoDao;
+
+	@Autowired
+	private LibraryAdditionDao additionDao;
 	
 	@Autowired
 	private PlaylistGeneratorService playlistGeneratorService;
@@ -89,32 +87,20 @@ public class JdbcArtistRecommendationDaoTest {
 		artistTopTracksDao.createTopTracks(kylie, Arrays.asList(
 				new Track(kylie, "Love At First Sight")));
 		
-		musicFileDao.clearImport();
-		List<MusicFile> musicFiles = new ArrayList<>();
+		List<File> files = new ArrayList<>();
 		for (Track track : Arrays.asList(track1, track2, track3)) {
-			MusicFile mf = new MusicFile(track.getArtist().getName(), 
-					track.getName(), "/path/to/" + track.getName(), 0L, 0L);
-			musicFiles.add(mf);
+			files.add(getFile(track));
 		}
-		musicFileDao.addMusicFiles(musicFiles);
-		musicFileDao.createMusicFiles();
+		UnittestLibraryUtil.submitFile(additionDao, files);
 		
 		playlistGeneratorService.updateSearchIndex();
 
 		cherId = musicDao.getArtistId(cher);
 
-		musicDirectoryDao.clearImport();
-		List<MusicDirectory> musicDirectories = new ArrayList<>();
 		List<ArtistInfo> artistInfos = new ArrayList<>();
 		for (Artist artist : Arrays.asList(madonna, cyndi, celine, kylie)) {
-			musicDirectories.add(new MusicDirectory(
-					artist.getName(), "/path/to/" + artist.getName()));
 			artistInfos.add(new ArtistInfo(artist, "/image/for/" + artist.getName()));
 		}
-		musicDirectories.add(new MusicDirectory(cyndi.getName(), "/another/path/to/cyndi"));
-		musicDirectoryDao.addMusicDirectories(musicDirectories);
-		musicDirectoryDao.createMusicDirectories();
-
 		artistInfoDao.createArtistInfo(artistInfos);
 	}
 	
@@ -157,17 +143,6 @@ public class JdbcArtistRecommendationDaoTest {
 		Assert.assertFalse(artists.contains(cher));
 		Assert.assertFalse(artists.contains(celine));
 		Assert.assertFalse(artists.contains(kylie));
-	}
-
-	@Test
-	public void artistCanHaveMultipleRootPaths() {
-		List<ArtistRecommendation> artistRecommendations = 
-				artistRecommendationDao.getRecommendedArtistsInLibrary(cherId, 10);
-		for (ArtistRecommendation ar : artistRecommendations) {
-			if (ar.getArtistName().equals(cyndi.getName())) {
-				Assert.assertEquals(2, ar.getPaths().size());
-			}
-		}
 	}
 	
 	@Test

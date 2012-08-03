@@ -8,9 +8,9 @@ import org.apache.http.NameValuePair;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.lastfm.WebserviceHistoryService;
 
 public class TagInfoClientTest extends AbstractWSImplementationTest {
 
@@ -34,8 +34,8 @@ public class TagInfoClientTest extends AbstractWSImplementationTest {
 			}
 			
 			@Override
-			protected WebserviceHistoryDao getHistoryDao() {
-				return Mockito.mock(WebserviceHistoryDao.class);
+			protected WebserviceHistoryService getHistoryService() {
+				return Mockito.mock(WebserviceHistoryService.class);
 			}
 
 		}.getTagInfo(tagName);

@@ -11,7 +11,8 @@ public class SearchIndexUpdateProgress {
 	
 	public static final int NOT_INITIALIZED = -1;
 	
-	public SearchIndexUpdateProgress() {
+	public SearchIndexUpdateProgress(String updateDescription) {
+		this.updateDescription = updateDescription;
 		totalOperations = NOT_INITIALIZED;
 		finishedOperations = NOT_INITIALIZED;
 	}

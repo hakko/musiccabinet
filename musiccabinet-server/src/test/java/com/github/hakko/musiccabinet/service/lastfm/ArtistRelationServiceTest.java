@@ -1,12 +1,12 @@
 package com.github.hakko.musiccabinet.service.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_SIMILAR;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -21,25 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
+import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistRelationDao;
-import com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicFileDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
-import com.github.hakko.musiccabinet.service.lastfm.ArtistRelationService;
-import com.github.hakko.musiccabinet.service.lastfm.ThrottleService;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 import com.github.hakko.musiccabinet.ws.lastfm.ArtistSimilarityClient;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class ArtistRelationServiceTest {
-
-	@Autowired
-	private JdbcMusicFileDao musicFileDao;
 	
 	@Autowired
 	private JdbcArtistRelationDao artistRelationDao;
@@ -48,7 +43,10 @@ public class ArtistRelationServiceTest {
 	private ArtistRelationService artistRelationService;
 
 	@Autowired
-	private WebserviceHistoryDao webserviceHistoryDao;
+	private WebserviceHistoryService webserviceHistoryService;
+
+	@Autowired
+	private LibraryAdditionDao additionDao;
 	
 	private static final String CHER_ARTIST_RELATIONS = "last.fm/xml/similarartists.cher.xml";
 	private static final String artistName = "cher";
@@ -58,7 +56,7 @@ public class ArtistRelationServiceTest {
 		Assert.assertNotNull(artistRelationService);
 		Assert.assertNotNull(artistRelationService.artistRelationDao);
 		Assert.assertNotNull(artistRelationService.artistSimilarityClient);
-		Assert.assertNotNull(artistRelationService.webserviceHistoryDao);
+		Assert.assertNotNull(artistRelationService.webserviceHistoryService);
 	}
 	
 	@Test
@@ -66,35 +64,31 @@ public class ArtistRelationServiceTest {
 		clearLibraryAndAddCherTrack();
 
 		WebserviceInvocation wi = new WebserviceInvocation(ARTIST_GET_SIMILAR, new Artist(artistName));
-		Assert.assertTrue(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
+		Assert.assertTrue(webserviceHistoryService.isWebserviceInvocationAllowed(wi));
 
-		List<Artist> artists = webserviceHistoryDao.getArtistsScheduledForUpdate(ARTIST_GET_SIMILAR);
-		Assert.assertNotNull(artists);
-		Assert.assertEquals(1, artists.size());
-		Assert.assertTrue(artists.contains(new Artist(artistName)));
+		Set<String> artistNames = webserviceHistoryService.getArtistNamesScheduledForUpdate(ARTIST_GET_SIMILAR);
+		Assert.assertNotNull(artistNames);
+		Assert.assertEquals(1, artistNames.size());
+		Assert.assertTrue(artistNames.contains(artistName));
 
 		ArtistRelationService artistRelationService = new ArtistRelationService();
-		artistRelationService.setArtistSimilarityClient(getArtistSimilarityClient(webserviceHistoryDao));
+		artistRelationService.setArtistSimilarityClient(getArtistSimilarityClient(webserviceHistoryService));
 		artistRelationService.setArtistRelationDao(artistRelationDao);
-		artistRelationService.setWebserviceHistoryDao(webserviceHistoryDao);
+		artistRelationService.setWebserviceHistoryService(webserviceHistoryService);
 		artistRelationService.updateSearchIndex();
 		
-		Assert.assertFalse(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
+		Assert.assertFalse(webserviceHistoryService.isWebserviceInvocationAllowed(wi));
 	}
 	
 	private void clearLibraryAndAddCherTrack() throws ApplicationException {
 		PostgreSQLUtil.truncateTables(artistRelationDao);
 		
-		long time = System.currentTimeMillis();
-		MusicFile mf = new MusicFile(artistName, "Believe", "/", time, time);
-
-		musicFileDao.clearImport();
-		musicFileDao.addMusicFiles(Arrays.asList(mf));
-		musicFileDao.createMusicFiles();
+		File file = getFile(artistName, null, "Believe");
+		UnittestLibraryUtil.submitFile(additionDao, file);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ArtistSimilarityClient getArtistSimilarityClient(WebserviceHistoryDao historyDao) throws IOException {
+	private ArtistSimilarityClient getArtistSimilarityClient(WebserviceHistoryService historyService) throws IOException {
 		// create a HTTP client that always returns Cher artist relations
 		HttpClient httpClient = mock(HttpClient.class);
 		ClientConnectionManager connectionManager = mock(ClientConnectionManager.class);
@@ -108,7 +102,7 @@ public class ArtistRelationServiceTest {
 
 		// create a client that allows all calls and returns Cher artist relations
 		ArtistSimilarityClient asClient = new ArtistSimilarityClient();
-		asClient.setWebserviceHistoryDao(historyDao);
+		asClient.setWebserviceHistoryService(historyService);
 		asClient.setHttpClient(httpClient);
 		asClient.setThrottleService(throttleService);
 

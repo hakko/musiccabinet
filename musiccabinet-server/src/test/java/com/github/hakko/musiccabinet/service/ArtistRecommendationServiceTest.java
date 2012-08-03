@@ -1,7 +1,6 @@
 package com.github.hakko.musiccabinet.service;
 
-import java.util.Arrays;
-
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -11,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
-import com.github.hakko.musiccabinet.domain.model.library.MusicDirectory;
+import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
+import com.github.hakko.musiccabinet.dao.MusicDao;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 /*
  * Doesn't actually do much testing, except invoking the service methods.
@@ -28,37 +29,40 @@ public class ArtistRecommendationServiceTest {
 	private ArtistRecommendationService arService;
 	
 	@Autowired
-	private MusicDirectoryDao musicDirectoryDao;
+	private LibraryAdditionDao additionDao;
 
-	private MusicDirectory madonnaDir = new MusicDirectory("Madonna", null, "/path/to/madonna");
+	@Autowired
+	private MusicDao musicDao;
+	
+	private int madonnaId;
 	
 	@Before
 	public void createArtistToSearchFor() {
-		musicDirectoryDao.clearImport();
-		musicDirectoryDao.addMusicDirectories(Arrays.asList(madonnaDir));
-		musicDirectoryDao.createMusicDirectories();
+		File file = getFile("Madonna", null, null);
+		UnittestLibraryUtil.submitFile(additionDao, file);
+		
+		madonnaId = musicDao.getArtistId("Madonna");
 	}
 	
 	@Test
 	public void serviceConfigured() {
 		Assert.assertNotNull(arService);
 		Assert.assertNotNull(arService.artistRecommendationDao);
-		Assert.assertNotNull(arService.musicDirectoryDao);
 	}
 
 	@Test
 	public void canInvokeRelatedArtistsInLibrary() throws ApplicationException {
-		arService.getRelatedArtistsInLibrary(madonnaDir.getPath(), 20);
+		arService.getRelatedArtistsInLibrary(madonnaId, 20);
 	}
 
 	@Test
 	public void canInvokeRelatedArtistsNotInLibrary() throws ApplicationException {
-		arService.getRelatedArtistsNotInLibrary(madonnaDir.getPath(), 20);
+		arService.getRelatedArtistsNotInLibrary(madonnaId, 20);
 	}
 	
 	@Test
 	public void canInvokeMatchingSongs() throws ApplicationException {
-		arService.getMatchingSongs(madonnaDir.getPath());
+		arService.getMatchingSongs(madonnaId);
 	}
 	
 	@Test

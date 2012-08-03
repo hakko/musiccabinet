@@ -4,10 +4,9 @@ import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvoc
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistInfoDao;
-import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -26,45 +25,36 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 
 	protected ArtistInfoClient artistInfoClient;
 	protected ArtistInfoDao artistInfoDao;
-	protected WebserviceHistoryDao webserviceHistoryDao;
-
-	protected MusicDirectoryDao musicDirectoryDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 	
 	private static final int BATCH_SIZE = 1000;
 	
 	private static final Logger LOG = Logger.getLogger(ArtistInfoService.class);
 	
-	public ArtistInfo getArtistInfo(String path) throws ApplicationException {
-		ArtistInfo artistInfo = null;
-		Integer artistId = musicDirectoryDao.getArtistId(path);
-		if (artistId != null) {
-			artistInfo = artistInfoDao.getArtistInfo(artistId);
-			if (artistInfo == null) {
-				LOG.info("No artist info found for " + path);
-			}
+	public ArtistInfo getArtistInfo(int artistId) throws ApplicationException {
+		ArtistInfo artistInfo = artistInfoDao.getArtistInfo(artistId);
+		if (artistInfo == null) {
+			LOG.info("No artist info found for id " + artistId);
 		}
 		return artistInfo;
 	}
 	
-	public void setBioSummary(String path, String biosummary) throws ApplicationException {
-		Integer artistId = musicDirectoryDao.getArtistId(path);
-		if (artistId != null) {
-			webserviceHistoryDao.blockWebserviceInvocation(artistId, ARTIST_GET_INFO);
-			artistInfoDao.setBioSummary(artistId, biosummary);
-		}
+	public void setBioSummary(int artistId, String biosummary) throws ApplicationException {
+		webserviceHistoryService.blockWebserviceInvocation(artistId, ARTIST_GET_INFO);
+		artistInfoDao.setBioSummary(artistId, biosummary);
 	}
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		List<Artist> artists = webserviceHistoryDao.
-				getArtistsScheduledForUpdate(ARTIST_GET_INFO);
+		Set<String> artistNames = webserviceHistoryService.
+				getArtistNamesScheduledForUpdate(ARTIST_GET_INFO);
 		
-		List<ArtistInfo> artistInfos = new ArrayList<>(artists.size());
-		setTotalOperations(artists.size());
+		List<ArtistInfo> artistInfos = new ArrayList<>(artistNames.size());
+		setTotalOperations(artistNames.size());
 		
-		for (Artist artist : artists) {
+		for (String artistName : artistNames) {
 			try {
-				WSResponse wsResponse = artistInfoClient.getArtistInfo(artist);
+				WSResponse wsResponse = artistInfoClient.getArtistInfo(new Artist(artistName));
 				if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 					StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 					ArtistInfoParser aiParser = 
@@ -72,7 +62,7 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 					if (aiParser.getArtistInfo() != null) {
 						artistInfos.add(aiParser.getArtistInfo());
 					} else {
-						LOG.warn("Artist info response for " + artist 
+						LOG.warn("Artist info response for " + artistName 
 								+ " not parsed correctly. Response was " 
 								+ wsResponse.getResponseBody());
 					}
@@ -83,7 +73,7 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 					}
 				}
 			} catch (ApplicationException e) {
-				LOG.warn("Fetching artist info for " + artist.getName() + " failed.", e);
+				LOG.warn("Fetching artist info for " + artistName + " failed.", e);
 			}
 			addFinishedOperation();
 		}
@@ -106,12 +96,9 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 		this.artistInfoDao = artistInfoDao;
 	}
 
-	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {
-		this.webserviceHistoryDao = webserviceHistoryDao;
-	}
-	
-	public void setMusicDirectoryDao(MusicDirectoryDao musicDirectoryDao) {
-		this.musicDirectoryDao = musicDirectoryDao;
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 
 }

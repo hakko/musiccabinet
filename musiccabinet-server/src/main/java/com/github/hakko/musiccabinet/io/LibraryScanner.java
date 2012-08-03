@@ -47,8 +47,10 @@ public class LibraryScanner extends SimpleFileVisitor<Path> {
     	if (attr.size() > Integer.MAX_VALUE) {
     		LOG.warn(file.getFileName() + " has actual file size " + attr.size());
     	}
-    	directoryContent.getFiles().add(new File(file.getParent().toString(), file.getFileName().toString(),
-    			new DateTime(attr.lastModifiedTime().toMillis()), (int) attr.size()));
+    	directoryContent.getFiles().add(new File(file.getParent().toString(), 
+    			file.getFileName().toString(),
+    			new DateTime(attr.lastModifiedTime().toMillis()), 
+    			(int) attr.size()));
     	
     	return CONTINUE;
     }
@@ -69,5 +71,5 @@ public class LibraryScanner extends SimpleFileVisitor<Path> {
     	
     	return CONTINUE;
     }
-
+    
 }

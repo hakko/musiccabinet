@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.service.library;
 
+import static java.util.regex.Pattern.compile;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.lang.math.NumberUtils.toInt;
 import static org.jaudiotagger.tag.FieldKey.ALBUM;
@@ -33,12 +34,14 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.reference.GenreTypes;
 
 import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.library.MetaData;
 import com.github.hakko.musiccabinet.domain.model.library.MetaData.Mediatype;
+import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
 
 public class AudioTagService {
@@ -49,10 +52,10 @@ public class AudioTagService {
 	
 	private Set<String> ALLOWED_EXTENSIONS = new HashSet<>();
 
-	private static final Pattern GENRE_PATTERN = Pattern
-			.compile("\\((\\d+)\\).*");
+	private static final Pattern GENRE_PATTERN = compile("\\((\\d+)\\).*");
+    private static final Pattern TRACK_NUMBER_PATTERN = compile("(\\d+)/\\d+");
 
-	public static final String UNKNOWN_ALBUM = "<Unknown album>";
+	public static final String UNKNOWN_ALBUM = "[Unknown album]";
 	
 	public AudioTagService() {
 		for (MetaData.Mediatype mediaType : MetaData.Mediatype.values()) {
@@ -65,16 +68,16 @@ public class AudioTagService {
 
 		String extension = getExtension(file.getFilename()).toUpperCase();
 		if (!ALLOWED_EXTENSIONS.contains(extension)) {
-			LOG.debug("Ignoring file " + file.getFilename());
 			return;
 		}
 
 		MetaData metaData = new MetaData();
+		metaData.setMediaType(Mediatype.valueOf(extension));
 
 		try {
 			AudioFile audioFile = AudioFileIO.read(new java.io.File(file
 					.getDirectory(), file.getFilename()));
-
+			
 			Tag tag = audioFile.getTag();
 			if (tag != null) {
 				metaData.setArtist(getTagField(tag, ARTIST));
@@ -86,11 +89,10 @@ public class AudioTagService {
 				metaData.setYear(getTagField(tag, YEAR));
 				metaData.setGenre(toGenre(getTagField(tag, GENRE)));
 				metaData.setComposer(getTagField(tag, COMPOSER));
-				metaData.setDiscNr(toShort(getTagField(tag, DISC_NO)));
+				metaData.setDiscNr(toFirstNumber(getTagField(tag, DISC_NO)));
 				metaData.setDiscNrs(toShort(getTagField(tag, DISC_TOTAL)));
-				metaData.setTrackNr(toShort(getTagField(tag, TRACK)));
+				metaData.setTrackNr(toFirstNumber(getTagField(tag, TRACK)));
 				metaData.setTrackNrs(toShort(getTagField(tag, TRACK_TOTAL)));
-				metaData.setMediaType(Mediatype.valueOf(extension));
 				metaData.setCoverArtEmbedded(tag.getFirstArtwork() != null);
 			}
 
@@ -99,11 +101,6 @@ public class AudioTagService {
 				metaData.setVbr(audioHeader.isVariableBitRate());
 				metaData.setBitrate((short) audioHeader.getBitRateAsNumber());
 				metaData.setDuration((short) audioHeader.getTrackLength());
-			}
-
-			if (metaData.getArtist() == null || metaData.getTitle() == null) {
-				LOG.warn("Insufficient tags, ignoring file "
-						+ file.getFilename());
 			}
 
 			file.setMetaData(metaData);
@@ -115,6 +112,22 @@ public class AudioTagService {
 		}
 	}
 
+	public boolean isAudioFile(String extension) {
+		return extension != null && ALLOWED_EXTENSIONS.contains(extension.toUpperCase());
+	}
+	
+    public Artwork getArtwork(java.io.File file) throws ApplicationException {
+    	Tag tag = null;
+    	try {
+    		AudioFile audioFile = AudioFileIO.read(file);
+    		tag = audioFile.getTag();
+    	} catch (CannotReadException | IOException | TagException
+    			| ReadOnlyFileException | InvalidAudioFrameException e) {
+    		throw new ApplicationException("Failed reading artwork from file " + file, e);
+    	}
+        return tag == null ? null : tag.getFirstArtwork();
+    }
+	
 	private String getTagField(Tag tag, FieldKey fieldKey) {
 		try {
 			return StringUtils.trimToNull(tag.getFirst(fieldKey));
@@ -151,6 +164,23 @@ public class AudioTagService {
 
 	private String toAlbum(String album) {
 		return album == null ? UNKNOWN_ALBUM : album;
+	}
+
+	/*
+	 * Track and disc number are allowed to be on form x/y.
+	 */
+	private Short toFirstNumber(String tag) {
+		if (tag == null) {
+			return null;
+		} else if (NumberUtils.isDigits(tag)) { 
+			return NumberUtils.toShort(tag);
+		} else {
+            Matcher matcher = TRACK_NUMBER_PATTERN.matcher(tag);
+            if (matcher.matches()) {
+            	return NumberUtils.toShort(matcher.group(1));
+            }
+		}
+		return null;
 	}
 	
 	private Short toShort(String tag) {

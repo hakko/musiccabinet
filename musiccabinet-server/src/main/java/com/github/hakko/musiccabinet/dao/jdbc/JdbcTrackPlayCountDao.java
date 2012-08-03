@@ -19,10 +19,6 @@ public class JdbcTrackPlayCountDao implements TrackPlayCountDao, JdbcTemplateDao
 
 	private JdbcTemplate jdbcTemplate;
 	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
 	@Override
 	public void createTrackPlayCounts(List<TrackPlayCount> trackPlayCounts) {
 		clearImportTable();
@@ -31,7 +27,7 @@ public class JdbcTrackPlayCountDao implements TrackPlayCountDao, JdbcTemplateDao
 	}
 
 	private void clearImportTable() {
-		jdbcTemplate.execute("delete from library.trackplaycount_import");
+		jdbcTemplate.execute("truncate library.trackplaycount_import");
 	}
 	
 	private void batchInsert(List<TrackPlayCount> trackPlayCounts) {
@@ -77,6 +73,12 @@ public class JdbcTrackPlayCountDao implements TrackPlayCountDao, JdbcTemplateDao
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

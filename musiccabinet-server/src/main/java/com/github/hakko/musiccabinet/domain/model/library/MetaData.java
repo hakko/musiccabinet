@@ -11,9 +11,11 @@ public class MetaData {
 	private short duration;
 	
 	private String artist;
+	private int artistId;
 	private String albumArtist;
 	private String composer;
 	private String album;
+	private int albumId;
 	private String title;
 	private Short trackNr;
 	private Short trackNrs;
@@ -22,6 +24,9 @@ public class MetaData {
 	private Short year;
 	private String genre;
 	private boolean isCoverArtEmbedded;
+	private String path;
+	private int size;
+	private long modified;
 	
 	private String artistSort;
 	private String albumArtistSort;
@@ -66,6 +71,14 @@ public class MetaData {
 		this.artist = artist;
 	}
 
+	public int getArtistId() {
+		return artistId;
+	}
+
+	public void setArtistId(int artistId) {
+		this.artistId = artistId;
+	}
+
 	public String getAlbumArtist() {
 		return albumArtist;
 	}
@@ -88,6 +101,14 @@ public class MetaData {
 
 	public void setAlbum(String album) {
 		this.album = album;
+	}
+
+	public int getAlbumId() {
+		return albumId;
+	}
+
+	public void setAlbumId(int albumId) {
+		this.albumId = albumId;
 	}
 
 	public String getTitle() {
@@ -138,7 +159,8 @@ public class MetaData {
 		if (year != null && year.length() > 4) {
 			year = year.substring(0, 4);
 		}
-		this.year = isDigits(year) ? toShort(year) : null;
+		this.year = isDigits(year) && toShort(year) > 1500 
+				? toShort(year) : null;
 	}
 	
 	public void setYear(Short year) {
@@ -159,6 +181,30 @@ public class MetaData {
 
 	public void setCoverArtEmbedded(boolean isCoverArtEmbedded) {
 		this.isCoverArtEmbedded = isCoverArtEmbedded;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public long getModified() {
+		return modified;
+	}
+
+	public void setModified(long modified) {
+		this.modified = modified;
 	}
 
 	public String getArtistSort() {

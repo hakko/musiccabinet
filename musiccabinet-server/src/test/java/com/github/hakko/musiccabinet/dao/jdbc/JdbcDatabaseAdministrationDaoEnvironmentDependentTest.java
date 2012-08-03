@@ -72,7 +72,7 @@ public class JdbcDatabaseAdministrationDaoEnvironmentDependentTest {
 		Assert.fail("Wrong password is supposed to throw an exception.");
 	}
 
-	@Test
+//	@Test
 	public void forcePasswordChangeWorksForCorrectPassword() {
 		try {
 			dbAdmDao.forcePasswordUpdate(getPostgresPassword());

@@ -7,6 +7,7 @@ import com.github.hakko.musiccabinet.domain.model.library.MetaData;
 
 public class Track {
 
+	private int id = -1; // TODO : start using music.track.id
 	private Artist artist;
 	private String name;
 	private MetaData metaData;
@@ -20,15 +21,26 @@ public class Track {
 		setName(trackName);
 	}
 	
+	public Track(Artist artist, int trackId, String trackName) {
+		setArtist(artist);
+		setName(trackName);
+		this.id = trackId;
+	}
+	
 	public Track(String artistName, String trackName) {
 		setArtist(new Artist(artistName));
 		setName(trackName);
 	}
 	
-	public Track(String trackName, MetaData metaData) {
+	public Track(int trackId, String trackName, MetaData metaData) {
+		this.id = trackId;
 		this.artist = new Artist(metaData.getArtist());
 		this.name = trackName;
 		this.metaData = metaData;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public Artist getArtist() {

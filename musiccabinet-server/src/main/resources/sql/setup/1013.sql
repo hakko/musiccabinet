@@ -11,17 +11,17 @@ delete from library.artisttoptrackplaycount where music_file_id in (
 	inner join music.duplicate_tracks dt on mf.track_id = dt.track_id
 );
 
-delete from library.trackplaycount_import;
+truncate library.trackplaycount_import;
 
 delete from library.trackplaycount where track_id in (
 	select track_id from music.duplicate_tracks
 );
 
-delete from music.trackrelation_import;
+truncate music.trackrelation_import;
 
-delete from music.trackrelation;
+truncate music.trackrelation;
 
-delete from music.artisttoptrack_import;
+truncate music.artisttoptrack_import;
 
 delete from music.artisttoptrack where track_id in (
 	select track_id from music.duplicate_tracks
@@ -54,7 +54,7 @@ select a1.id from music.album a1 inner join
 		group by artist_id, album_name having count(album_name) > 1) a2
 on a1.artist_id = a2.artist_id and a1.album_name = a2.album_name;
 
-delete from music.albuminfo_import;
+truncate music.albuminfo_import;
 
 delete from library.webservice_history where album_id in (
 	select album_id from music.duplicate_albums
@@ -64,7 +64,7 @@ delete from music.albuminfo where album_id in (
 	select album_id from music.duplicate_albums
 );
 
-delete from library.musicdirectory_import;
+truncate library.musicdirectory_import;
 
 delete from library.musicdirectory where album_id in (
 	select album_id from music.duplicate_albums

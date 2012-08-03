@@ -1,14 +1,13 @@
 package com.github.hakko.musiccabinet.parser.itunes;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.parser.itunes.ItunesMusicLibraryParserImpl.ItunesTrack;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
 
 public class ItunesMusicLibraryParserTest {
@@ -25,11 +24,11 @@ public class ItunesMusicLibraryParserTest {
 		ItunesMusicLibraryParserCallback() {
 			
 			@Override
-			public void endOfMusicFiles() {
+			public void endOfTracks() {
 			}
 			
 			@Override
-			public void addMusicFile(MusicFile musicFile) {
+			public void addTrack(ItunesTrack track) {
 				counter.incrementAndGet();
 			}
 		};

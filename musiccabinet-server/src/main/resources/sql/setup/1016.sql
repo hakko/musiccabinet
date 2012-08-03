@@ -1,0 +1,1 @@
+create table library.playcount (invocation_time timestamp default now(), lastfmuser_id integer not null references library.lastfmuser (id), track_id integer not null references music.track (id), album_id integer not null references music.album (id), artist_id integer not null references music.artist (id));

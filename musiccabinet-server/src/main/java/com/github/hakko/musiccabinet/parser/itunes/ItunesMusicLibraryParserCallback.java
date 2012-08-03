@@ -1,10 +1,10 @@
 package com.github.hakko.musiccabinet.parser.itunes;
 
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.parser.itunes.ItunesMusicLibraryParserImpl.ItunesTrack;
 
 public interface ItunesMusicLibraryParserCallback {
 
-	void addMusicFile(MusicFile musicFile);
-	void endOfMusicFiles();
+	void addTrack(ItunesTrack iTunesTrack);
+	void endOfTracks();
 	
 }

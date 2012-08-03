@@ -32,12 +32,6 @@ public enum PostgreSQLFunction {
 		
 	/* Library schema */
 	GET_LASTFMUSER_ID("library", "get_lastfmuser_id", "sql/library/get-lastfmuser-id.sql"),
-	UPDATE_MUSICFILE("library", "update_musicfile", 
-		"sql/library/update-musicfile.sql"),
-	UPDATE_MUSICFILE_EXTERNAL_IDS("library", "update_musicfile_extid", 
-		"sql/library/update-musicfile-extid.sql"),
-	UPDATE_MUSICDIRECTORY("library", "update_musicdirectory", 
-		"sql/library/update-musicdirectory.sql"),
 	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 
 		"sql/library/update-trackplaycount.sql"),
 	UPDATE_USER_TOP_ARTISTS("library", "update_usertopartists", 
@@ -46,7 +40,9 @@ public enum PostgreSQLFunction {
 	ADD_TO_LIBRARY("library", "add_to_library",
 		"sql/library/add-to-library.sql"),
 	DELETE_FROM_LIBRARY("library", "delete_from_library",
-		"sql/library/delete-from-library.sql");
+		"sql/library/delete-from-library.sql"),
+	UPDATE_STATISTICS("library", "update_statistics",
+		"sql/library/update-statistics.sql");
 
 	
 	private final String schema;

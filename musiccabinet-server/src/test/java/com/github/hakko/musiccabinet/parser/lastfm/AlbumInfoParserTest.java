@@ -2,8 +2,6 @@ package com.github.hakko.musiccabinet.parser.lastfm;
 
 import static junit.framework.Assert.assertEquals;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import com.github.hakko.musiccabinet.domain.model.music.AlbumInfo;

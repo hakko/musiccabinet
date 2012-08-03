@@ -1,7 +1,6 @@
 package com.github.hakko.musiccabinet.service;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Mockito.mock;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,19 +18,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
-import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
-import com.github.hakko.musiccabinet.dao.MusicFileDao;
-import com.github.hakko.musiccabinet.dao.TrackRelationDao;
+import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
+import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcPlaylistGeneratorDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
-import com.github.hakko.musiccabinet.domain.model.library.MusicDirectory;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
-import com.github.hakko.musiccabinet.domain.model.music.TrackRelation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
-import com.github.hakko.musiccabinet.service.lastfm.TrackRelationService;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -44,55 +39,37 @@ public class PlaylistGeneratorServiceTest {
 	private JdbcPlaylistGeneratorDao playlistGeneratorDao;
 	
 	@Autowired
-	private ArtistTopTracksDao artistTopTracksDao;
-	
-	@Autowired
-	private TrackRelationDao trackRelationDao;
-	
-	@Autowired
-	private MusicFileDao musicFileDao;
+	private ArtistTopTracksDao artistTopPlaylistItemsDao;
 
 	@Autowired
-	private MusicDirectoryDao musicDirectoryDao;
-
+	private MusicDao musicDao;
+	
+	@Autowired
+	private LibraryAdditionDao additionDao;
+	
 	private String artistName = "Helios", trackName = "Bless This Morning Year";
 	private Artist artist = new Artist(artistName);
-	private Track track = new Track(artist, trackName);
-	private MusicDirectory musicDirectory = new MusicDirectory(
-			artistName, "/path/to/" + artistName);
-	private MusicFile musicFile = new MusicFile(artistName, trackName,
-			"/path/to/" + artistName + "/" + trackName, 0L, 0L);
+	private int artistId;
 	
 	@Before
 	public void prepareTestData() throws ApplicationException {
 		PostgreSQLUtil.truncateTables(playlistGeneratorDao);
-
-		artistTopTracksDao.createTopTracks(artist, Arrays.asList(track));
-
-		trackRelationDao.createTrackRelations(track, asList(new TrackRelation(track, 1f)));
 		
-		musicFileDao.clearImport();
-		musicFileDao.addMusicFiles(Arrays.asList(musicFile));
-		musicFileDao.createMusicFiles();
+		Track track = new Track(artistName, trackName);
+		
+		UnittestLibraryUtil.submitFile(additionDao, getFile(track));
 
-		musicDirectoryDao.clearImport();
-		musicDirectoryDao.addMusicDirectories(Arrays.asList(musicDirectory));
-		musicDirectoryDao.createMusicDirectories();
+		artistId = musicDao.getArtistId(artist);
+		
+		artistTopPlaylistItemsDao.createTopTracks(artist, Arrays.asList(track));
 		
 		playlistGeneratorService.updateSearchIndex();
-
-		// we don't want actual look-up of track relations from last.fm in tests
-		TrackRelationService trService = mock(TrackRelationService.class);
-		playlistGeneratorService.setTrackRelationService(trService);
 	}
 	
 	@Test
 	public void playlistGeneratorServiceConfigured() {
 		Assert.assertNotNull(playlistGeneratorService);
-		Assert.assertNotNull(playlistGeneratorService.musicFileDao);
 		Assert.assertNotNull(playlistGeneratorService.playlistGeneratorDao);
-		Assert.assertNotNull(playlistGeneratorService.musicDirectoryDao);
-		Assert.assertNotNull(playlistGeneratorService.trackRelationService);
 	}
 	
 	@Test
@@ -102,66 +79,54 @@ public class PlaylistGeneratorServiceTest {
 	
 	@Test
 	public void invokeGetPlaylistForArtist() throws ApplicationException {
-		List<String> playlist = 
-			playlistGeneratorService.getPlaylistForArtist(musicDirectory.getPath(), 3, 20);
+		List<Integer> playlist = 
+			playlistGeneratorService.getPlaylistForArtist(artistId, 3, 20);
 		
 		Assert.assertNotNull(playlist);
 		Assert.assertEquals(1, playlist.size());
-		Assert.assertEquals(musicFile.getPath(), playlist.get(0));
 	}
 
 	@Test
-	public void invokeGetPlaylistForTrack() throws ApplicationException {
-		List<String> playlist = 
-			playlistGeneratorService.getPlaylistForTrack(musicFile.getPath());
+	public void invokeGetTopPlaylistItemsForArtist() throws ApplicationException {
+		List<Integer> playlist = 
+			playlistGeneratorService.getTopTracksForArtist(artistId, 25);
 		
 		Assert.assertNotNull(playlist);
 		Assert.assertEquals(1, playlist.size());
-		Assert.assertEquals(musicFile.getPath(), playlist.get(0));
-	}
-
-	@Test
-	public void invokeGetTopTracksForArtist() throws ApplicationException {
-		List<String> playlist = 
-			playlistGeneratorService.getTopTracksForArtist(musicDirectory.getPath(), 25);
-		
-		Assert.assertNotNull(playlist);
-		Assert.assertEquals(1, playlist.size());
-		Assert.assertEquals(musicFile.getPath(), playlist.get(0));
 	}
 	
 	@Test
-	public void invokeGetTopTracksForTags() {
+	public void invokeGetTopPlaylistItemsForTags() {
 		playlistGeneratorService.getTopTracksForTags(new String[]{"indie", "pop"}, 1, 25);
 	}
 	
 	@Test
 	public void noAdjacentArtistsInPlaylist() {
 		List<PlaylistItem> ts = new ArrayList<>();
-		ts.add(new PlaylistItem("A", "P1"));
-		ts.add(new PlaylistItem("A", "P2"));
-		ts.add(new PlaylistItem("A", "P3"));
-		ts.add(new PlaylistItem("B", "P4"));
-		ts.add(new PlaylistItem("B", "P5"));
-		ts.add(new PlaylistItem("B", "P6"));
-		ts.add(new PlaylistItem("C", "P7"));
-		ts.add(new PlaylistItem("C", "P8"));
-		ts.add(new PlaylistItem("C", "P9"));
-		ts.add(new PlaylistItem("D", "P10"));
-		ts.add(new PlaylistItem("D", "P11"));
-		ts.add(new PlaylistItem("D", "P12"));
-		ts.add(new PlaylistItem("E", "P13"));
-		ts.add(new PlaylistItem("E", "P14"));
-		ts.add(new PlaylistItem("E", "P15"));
-		ts.add(new PlaylistItem("F", "P16"));
-		ts.add(new PlaylistItem("F", "P17"));
-		ts.add(new PlaylistItem("F", "P18"));
-		ts.add(new PlaylistItem("G", "P19"));
-		ts.add(new PlaylistItem("G", "P20"));
-		ts.add(new PlaylistItem("G", "P21"));
-		ts.add(new PlaylistItem("H", "P22"));
-		ts.add(new PlaylistItem("H", "P23"));
-		ts.add(new PlaylistItem("H", "P24"));
+		ts.add(new PlaylistItem(1, 1));
+		ts.add(new PlaylistItem(1, 2));
+		ts.add(new PlaylistItem(1, 3));
+		ts.add(new PlaylistItem(2, 4));
+		ts.add(new PlaylistItem(2, 5));
+		ts.add(new PlaylistItem(2, 6));
+		ts.add(new PlaylistItem(3, 7));
+		ts.add(new PlaylistItem(3, 8));
+		ts.add(new PlaylistItem(3, 9));
+		ts.add(new PlaylistItem(4, 10));
+		ts.add(new PlaylistItem(4, 11));
+		ts.add(new PlaylistItem(4, 12));
+		ts.add(new PlaylistItem(5, 13));
+		ts.add(new PlaylistItem(5, 14));
+		ts.add(new PlaylistItem(5, 15));
+		ts.add(new PlaylistItem(6, 16));
+		ts.add(new PlaylistItem(6, 17));
+		ts.add(new PlaylistItem(6, 18));
+		ts.add(new PlaylistItem(7, 19));
+		ts.add(new PlaylistItem(7, 20));
+		ts.add(new PlaylistItem(7, 21));
+		ts.add(new PlaylistItem(8, 22));
+		ts.add(new PlaylistItem(8, 23));
+		ts.add(new PlaylistItem(8, 24));
 
 		Random rnd = new Random(1258114665843L);
 		for (int i = 0; i < 1000; i++) {
@@ -169,8 +134,7 @@ public class PlaylistGeneratorServiceTest {
 			playlistGeneratorService.distributeArtists(ts);
 			
 			for (int j = 1; j < ts.size(); j++) {
-				if (ts.get(j).getArtist().equals(
-					ts.get(j - 1).getArtist())) {
+				if (ts.get(j).getArtistId() == ts.get(j - 1).getArtistId()) {
 					Assert.fail("Found adjacent artists in list!");
 				}
 			}

@@ -5,14 +5,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.github.hakko.musiccabinet.dao.MusicDirectoryDao;
-import com.github.hakko.musiccabinet.dao.MusicFileDao;
 import com.github.hakko.musiccabinet.dao.PlaylistGeneratorDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
-import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
-import com.github.hakko.musiccabinet.service.lastfm.TrackRelationService;
 
 /*
  * Exposes methods to generate playlists of relevant tracks, based on either an artist,
@@ -21,9 +17,6 @@ import com.github.hakko.musiccabinet.service.lastfm.TrackRelationService;
 public class PlaylistGeneratorService {
 
 	protected PlaylistGeneratorDao playlistGeneratorDao;
-	protected MusicDirectoryDao musicDirectoryDao;
-	protected MusicFileDao musicFileDao;
-	protected TrackRelationService trackRelationService;
 
 	private static final Logger LOG = Logger.getLogger(PlaylistGeneratorService.class);
 	
@@ -47,54 +40,30 @@ public class PlaylistGeneratorService {
 	 * it manually when new data has been added.
 	 */
 	public void updateSearchIndex() {
+		long millis = -System.currentTimeMillis();
 		playlistGeneratorDao.updateSearchIndex();
+		millis += System.currentTimeMillis();
+		LOG.info("Creating materialized view took " + (millis / 1000) + " sec.");
 	}
 
 	public boolean isSearchIndexCreated() {
 		return playlistGeneratorDao.isSearchIndexCreated();
 	}
 	
-	public List<String> getPlaylistForArtist(String path, int artistCount, int totalCount) throws ApplicationException {
-		int artistId = musicDirectoryDao.getArtistId(path);
-		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForArtist(artistId, artistCount, totalCount);
-		Collections.shuffle(result);
-		distributeArtists(result);
-		List<String> trackPaths = new ArrayList<>();
-		for (PlaylistItem pli : result) {
-			trackPaths.add(pli.getPath());
-		}
-		return trackPaths;
-	}
-
-	// Currently not used from UI, it's way too slow.
-	public List<String> getPlaylistForTrack(String path) throws ApplicationException {
-		// opposed from artist relations, track relations are not pre-fetched.
-		trackRelationService.updateTrackRelation(path);
-		int trackId = musicFileDao.getTrackId(path);
-		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForTrack(trackId);
-		Collections.shuffle(result);
-		distributeArtists(result);
-		List<String> trackPaths = new ArrayList<>();
-		for (PlaylistItem pli : result) {
-			trackPaths.add(pli.getPath());
-		}
-		return trackPaths;
-	}
-	
-	public List<String> getTopTracksForArtist(String path, int totalCount) throws ApplicationException {
-		int artistId = musicDirectoryDao.getArtistId(path);
+	public List<Integer> getTopTracksForArtist(int artistId, int totalCount) throws ApplicationException {
 		return playlistGeneratorDao.getTopTracksForArtist(artistId, totalCount);
 	}
 	
-	public List<String> getTopTracksForTags(String[] tags, int artistCount, int totalCount) {
+	public List<Integer> getPlaylistForArtist(int artistId, int artistCount, int totalCount) throws ApplicationException {
+		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForArtist(artistId, artistCount, totalCount);
+		Collections.shuffle(result);
+		return distributeArtists(result);
+	}
+	
+	public List<Integer> getTopTracksForTags(String[] tags, int artistCount, int totalCount) {
 		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForTags(tags, artistCount, totalCount);
 		Collections.shuffle(result);
-		distributeArtists(result);
-		List<String> trackPaths = new ArrayList<>();
-		for (PlaylistItem pli : result) {
-			trackPaths.add(pli.getPath());
-		}
-		return trackPaths;
+		return distributeArtists(result);
 	}
 	
 	/*
@@ -107,42 +76,35 @@ public class PlaylistGeneratorService {
 	 * Using this with small lists (like AAABBB) won't work, it could end up as ABABBA.
 	 * This is intentional, always having ABABAB isn't ideal.
 	 */
-	protected void distributeArtists(List<PlaylistItem> list) {
+	protected List<Integer> distributeArtists(List<PlaylistItem> list) {
 		int size = list.size();
 		for (int i = 1; i < size; i++) {
-			Artist artist = list.get(i).getArtist();
-			if (list.get(i - 1).getArtist().equals(artist)) {
+			int artistId = list.get(i).getArtistId();
+			if (list.get(i - 1).getArtistId() == artistId) {
 				for (int j = i + 5; j < i + 5 + size; j++) {
 					int prev = (j - 1 + size) % size;
 					int pos = j % size;
 					int next = (j + 1) % size;
-					if (!list.get(prev).getArtist().equals(artist) &&
-						!list.get(pos).getArtist().equals(artist) &&
-						!list.get(next).getArtist().equals(artist)) {
+					if (list.get(prev).getArtistId() != artistId &&
+						list.get(pos).getArtistId() != artistId &&
+						list.get(next).getArtistId() != artistId) {
 						Collections.swap(list, i, pos);
 						break;
 					}
 				}
 			}
 		}
+		List<Integer> trackIds = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			trackIds.add(list.get(i).getTrackId());
+		}
+		return trackIds;
 	}
 
 	// Spring setters
 	
 	public void setPlaylistGeneratorDao(PlaylistGeneratorDao playlistGeneratorDao) {
 		this.playlistGeneratorDao = playlistGeneratorDao;
-	}
-
-	public void setMusicDirectoryDao(MusicDirectoryDao musicDirectoryDao) {
-		this.musicDirectoryDao = musicDirectoryDao;
-	}
-
-	public void setMusicFileDao(MusicFileDao musicFileDao) {
-		this.musicFileDao = musicFileDao;
-	}
-
-	public void setTrackRelationService(TrackRelationService trackRelationService) {
-		this.trackRelationService = trackRelationService;
 	}
 	
 }

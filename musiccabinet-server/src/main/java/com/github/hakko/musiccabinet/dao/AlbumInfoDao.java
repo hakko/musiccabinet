@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.AlbumInfo;
-import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
 public interface AlbumInfoDao {
@@ -14,7 +13,7 @@ public interface AlbumInfoDao {
 	AlbumInfo getAlbumInfo(int albumId) throws ApplicationException;
 	AlbumInfo getAlbumInfo(Album album) throws ApplicationException;
 	List<Album> getAlbumsWithoutInfo();
-	List<AlbumInfo> getAlbumInfosForArtist(Artist artist);
-	Map<String, AlbumInfo> getAlbumInfosForPaths(List<String> paths);
+	List<AlbumInfo> getAlbumInfosForArtist(int artistId);
+	Map<Integer, AlbumInfo> getAlbumInfosForIds(List<Integer> albumIds);
 	
 }

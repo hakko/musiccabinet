@@ -31,12 +31,12 @@ public class AlbumInfoServiceTest {
 		Assert.assertNotNull(aiService);
 		Assert.assertNotNull(aiService.albumInfoDao);
 		Assert.assertNotNull(aiService.albumInfoClient);
-		Assert.assertNotNull(aiService.webserviceHistoryDao);
+		Assert.assertNotNull(aiService.webserviceHistoryService);
 	}
 	
 	@Test
 	public void canInvokeService() throws ApplicationException {
-		List<AlbumInfo> albums = aiService.getAlbumInfosForArtist("UNDEFINED ARTIST");
+		List<AlbumInfo> albums = aiService.getAlbumInfosForArtist(-1);
 		
 		Assert.assertNotNull(albums);
 		Assert.assertEquals(0, albums.size());

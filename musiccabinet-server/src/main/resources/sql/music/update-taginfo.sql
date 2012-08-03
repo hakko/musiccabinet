@@ -12,7 +12,7 @@ begin
 	from music.taginfo_import;
 	
 	-- clear import.
-	delete from music.taginfo_import;
+	truncate music.taginfo_import;
 
 	return 0;
 

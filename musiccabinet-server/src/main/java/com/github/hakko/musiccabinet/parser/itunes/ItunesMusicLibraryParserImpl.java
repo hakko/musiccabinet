@@ -6,8 +6,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
-import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.parser.AbstractStAXParserImpl;
 
@@ -24,13 +22,13 @@ public class ItunesMusicLibraryParserImpl extends AbstractStAXParserImpl impleme
 	
 	private XMLEventReader xmlEventReader;
 
-	private MusicFile currentMusicFile; // used internally while parsing
-
 	private StringBuilder characterData = new StringBuilder(); // used to assemble xml text passed by parser
 
 	private int dictDepth; // keep track of level, since xml is self-recursive
 	private String dictDepthOneKey; // current outermost key. only "Tracks" is interesting
 	private String currentKey;
+
+	private ItunesTrack track; // used internally while parsing
 	
 	private ItunesMusicLibraryParserCallback callback;
 	
@@ -78,7 +76,7 @@ public class ItunesMusicLibraryParserImpl extends AbstractStAXParserImpl impleme
 		if (TAG_DICT.equals(qName)) {
 			--dictDepth;
 			if (dictDepth == 0) {
-				callback.endOfMusicFiles();
+				callback.endOfTracks();
 			}
 		} else if (TAG_KEY.equals(qName)) {
 			currentKey = chars;
@@ -88,12 +86,13 @@ public class ItunesMusicLibraryParserImpl extends AbstractStAXParserImpl impleme
 		} else {
 			if (KEY_TRACKS.equals(dictDepthOneKey)) {
 				if (KEY_TRACK_ID.equals(currentKey)) {
-					currentMusicFile = new MusicFile(chars);
+					track = new ItunesTrack();
+					track.internalId = chars;
 				} else if (KEY_NAME.equals(currentKey)) {
-					currentMusicFile.getTrack().setName(chars.trim());
+					track.track = chars.trim();
 				} else if (KEY_ARTIST.equals(currentKey)) {
-					currentMusicFile.getTrack().setArtist(new Artist(chars.trim()));
-					callback.addMusicFile(currentMusicFile);
+					track.artist = chars.trim();
+					callback.addTrack(track);
 				}
 			}
 		}
@@ -103,4 +102,9 @@ public class ItunesMusicLibraryParserImpl extends AbstractStAXParserImpl impleme
 		characterData.append(data);
 	}
 
+	protected class ItunesTrack {
+		public String internalId;
+		public String artist;
+		public String track;
+	}
 }

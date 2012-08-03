@@ -22,8 +22,9 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 
 	@Override
 	public void clearImport() {
-		jdbcTemplate.execute("delete from library.directory_import");
-		jdbcTemplate.execute("delete from library.file_import");
+		jdbcTemplate.execute("truncate library.directory_import");
+		jdbcTemplate.execute("truncate library.file_import");
+		jdbcTemplate.execute("truncate library.file_headertag_import");
 	}
 
 	@Override
@@ -70,45 +71,51 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 				+ "album_name, track_name, track_nr, track_nrs, disc_nr, disc_nrs, year,"
 				+ "tag_name, coverart, artistsort_name, albumartistsort_name) values"
 				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
-		batchUpdate.declareParameter(new SqlParameter("path", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("filename", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("extension", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("bitrate", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("vbr", Types.BOOLEAN));
-		batchUpdate.declareParameter(new SqlParameter("duration", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("artist_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("album_artist_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("composer_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("album_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("track_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("track_nr", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("track_nrs", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("disc_nr", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("disc_nrs", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("year", Types.SMALLINT));
-		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("coverart", Types.BOOLEAN));
-		batchUpdate.declareParameter(new SqlParameter("artistsort_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("albumartistsort_name", Types.VARCHAR));
+		BatchSqlUpdate batch = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
+		batch.declareParameter(new SqlParameter("path", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("filename", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("extension", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("bitrate", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("vbr", Types.BOOLEAN));
+		batch.declareParameter(new SqlParameter("duration", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("artist_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("album_artist_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("composer_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("album_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("track_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("track_nr", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("track_nrs", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("disc_nr", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("disc_nrs", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("year", Types.SMALLINT));
+		batch.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("coverart", Types.BOOLEAN));
+		batch.declareParameter(new SqlParameter("artistsort_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("albumartistsort_name", Types.VARCHAR));
 		for (File file : files) {
 			MetaData md = file.getMetadata();
-			if (md != null) {
-				batchUpdate.update(new Object[]{file.getDirectory(), file.getFilename(),
+			if (md != null && md.getArtist() != null && md.getAlbum() != null && md.getTitle() != null) {
+				batch.update(new Object[]{file.getDirectory(), file.getFilename(),
 						md.getMediaType().getFilesuffix(), md.getBitrate(), md.isVbr(),
 						md.getDuration(), md.getArtist(), md.getAlbumArtist(), 
 						md.getComposer(), md.getAlbum(), md.getTitle(), md.getTrackNr(), 
 						md.getTrackNrs(), md.getDiscNr(), md.getDiscNrs(), md.getYear(),
 						md.getGenre(), md.isCoverArtEmbedded(), md.getArtistSort(),
 						md.getAlbumArtistSort()});
+			} else if (md != null) {
+				LOG.warn("Insufficient tags, ignoring file " + file.getFilename() + 
+						" in " + file.getDirectory());
 			}
 		}
-		batchUpdate.flush();
+		batch.flush();
 	}
 
 	@Override
 	public void updateLibrary() {
+		long ms = -System.currentTimeMillis();
 		jdbcTemplate.execute("select library.add_to_library()");
+		ms += System.currentTimeMillis();
+		LOG.debug("Library update procedure took " + ms + " ms");
 	}
 
 	@Override
@@ -116,6 +123,8 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 		return jdbcTemplate;
 	}
 
+	// Spring setters
+	
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}

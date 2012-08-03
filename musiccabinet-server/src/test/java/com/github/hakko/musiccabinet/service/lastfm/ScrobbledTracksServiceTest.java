@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.service.lastfm.ScrobbledTracksService;
@@ -52,8 +51,8 @@ public class ScrobbledTracksServiceTest {
 	@SuppressWarnings("unchecked")
 	private ScrobbledTracksClient getScrobbledTracksClient() throws IOException {
 		// create a HistoryDao that allows all calls
-		WebserviceHistoryDao historyDao = mock(WebserviceHistoryDao.class);
-		when(historyDao.isWebserviceInvocationAllowed(
+		WebserviceHistoryService historyService = mock(WebserviceHistoryService.class);
+		when(historyService.isWebserviceInvocationAllowed(
 				Mockito.any(WebserviceInvocation.class))).thenReturn(true);
 
 		// create a HTTP client that always returns sampled scrobbled tracks from last.fm
@@ -66,7 +65,7 @@ public class ScrobbledTracksServiceTest {
 
 		// create a client out of the components above
 		ScrobbledTracksClient stClient = new ScrobbledTracksClient();
-		stClient.setWebserviceHistoryDao(historyDao);
+		stClient.setWebserviceHistoryService(historyService);
 		stClient.setHttpClient(httpClient);
 
 		// create a throttling service that allows calls at any rate

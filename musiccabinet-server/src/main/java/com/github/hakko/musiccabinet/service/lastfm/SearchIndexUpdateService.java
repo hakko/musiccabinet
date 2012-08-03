@@ -12,10 +12,10 @@ import com.github.hakko.musiccabinet.exception.ApplicationException;
  */
 public abstract class SearchIndexUpdateService {
 
-	private SearchIndexUpdateProgress progress = new SearchIndexUpdateProgress();
+	private SearchIndexUpdateProgress progress;
 	
 	public SearchIndexUpdateService() {
-		progress.setUpdateDescription(getUpdateDescription());
+		progress = new SearchIndexUpdateProgress(getUpdateDescription());
 	}
 	
 	/*

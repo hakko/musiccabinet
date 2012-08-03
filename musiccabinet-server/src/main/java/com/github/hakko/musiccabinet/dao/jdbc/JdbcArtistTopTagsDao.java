@@ -19,10 +19,6 @@ import com.github.hakko.musiccabinet.domain.model.music.Tag;
 public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
 
 	@Override
 	public void createTopTags(Artist artist, List<Tag> tags) {
@@ -34,7 +30,7 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 	}
 	
 	private void clearImportTable() {
-		jdbcTemplate.execute("delete from music.artisttoptag_import");
+		jdbcTemplate.execute("truncate music.artisttoptag_import");
 	}
 
 	private void batchInsert(Artist artist, List<Tag> tags) {
@@ -85,6 +81,12 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

@@ -2,6 +2,7 @@ package com.github.hakko.musiccabinet.service.library;
 
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.FINISHED_MESSAGE;
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -9,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Set;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +32,12 @@ public class LibraryPresenceServiceTest {
 	private String dir1 = "/d1";
 	private String dir2 = "/d1/d2";
 	
-	private File file1 = new File(dir1, "f1", new DateTime(), 0);
-	private File file2 = new File(dir1, "f2", new DateTime(), 0);
-	private File file3 = new File(dir1, "f3", new DateTime(), 0);
+	private File file1 = getFile(dir1, "f1");
+	private File file2 = getFile(dir1, "f2");
+	private File file3 = getFile(dir1, "f3");
 
-	private File file2b = new File(dir1, "f2", new DateTime(), 1); // changed version of file2
-
+	private File file2b = getFile(dir1, "f2b"); // changed version of file2
+	
 	@Test
 	public void delegatesHandlingOfAddedAndDeletedResources() {
 		LibraryPresenceDao presenceDao = mock(LibraryPresenceDao.class);
@@ -45,6 +45,8 @@ public class LibraryPresenceServiceTest {
 		when(presenceDao.getSubdirectories(dir1)).thenReturn(set(dir2));
 		presenceService.setLibraryPresenceDao(presenceDao);
 
+		file2b.setSize(file2.getSize() + 1);
+		
 		PollableChannel presenceChannel = presenceService.libraryPresenceChannel;
 		presenceChannel.send(LibraryUtil.msg(dir1, set(dir2), set(file1, file2b)));
 		presenceChannel.send(FINISHED_MESSAGE);

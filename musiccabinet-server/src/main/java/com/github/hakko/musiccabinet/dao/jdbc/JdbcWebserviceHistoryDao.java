@@ -1,7 +1,5 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +9,6 @@ import javax.sql.DataSource;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.LastFmUserDao;
@@ -60,7 +57,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 		} else if (wi.getArtist() != null) {
 			artistId = musicDao.getArtistId(wi.getArtist());
 		} else if (wi.getUser() != null) {
-			userId = lastFmUserDao.getLastFmUserId(wi.getUser().getLastFmUser());
+			userId = lastFmUserDao.getLastFmUserId(wi.getUser().getLastFmUsername());
 		}
 		
 		StringBuilder deleteSql = new StringBuilder(
@@ -154,7 +151,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			+ " where calltype_id = " + callType.getDatabaseId()
 			+ " and u.lastfm_user = upper(?) and h.page = ?";
 		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{
-				user.getLastFmUser(), page}, Timestamp.class);
+				user.getLastFmUsername(), page}, Timestamp.class);
 		return isWebserviceInvocationAllowed(callType, lastInvocation);
 	}
 
@@ -177,7 +174,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	 * Group artists in local library by last update time from last.fm, and return
 	 * the 1/30th, but maximum 1000 artists, that were updated longest ago.
 	 */
-	protected List<Artist> getArtistsWithOldestInvocations(Calltype callType) {
+	@Override
+	public List<String> getArtistNamesWithOldestInvocations(Calltype callType) {
 		String sql = "select a.artist_name_capitalization from ("
 			+ "  select artist_id, ntile(30) over (order by invocation_time) "
 			+ "   from library.webservice_history where calltype_id = " + callType.getDatabaseId()
@@ -185,18 +183,11 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			+ " inner join music.artist a on ntile.artist_id = a.id"
 			+ " and ntile.ntile = 1"
 			+ " where a.id in "
-			+ " (select t.artist_id from library.musicfile mf "
-			+ "  inner join music.track t on mf.track_id = t.id)"
+			+ " (select mt.artist_id from library.track lt "
+			+ "  inner join music.track mt on lt.track_id = mt.id)"
 			+ " order by artist_id limit 1000";
 		
-		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
-			@Override
-			public Artist mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new Artist(rs.getString(1));
-			}
-		});
-		
-		return artists;
+		return jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	/*
@@ -205,47 +196,25 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	 * Sets an upper limit of 3000 artists, meaning larger libraries will have to run
 	 * the search index multiple times to get fully updated.
 	 */
-	protected List<Artist> getArtistsWithNoInvocations(Calltype callType) {
-		String sql = "select artist_name_capitalization from music.artist where id in ("
-				+ " select distinct t.artist_id from library.musicfile mf"
-				+ " inner join music.track t on mf.track_id = t.id"
-				+ " where not exists ("
-				+ " select 1 from library.webservice_history where artist_id = t.artist_id "
-				+ " and calltype_id = " + callType.getDatabaseId() + ")"
-				+ " order by t.artist_id limit 3000)";
-		
-		List<Artist> artists = jdbcTemplate.query(sql, new RowMapper<Artist>() {
-			@Override
-			public Artist mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new Artist(rs.getString(1));
-			}
-		});
-		
-		return artists;
-	}
-
-	/*
-	 * Returns a concatenated list of artists from the local library, who:
-	 * - have either never been looked up from last.fm
-	 * - or have been looked up, but belong in the oldest ntile,
-	 *   meaning it's time for them to get updated.
-	 */
 	@Override
-	public List<Artist> getArtistsScheduledForUpdate(Calltype callType) {
-		List<Artist> newArtists = getArtistsWithNoInvocations(callType);
-		List<Artist> oldestArtists = getArtistsWithOldestInvocations(callType);
+	public List<String> getArtistNamesWithNoInvocations(Calltype callType) {
+		String sql = "select artist_name_capitalization from music.artist where id in ("
+				+ " select distinct mt.artist_id from library.track lt"
+				+ " inner join music.track mt on lt.track_id = mt.id"
+				+ " where not exists ("
+				+ " select 1 from library.webservice_history where artist_id = mt.artist_id "
+				+ " and calltype_id = " + callType.getDatabaseId() + ")"
+				+ " order by mt.artist_id limit 3000)";
 		
-		if (!newArtists.isEmpty()) {
-			oldestArtists.addAll(newArtists);
-		}
-		
-		return oldestArtists;
+		return jdbcTemplate.queryForList(sql, String.class);
 	}
 	
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
+
+	// Spring setters
 	
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);

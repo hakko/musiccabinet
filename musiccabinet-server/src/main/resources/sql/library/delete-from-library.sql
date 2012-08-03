@@ -45,6 +45,12 @@ begin
 	);
 
 
+	delete from library.artisttoptrackplaycount where track_id in (
+		select id from library.track where file_id in (
+			select id from library.file where deleted
+		)
+	);
+
 	delete from library.track where file_id in (
 		select id from library.file where deleted
 	);
@@ -57,14 +63,20 @@ begin
 		select coalesce(album_artist_id, artist_id) from library.filetag
 	);
 
-
+	delete from library.artistindex where ascii_code not in (
+		select distinct ascii(artist_name) from music.artist ma 
+		inner join library.artist la on la.artist_id = ma.id	
+	);
+	
 	delete from library.file where deleted;
 	
 	delete from library.directory where deleted;
 	
-	delete from library.file_delete;
+	truncate library.file_delete;
 	
-	delete from library.directory_delete;
+	truncate library.directory_delete;
+	
+	perform library.update_statistics();
 	
 	return 0;
 

@@ -2,10 +2,9 @@ package com.github.hakko.musiccabinet.service.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_SIMILAR;
 
-import java.util.List;
+import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistRelationDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -24,20 +23,20 @@ public class ArtistRelationService extends SearchIndexUpdateService {
 
 	protected ArtistSimilarityClient artistSimilarityClient;
 	protected ArtistRelationDao artistRelationDao;
-	protected WebserviceHistoryDao webserviceHistoryDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 
 	private static final Logger LOG = Logger.getLogger(ArtistRelationService.class);
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		List<Artist> artists = webserviceHistoryDao.
-				getArtistsScheduledForUpdate(ARTIST_GET_SIMILAR);
+		Set<String> artistNames = webserviceHistoryService.
+				getArtistNamesScheduledForUpdate(ARTIST_GET_SIMILAR);
 
-		setTotalOperations(artists.size());
+		setTotalOperations(artistNames.size());
 		
-		for (Artist artist : artists) {
+		for (String artistName : artistNames) {
 			try {
-				WSResponse wsResponse = artistSimilarityClient.getArtistSimilarity(artist);
+				WSResponse wsResponse = artistSimilarityClient.getArtistSimilarity(new Artist(artistName));
 				if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 					StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 					ArtistSimilarityParser asParser = 
@@ -46,7 +45,7 @@ public class ArtistRelationService extends SearchIndexUpdateService {
 							asParser.getArtistRelations());
 				}
 			} catch (ApplicationException e) {
-				LOG.warn("Fetching artist relations for " + artist.getName() + " failed.", e);
+				LOG.warn("Fetching artist relations for " + artistName + " failed.", e);
 			}
 			addFinishedOperation();
 		}
@@ -67,8 +66,9 @@ public class ArtistRelationService extends SearchIndexUpdateService {
 		this.artistRelationDao = artistRelationDao;
 	}
 
-	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {
-		this.webserviceHistoryDao = webserviceHistoryDao;
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 
 }

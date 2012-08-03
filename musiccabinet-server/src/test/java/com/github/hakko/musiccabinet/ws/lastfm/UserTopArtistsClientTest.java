@@ -8,12 +8,12 @@ import org.apache.http.NameValuePair;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.library.Period;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.lastfm.WebserviceHistoryService;
 
 public class UserTopArtistsClientTest extends AbstractWSImplementationTest {
 
@@ -30,7 +30,7 @@ public class UserTopArtistsClientTest extends AbstractWSImplementationTest {
 					List<NameValuePair> params) throws ApplicationException {
 				
 				Assert.assertEquals(Calltype.USER_GET_TOP_ARTISTS, wi.getCallType());
-				Assert.assertEquals(lastFmUser, wi.getUser().getLastFmUser());
+				Assert.assertEquals(lastFmUser, wi.getUser().getLastFmUsername());
 				
 				assertHasParameter(params, PARAM_METHOD, method);
 				assertHasParameter(params, PARAM_USER, lastFmUser);
@@ -40,8 +40,8 @@ public class UserTopArtistsClientTest extends AbstractWSImplementationTest {
 			}
 			
 			@Override
-			protected WebserviceHistoryDao getHistoryDao() {
-				return Mockito.mock(WebserviceHistoryDao.class);
+			protected WebserviceHistoryService getHistoryService() {
+				return Mockito.mock(WebserviceHistoryService.class);
 			}
 
 		}.getUserTopArtists(new LastFmUser(lastFmUser), period);

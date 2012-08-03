@@ -1,12 +1,12 @@
 package com.github.hakko.musiccabinet.service.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -21,18 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.MusicFileDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
+import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistTopTracksDao;
-import com.github.hakko.musiccabinet.dao.jdbc.JdbcWebserviceHistoryDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
-import com.github.hakko.musiccabinet.service.lastfm.ArtistTopTracksService;
-import com.github.hakko.musiccabinet.service.lastfm.ThrottleService;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 import com.github.hakko.musiccabinet.ws.lastfm.ArtistTopTracksClient;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,7 +37,7 @@ import com.github.hakko.musiccabinet.ws.lastfm.ArtistTopTracksClient;
 public class ArtistTopTracksServiceTest {
 
 	@Autowired
-	private MusicFileDao musicFileDao;
+	private LibraryAdditionDao additionDao;
 	
 	@Autowired
 	private JdbcArtistTopTracksDao artistTopTracksDao;
@@ -49,7 +46,7 @@ public class ArtistTopTracksServiceTest {
 	private ArtistTopTracksService artistTopTracksService;
 
 	@Autowired
-	private JdbcWebserviceHistoryDao webserviceHistoryDao;
+	private WebserviceHistoryService webserviceHistoryService;
 	
 	private static final String CHER_TOP_TRACKS = "last.fm/xml/toptracks.cher.xml";
 	private static final String artistName = "cher";
@@ -59,7 +56,7 @@ public class ArtistTopTracksServiceTest {
 		Assert.assertNotNull(artistTopTracksService);
 		Assert.assertNotNull(artistTopTracksService.artistTopTracksDao);
 		Assert.assertNotNull(artistTopTracksService.artistTopTracksClient);
-		Assert.assertNotNull(artistTopTracksService.webserviceHistoryDao);
+		Assert.assertNotNull(artistTopTracksService.webserviceHistoryService);
 	}
 	
 	@Test
@@ -67,35 +64,31 @@ public class ArtistTopTracksServiceTest {
 		clearLibraryAndAddCherTrack();
 
 		WebserviceInvocation wi = new WebserviceInvocation(ARTIST_GET_TOP_TRACKS, new Artist(artistName));
-		Assert.assertTrue(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
+		Assert.assertTrue(webserviceHistoryService.isWebserviceInvocationAllowed(wi));
 
-		List<Artist> artists = webserviceHistoryDao.getArtistsScheduledForUpdate(ARTIST_GET_TOP_TRACKS);
+		Set<String> artists = webserviceHistoryService.getArtistNamesScheduledForUpdate(ARTIST_GET_TOP_TRACKS);
 		Assert.assertNotNull(artists);
 		Assert.assertEquals(1, artists.size());
-		Assert.assertTrue(artists.contains(new Artist(artistName)));
+		Assert.assertTrue(artists.contains(artistName));
 
 		ArtistTopTracksService artistTopTracksService = new ArtistTopTracksService();
-		artistTopTracksService.setArtistTopTracksClient(getArtistTopTracksClient(webserviceHistoryDao));
+		artistTopTracksService.setArtistTopTracksClient(getArtistTopTracksClient(webserviceHistoryService));
 		artistTopTracksService.setArtistTopTracksDao(artistTopTracksDao);
-		artistTopTracksService.setWebserviceHistoryDao(webserviceHistoryDao);
+		artistTopTracksService.setWebserviceHistoryService(webserviceHistoryService);
 		artistTopTracksService.updateSearchIndex();
 		
-		Assert.assertFalse(webserviceHistoryDao.isWebserviceInvocationAllowed(wi));
+		Assert.assertFalse(webserviceHistoryService.isWebserviceInvocationAllowed(wi));
 	}
 	
 	private void clearLibraryAndAddCherTrack() throws ApplicationException {
 		PostgreSQLUtil.truncateTables(artistTopTracksDao);
 
-		long time = System.currentTimeMillis();
-		MusicFile mf = new MusicFile(artistName, "Believe", "/", time, time);
-
-		musicFileDao.clearImport();
-		musicFileDao.addMusicFiles(Arrays.asList(mf));
-		musicFileDao.createMusicFiles();
+		File file = getFile(artistName, null, "Believe");
+		UnittestLibraryUtil.submitFile(additionDao, file);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ArtistTopTracksClient getArtistTopTracksClient(WebserviceHistoryDao historyDao) throws IOException {
+	private ArtistTopTracksClient getArtistTopTracksClient(WebserviceHistoryService historyService) throws IOException {
 		// create a HTTP client that always returns Cher top tracks
 		HttpClient httpClient = mock(HttpClient.class);
 		ClientConnectionManager connectionManager = mock(ClientConnectionManager.class);
@@ -109,7 +102,7 @@ public class ArtistTopTracksServiceTest {
 
 		// create a client that allows all calls and returns Cher top tracks
 		ArtistTopTracksClient attClient = new ArtistTopTracksClient();
-		attClient.setWebserviceHistoryDao(historyDao);
+		attClient.setWebserviceHistoryService(historyService);
 		attClient.setHttpClient(httpClient);
 		attClient.setThrottleService(throttleService);
 

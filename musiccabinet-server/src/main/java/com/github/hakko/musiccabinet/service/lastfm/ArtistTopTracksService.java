@@ -2,10 +2,9 @@ package com.github.hakko.musiccabinet.service.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
 
-import java.util.List;
+import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
-import com.github.hakko.musiccabinet.dao.WebserviceHistoryDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -22,19 +21,19 @@ public class ArtistTopTracksService extends SearchIndexUpdateService {
 
 	protected ArtistTopTracksClient artistTopTracksClient;
 	protected ArtistTopTracksDao artistTopTracksDao;
-	protected WebserviceHistoryDao webserviceHistoryDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 
 	private static final Logger LOG = Logger.getLogger(ArtistTopTracksService.class);
 
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
-		List<Artist> artists = webserviceHistoryDao.
-				getArtistsScheduledForUpdate(ARTIST_GET_TOP_TRACKS);
-		setTotalOperations(artists.size());
+		Set<String> artistNames = webserviceHistoryService.
+				getArtistNamesScheduledForUpdate(ARTIST_GET_TOP_TRACKS);
+		setTotalOperations(artistNames.size());
 		
-		for (Artist artist : artists) {
+		for (String artistName : artistNames) {
 			try {
-				WSResponse wsResponse = artistTopTracksClient.getTopTracks(artist);
+				WSResponse wsResponse = artistTopTracksClient.getTopTracks(new Artist(artistName));
 				if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 					StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 					ArtistTopTracksParser attParser =
@@ -43,7 +42,7 @@ public class ArtistTopTracksService extends SearchIndexUpdateService {
 							attParser.getTopTracks());
 				}
 			} catch (ApplicationException e) {
-				LOG.warn("Fetching top tracks for " + artist.getName() + " failed.", e);
+				LOG.warn("Fetching top tracks for " + artistName + " failed.", e);
 			}
 			addFinishedOperation();
 		}
@@ -64,8 +63,9 @@ public class ArtistTopTracksService extends SearchIndexUpdateService {
 		this.artistTopTracksDao = artistTopTracksDao;
 	}
 
-	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {
-		this.webserviceHistoryDao = webserviceHistoryDao;
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 	
 }

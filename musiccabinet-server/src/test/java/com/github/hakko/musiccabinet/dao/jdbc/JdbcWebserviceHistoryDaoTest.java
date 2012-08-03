@@ -10,7 +10,6 @@ import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvoc
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -26,13 +25,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.library.MusicFile;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -42,11 +42,11 @@ public class JdbcWebserviceHistoryDaoTest {
 	private JdbcWebserviceHistoryDao dao;
 
 	@Autowired
-	private JdbcMusicFileDao musicFileDao;
-
-	@Autowired
 	private JdbcMusicDao musicDao;
 
+	@Autowired
+	private JdbcLibraryAdditionDao additionDao;
+	
 	@Before
 	public void setUp() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(dao, GET_ARTIST_ID);
@@ -273,37 +273,34 @@ public class JdbcWebserviceHistoryDaoTest {
 
 	@Test
 	public void identifiesArtistsWithoutInvocations() {
-		deleteMusicFiles();
+		deleteLibraryTracks();
 		deleteWebserviceInvocations();
 
-		MusicFile mf = new MusicFile("Madonna", "Jump", "/path/to/madonna/jump", 0L, 0L);
-		
-		musicFileDao.clearImport();
-		musicFileDao.addMusicFiles(Arrays.asList(mf));
-		musicFileDao.createMusicFiles();
+		File file = UnittestLibraryUtil.getFile("Madonna", null, "Jump");
+		UnittestLibraryUtil.submitFile(additionDao, file);
 		
 		final Calltype INFO = ARTIST_GET_INFO, TOP_TRACKS = ARTIST_GET_TOP_TRACKS;
-		final Artist MADONNA = mf.getTrack().getArtist();
-		List<Artist> artistInfo, artistTopTracks;
-		artistInfo = dao.getArtistsWithNoInvocations(INFO);
-		artistTopTracks = dao.getArtistsWithNoInvocations(TOP_TRACKS);
+		final String MADONNA = file.getMetadata().getArtist();
+		List<String> artistInfo, artistTopTracks;
+		artistInfo = dao.getArtistNamesWithNoInvocations(INFO);
+		artistTopTracks = dao.getArtistNamesWithNoInvocations(TOP_TRACKS);
 		
 		Assert.assertNotNull(artistInfo);
 		Assert.assertNotNull(artistTopTracks);
 		Assert.assertTrue(artistInfo.contains(MADONNA));
 		Assert.assertTrue(artistTopTracks.contains(MADONNA));
 		
-		dao.logWebserviceInvocation(new WebserviceInvocation(INFO, mf.getTrack().getArtist()));
+		dao.logWebserviceInvocation(new WebserviceInvocation(INFO, new Artist(MADONNA)));
 
-		artistInfo = dao.getArtistsWithNoInvocations(INFO);
-		artistTopTracks = dao.getArtistsWithNoInvocations(TOP_TRACKS);
+		artistInfo = dao.getArtistNamesWithNoInvocations(INFO);
+		artistTopTracks = dao.getArtistNamesWithNoInvocations(TOP_TRACKS);
 		Assert.assertFalse(artistInfo.contains(MADONNA));
 		Assert.assertTrue(artistTopTracks.contains(MADONNA));
 
-		dao.logWebserviceInvocation(new WebserviceInvocation(TOP_TRACKS, mf.getTrack().getArtist()));
+		dao.logWebserviceInvocation(new WebserviceInvocation(TOP_TRACKS, new Artist(MADONNA)));
 
-		artistInfo = dao.getArtistsWithNoInvocations(INFO);
-		artistTopTracks = dao.getArtistsWithNoInvocations(TOP_TRACKS);
+		artistInfo = dao.getArtistNamesWithNoInvocations(INFO);
+		artistTopTracks = dao.getArtistNamesWithNoInvocations(TOP_TRACKS);
 		Assert.assertFalse(artistInfo.contains(MADONNA));
 		Assert.assertFalse(artistTopTracks.contains(MADONNA));
 	}
@@ -359,8 +356,8 @@ public class JdbcWebserviceHistoryDaoTest {
 		dao.getJdbcTemplate().execute("truncate library.webservice_history cascade");
 	}
 
-	private void deleteMusicFiles() {
-		dao.getJdbcTemplate().execute("truncate library.musicfile cascade");
+	private void deleteLibraryTracks() {
+		dao.getJdbcTemplate().execute("truncate library.track cascade");
 	}
 
 }

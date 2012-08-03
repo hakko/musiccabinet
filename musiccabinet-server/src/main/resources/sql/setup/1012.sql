@@ -10,26 +10,26 @@ delete from library.artisttoptrackplaycount where artist_id in (
 	select artist_id from music.duplicate_artists
 );
 	
-delete from library.musicdirectory_import;
+truncate library.musicdirectory_import;
 delete from library.musicdirectory where artist_id in (
 	select artist_id from music.duplicate_artists
 );
 
-delete from library.musicfile_import;
+truncate library.musicfile_import;
 delete from library.musicfile where track_id in (
 	select id from music.track where artist_id in (
 		select artist_id from music.duplicate_artists
 	)
 );
 
-delete from library.trackplaycount_import;
+truncate library.trackplaycount_import;
 delete from library.trackplaycount where track_id in (
 	select id from music.track where artist_id in (
 		select artist_id from music.duplicate_artists
 	)
 );
 
-delete from library.usertopartist_import;
+truncate library.usertopartist_import;
 delete from library.usertopartist where artist_id in (
 	select artist_id from music.duplicate_artists
 );
@@ -44,12 +44,12 @@ delete from library.webservice_history where album_id in (
 	)
 );
 
-delete from music.albuminfo_import;
-delete from music.artistinfo_import;
-delete from music.artistrelation_import;
-delete from music.artisttoptag_import;
-delete from music.artisttoptrack_import;
-delete from music.trackrelation_import;
+truncate music.albuminfo_import;
+truncate music.artistinfo_import;
+truncate music.artistrelation_import;
+truncate music.artisttoptag_import;
+truncate music.artisttoptrack_import;
+truncate music.trackrelation_import;
 
 delete from music.albuminfo where album_id in (
 	select id from music.album where artist_id in (

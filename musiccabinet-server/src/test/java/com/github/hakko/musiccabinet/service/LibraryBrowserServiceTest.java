@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.service;
 
 import static com.github.hakko.musiccabinet.service.library.AudioTagService.UNKNOWN_ALBUM;
+import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
 import static java.io.File.separatorChar;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
@@ -66,22 +67,22 @@ public class LibraryBrowserServiceTest {
 	
 	@Test
 	public void findsArtists() throws Exception {
-		scannerService.add(media1);
+		scannerService.add(set(media1));
 		assertArtists(browserService.getArtists(), "The Beatles", "Elvis Presley");
 
-		scannerService.add(media1, media2);
+		scannerService.add(set(media1, media2));
 		assertArtists(browserService.getArtists(), "The Beatles", "Elvis Presley", "Aretha Franklin");
 
-		scannerService.delete(media1);
+		scannerService.delete(set(media1));
 		assertArtists(browserService.getArtists(), "The Beatles", "Aretha Franklin");
 
-		scannerService.delete(media2);
+		scannerService.delete(set(media2));
 		assertArtists(browserService.getArtists());
 
-		scannerService.add(aretha);
+		scannerService.add(set(aretha));
 		assertArtists(browserService.getArtists(), "Aretha Franklin");
 
-		scannerService.add(media2);
+		scannerService.add(set(media2));
 		assertArtists(browserService.getArtists(), "The Beatles", "Aretha Franklin");
 	}
 	
@@ -90,76 +91,92 @@ public class LibraryBrowserServiceTest {
 		Artist theBeatles = new Artist("The Beatles");
 		int beatlesId = musicDao.getArtistId(theBeatles);
 		
-		scannerService.add(media1);
-		assertAlbums(browserService.getAlbums(beatlesId), theBeatles, "1962-1966", UNKNOWN_ALBUM);
+		scannerService.add(set(media1));
+		assertAlbums(browserService.getAlbums(beatlesId, true), theBeatles, "1962-1966", UNKNOWN_ALBUM);
 
-		scannerService.add(media1); // shouldn't change anything
-		assertAlbums(browserService.getAlbums(beatlesId), theBeatles, "1962-1966", UNKNOWN_ALBUM);
+		scannerService.add(set(media1)); // shouldn't change anything
+		assertAlbums(browserService.getAlbums(beatlesId, true), theBeatles, "1962-1966", UNKNOWN_ALBUM);
 
-		scannerService.add(media2);
-		assertAlbums(browserService.getAlbums(beatlesId), theBeatles, "1962-1966", "1967-1970", UNKNOWN_ALBUM);
+		scannerService.add(set(media2));
+		assertAlbums(browserService.getAlbums(beatlesId, true), theBeatles, "1962-1966", "1967-1970", UNKNOWN_ALBUM);
 
-		scannerService.delete(media1);
-		assertAlbums(browserService.getAlbums(beatlesId), theBeatles, "1967-1970");
+		scannerService.delete(set(media1));
+		assertAlbums(browserService.getAlbums(beatlesId, true), theBeatles, "1967-1970");
 		
-		scannerService.delete(media1); // shouldn't change anything
-		assertAlbums(browserService.getAlbums(beatlesId), theBeatles, "1967-1970");
+		scannerService.delete(set(media1)); // shouldn't change anything
+		assertAlbums(browserService.getAlbums(beatlesId, true), theBeatles, "1967-1970");
 
-		scannerService.delete(media2);
-		assertAlbums(browserService.getAlbums(beatlesId), theBeatles);
+		scannerService.delete(set(media2));
+		assertAlbums(browserService.getAlbums(beatlesId, true), theBeatles);
 	}
-	
+
+	@Test
+	public void findsAlbum() throws Exception {
+		Artist theBeatles = new Artist("The Beatles");
+		int beatlesId = musicDao.getArtistId(theBeatles);
+
+		scannerService.add(set(media2));
+
+		List<Album> albums = browserService.getAlbums(beatlesId, true);
+		assertAlbums(albums, theBeatles, "1967-1970");
+		
+		int albumId = albums.get(0).getId();
+		Album album = browserService.getAlbum(albumId);
+
+		assertAlbums(Arrays.asList(album), theBeatles, "1967-1970");
+	}
+
 	@Test
 	public void findsArtwork() throws Exception {
 		Artist artist = new Artist("Artist Name");
 		int artistId = musicDao.getArtistId(artist);
 		
-		scannerService.add(media3);
-		List<Album> albums = browserService.getAlbums(artistId);
+		scannerService.add(set(media3));
+		List<Album> albums = browserService.getAlbums(artistId, true);
 		
 		assertAlbums(albums, artist, "Embedded artwork", "Folder artwork");
 
 		Album folderArtAlbum = getAlbum(albums, "Folder artwork");
 		Album embeddedArtAlbum = getAlbum(albums, "Embedded artwork");
 		
-		Assert.assertTrue(embeddedArtAlbum.getCoverArtEmbeddedFile() != null);
-		Assert.assertTrue(embeddedArtAlbum.getCoverArtFile() == null);
+		Assert.assertTrue(embeddedArtAlbum.getCoverArtPath() != null);
+		Assert.assertTrue(embeddedArtAlbum.isCoverArtEmbedded());
 		Assert.assertTrue(embeddedArtAlbum.getCoverArtURL() == null);
 
-		Assert.assertTrue(folderArtAlbum.getCoverArtEmbeddedFile() == null);
-		Assert.assertTrue(folderArtAlbum.getCoverArtFile() != null);
+		Assert.assertTrue(folderArtAlbum.getCoverArtPath() != null);
+		Assert.assertFalse(folderArtAlbum.isCoverArtEmbedded());
 		Assert.assertTrue(folderArtAlbum.getCoverArtURL() == null);
 		
-		Assert.assertTrue(embeddedArtAlbum.getCoverArtEmbeddedFile().endsWith(
+		Assert.assertTrue(embeddedArtAlbum.getCoverArtPath().endsWith(
 				"Embedded artwork.mp3"));
-		Assert.assertTrue(folderArtAlbum.getCoverArtFile().endsWith(
+		Assert.assertTrue(folderArtAlbum.getCoverArtPath().endsWith(
 				"folder.png"));
 	}
 	
 	@Test
 	public void findsTrack() throws Exception {
-		scannerService.add(aretha);
+		scannerService.add(set(aretha));
 		Artist artist = new Artist("Aretha Franklin");
 		int artistId = musicDao.getArtistId(artist);
 		
-		List<Album> albums = browserService.getAlbums(artistId);
+		List<Album> albums = browserService.getAlbums(artistId, true);
 		assertAlbums(albums, artist, UNKNOWN_ALBUM);
 		
-		List<Track> tracks = browserService.getTracks(albums.get(0).getId());
+		List<Track> tracks = browserService.getTracks(albums.get(0).getTrackIds());
 		assertTracks(tracks, Arrays.asList(new Track("Aretha Franklin", "Bridge Over Troubled Water")));
 	}
 
 	@Test
 	public void findsTracks() throws Exception {
-		scannerService.add(media1);
+		scannerService.add(set(media1));
 		
 		Artist artist = new Artist("The Beatles");
 		int artistId = musicDao.getArtistId(artist);
 		
-		List<Album> albums = browserService.getAlbums(artistId);
+		List<Album> albums = browserService.getAlbums(artistId, true);
 		Album redAlbum = getAlbum(albums, "1962-1966");
 		
-		List<Track> tracks = browserService.getTracks(redAlbum.getId());
+		List<Track> tracks = browserService.getTracks(redAlbum.getTrackIds());
 		List<Track> expectedTracks = new ArrayList<>();
 		for (String title : asList("Love Me Do", "Please Please Me", "From Me To You", 
 				"She Loves You", "Help!")) {
@@ -170,16 +187,16 @@ public class LibraryBrowserServiceTest {
 
 	@Test
 	public void findsVariousArtistsTracks() throws Exception {
-		scannerService.add(media5);
+		scannerService.add(set(media5));
 		
 		Artist artist = new Artist("Various Artists");
 		int artistId = musicDao.getArtistId(artist);
 		
-		List<Album> albums = browserService.getAlbums(artistId);
+		List<Album> albums = browserService.getAlbums(artistId, true);
 		assertAlbums(albums, artist, "Music From Searching For Wrong-Eyed Jesus");
 		
-		int albumId = albums.get(0).getId();
-		List<Track> tracks = browserService.getTracks(albumId);
+		Album album = albums.get(0);
+		List<Track> tracks = browserService.getTracks(album.getTrackIds());
 		List<Track> expectedTracks = asList(new Track("Harry Crews", "Everything Was Stories"),
 				new Track("Jim White", "Still Waters"),
 				new Track("The Handsome Family", "My Sister's Tiny Hands"));
@@ -188,8 +205,16 @@ public class LibraryBrowserServiceTest {
 	
 	@Test
 	public void handlesEmptyMediaFolder() throws Exception {
-		scannerService.add(media4);
-		scannerService.delete(media4);
+		scannerService.add(set(media4));
+		scannerService.delete(set(media4));
+	}
+	
+	@Test
+	public void handlesMultipleImportOfSameFolder() throws Exception {
+		// aretha is below media2 and gets scanned twice
+		scannerService.add(set(media2, aretha));
+
+		assertArtists(browserService.getArtists(), "The Beatles", "Aretha Franklin");
 	}
 	
 	private void assertArtists(List<Artist> artists, String... artistNames) {

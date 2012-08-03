@@ -9,15 +9,6 @@ import com.github.hakko.musiccabinet.dao.FunctionCountDao;
 public class JdbcFunctionCountDao implements FunctionCountDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
-	@Override
-	public JdbcTemplate getJdbcTemplate() {
-		return jdbcTemplate;
-	}
 
 	@Override
 	public int countFunctions() {
@@ -27,6 +18,17 @@ public class JdbcFunctionCountDao implements FunctionCountDao, JdbcTemplateDao {
 	@Override
 	public int countFunctionsByName(String name) {
 		return jdbcTemplate.queryForInt("select util.count_functions(?)", name);
+	}
+	
+	@Override
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

@@ -2,6 +2,8 @@ package com.github.hakko.musiccabinet.dao.util;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.DROP_FUNCTION;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcTemplateDao;
@@ -51,14 +53,15 @@ public class PostgreSQLUtil {
 	public static void truncateTables(JdbcTemplateDao dao) throws ApplicationException {
 		JdbcTemplate jdbcTemplate = dao.getJdbcTemplate();
 		jdbcTemplate.execute("truncate music.artist cascade");
+		jdbcTemplate.execute("truncate library.file cascade");
 		
 		/*
 		 * If we really wanted to truncate all tables, we could do: 
 		 * loadFunction(dao, PostgreSQLFunction.TRUNCATE_ALL_TABLES);
 		 * jdbcTemplate.execute("select util.truncate_all_tables()");
 		 * 
-		 * Truncating music.artist reaches pretty much everything
-		 * and is by far faster, though.
+		 * Truncating music.artist and library.file reaches pretty much
+		 * everything and is by far faster, though.
 		 */
 	}
 	
@@ -75,6 +78,17 @@ public class PostgreSQLUtil {
 			chars[i * 2 - 1] = ',';
 		}
 		return new String(chars);
+	}
+	
+	public static String getIdParameters(List<Integer> ids) {
+		StringBuilder sb = new StringBuilder();
+		if (ids.size() > 0) {
+			sb.append(ids.get(0));
+		}
+		for (int i = 1; i < ids.size(); i++) {
+			sb.append(",").append(ids.get(i));
+		}
+		return sb.toString();
 	}
 	
 }

@@ -11,7 +11,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
 import org.postgresql.core.ConnectionFactory;
 import org.postgresql.core.Logger;
 import org.postgresql.core.v3.ConnectionFactoryImpl;
@@ -194,30 +193,22 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 	}
 
 	@Override
-	public void loadDatabaseUpdate(int versionNumber, String statements) {
-		System.out.println("Load version number " + versionNumber);
-		for (String statement : StringUtils.split(statements, ';')) {
-			jdbcTemplate.execute(statement);
-		}
+	public void loadDatabaseUpdate(int version, String statements) {
+		System.out.println("Load version number " + version);
 
-		String insertSql = "insert into util.musiccabinet_version (update_id) values (?)";
-		jdbcTemplate.update(insertSql, versionNumber);
-	}
-
-	@Override
-	public JdbcTemplate getJdbcTemplate() {
-		return jdbcTemplate;
-	}
-
-	// Spring setters
-	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		parseJDBCURL();
-	}
-	
-	public void setInitialDataSource(DataSource dataSource) {
-		this.initialJdbcTemplate = new JdbcTemplate(dataSource);
+		String function = "load_" + version + "()";
+		StringBuilder sb = new StringBuilder();
+		sb.append("create or replace function " + function + " returns int as $$ begin\n");
+		sb.append(statements);
+		sb.append("\ninsert into util.musiccabinet_version (update_id) values (" + version + ");");
+		sb.append("\nreturn 0;");
+		sb.append("\nend; $$ language plpgsql;");
+		
+		jdbcTemplate.execute(sb.toString());
+		int result = jdbcTemplate.queryForInt("select " + function);
+		jdbcTemplate.execute("drop function " + function);
+		
+		System.out.println("Version " + version + " loaded, result code " + result);
 	}
 	
 	/*
@@ -238,6 +229,22 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		host = url.substring(i1, i2);
 		port = toInt(url.substring(i2 + 1, i3));
 		database = url.substring(i3 + 1);
+	}
+
+	@Override
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		parseJDBCURL();
+	}
+	
+	public void setInitialDataSource(DataSource dataSource) {
+		this.initialJdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

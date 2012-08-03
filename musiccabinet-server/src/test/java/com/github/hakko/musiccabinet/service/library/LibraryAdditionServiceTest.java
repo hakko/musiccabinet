@@ -3,11 +3,11 @@ package com.github.hakko.musiccabinet.service.library;
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.FINISHED_MESSAGE;
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.msg;
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
+import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,11 +30,9 @@ public class LibraryAdditionServiceTest {
 	private JdbcLibraryPresenceDao presenceDao;
 	
 	private String dir1 = "/dir1", dir2 = "/dir1/dir2";
-	private File file1a = new File(dir1, "file1a", NOW, 0);
-	private File file1b = new File(dir1, "file1b", NOW, 0);
-	private File file2a = new File(dir2, "file2a", NOW, 0);
-	
-	private static final DateTime NOW = DateTime.now();
+	private File file1a = getFile(dir1, "file1a");
+	private File file1b = getFile(dir1, "file1b");
+	private File file2a = getFile(dir2, "file2a");
 	
 	@Before
 	public void clearLibrary() {
@@ -52,6 +50,7 @@ public class LibraryAdditionServiceTest {
 		additionChannel.send(FINISHED_MESSAGE);
 		
 		additionService.receive();
+		additionService.updateLibrary();
 		
 		assertEquals(set(file1a, file1b), presenceDao.getFiles(dir1));
 		assertEquals(set(file2a), presenceDao.getFiles(dir2));

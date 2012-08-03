@@ -24,6 +24,10 @@ public class LibraryAdditionService implements LibraryReceiverService {
 	public void clearImport() {
 		libraryAdditionDao.clearImport();
 	}
+	
+	public void updateLibrary() {
+		libraryAdditionDao.updateLibrary();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -32,7 +36,6 @@ public class LibraryAdditionService implements LibraryReceiverService {
 		while (true) {
 			message = (Message<DirectoryContent>) libraryAdditionChannel.receive();
 			if (message == null || message.equals(FINISHED_MESSAGE)) {
-				libraryAdditionDao.updateLibrary();
 				break;
 			} else {
 				DirectoryContent content = message.getPayload();
@@ -42,7 +45,7 @@ public class LibraryAdditionService implements LibraryReceiverService {
 			}
 		}
 	}
-
+	
 	public void setLibraryAdditionDao(LibraryAdditionDao libraryAdditionDao) {
 		this.libraryAdditionDao = libraryAdditionDao;
 	}

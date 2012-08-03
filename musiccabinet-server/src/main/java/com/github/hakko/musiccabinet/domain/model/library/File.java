@@ -23,16 +23,36 @@ public class File {
 		return directory;
 	}
 
+	public void setDirectory(String directory) {
+		this.directory = directory;
+	}
+
 	public String getFilename() {
 		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 	public DateTime getModified() {
 		return modified;
 	}
 
+	public void setModified(DateTime modified) {
+		this.modified = modified;
+	}
+
 	public int getSize() {
 		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public MetaData getMetaData() {
+		return metaData;
 	}
 
 	public void setMetaData(MetaData metaData) {

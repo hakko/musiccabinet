@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameter;
@@ -31,7 +30,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	}
 	
 	private void clearImportTable() {
-		jdbcTemplate.execute("delete from music.artistinfo_import");
+		jdbcTemplate.execute("truncate music.artistinfo_import");
 	}
 	
 	private void batchInsert(List<ArtistInfo> artistInfos) {
@@ -63,30 +62,26 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	}
 
 	@Override
-	public ArtistInfo getArtistInfo(int artistId) {
+	public ArtistInfo getArtistInfo(final int artistId) {
 		String sql = 
-				"select ai.largeimageurl, ai.biosummary from music.artistinfo ai" + 
-				" where ai.artist_id = " + artistId;
-		ArtistInfo artistInfo = null;
+				"select a.artist_name_capitalization, ai.largeimageurl, ai.biosummary,"
+				+ " exists(select 1 from library.artisttoptrackplaycount where artist_id = a.id)"
+				+ " from music.artist a"
+				+ " left outer join music.artistinfo ai on ai.artist_id = a.id"
+				+ " where a.id = " + artistId;
 		
-		try {
-			artistInfo = jdbcTemplate.queryForObject(sql, 
-					new RowMapper<ArtistInfo>() {
-				@Override
-				public ArtistInfo mapRow(ResultSet rs, int rowNum)
-						throws SQLException {
-					ArtistInfo ai = new ArtistInfo();
-					ai.setLargeImageUrl(rs.getString(1));
-					ai.setBioSummary(rs.getString(2));
-					return ai;
-				}
-
-			});
-		} catch (DataAccessException e) {
-			// some artists lack artist info
-		}
-
-		return artistInfo;
+		return jdbcTemplate.queryForObject(sql, new RowMapper<ArtistInfo>() {
+			@Override
+			public ArtistInfo mapRow(ResultSet rs, int rowNum)
+					throws SQLException {
+				ArtistInfo ai = new ArtistInfo();
+				ai.setArtist(new Artist(artistId, rs.getString(1)));
+				ai.setLargeImageUrl(rs.getString(2));
+				ai.setBioSummary(rs.getString(3));
+				ai.setInSearchIndex(rs.getBoolean(4));
+				return ai;
+			}
+		});
 	}
 	
 	@Override
@@ -128,6 +123,8 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
+
+	// Spring setters
 	
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);

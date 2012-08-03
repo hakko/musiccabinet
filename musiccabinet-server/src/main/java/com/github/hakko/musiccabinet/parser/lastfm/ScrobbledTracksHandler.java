@@ -5,8 +5,8 @@ import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler
 import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler.State.NAME;
 import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler.State.PLAY_COUNT;
 import static com.github.hakko.musiccabinet.parser.lastfm.ScrobbledTracksHandler.State.TRACK;
-import static java.lang.Short.parseShort;
 import static org.apache.commons.lang.math.NumberUtils.toInt;
+import static org.apache.commons.lang.math.NumberUtils.toShort;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,8 +57,8 @@ public class ScrobbledTracksHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) 
 	throws SAXException {
 		if (TAG_TRACKS.equals(qName)) {
-			page = parseShort(attributes.getValue(ATTR_PAGE));
-			totalPages = parseShort(attributes.getValue(ATTR_TOTAL_PAGES));
+			page = toShort(attributes.getValue(ATTR_PAGE));
+			totalPages = toShort(attributes.getValue(ATTR_TOTAL_PAGES));
 		} else if (TAG_TRACK.equals(qName)) {
 			scope = TRACK;
 			currentTrackPlayCount = new TrackPlayCount();

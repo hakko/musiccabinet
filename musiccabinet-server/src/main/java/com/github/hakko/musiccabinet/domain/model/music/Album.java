@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.domain.model.music;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -9,9 +11,10 @@ public class Album {
 	private int id;
 	private String name;
 	private short year;
-	private String coverArtFile;
-	private String coverArtEmbeddedFile;
+	private String coverArtPath;
+	private boolean coverArtEmbedded;
 	private String coverArtURL;
+	private List<Integer> trackIds;
 	
 	public Album() {
 		setArtist(new Artist());
@@ -32,14 +35,22 @@ public class Album {
 		setName(albumName);
 	}
 	
-	public Album(int id, String name, short year, String coverArtFile, 
-			String coverArtEmbeddedFile, String coverArtURL) {
+	public Album(int artistId, String artistName, int id, String name, short year, String coverArtFile,
+			boolean coverArtEmbedded, String coverArtURL, List<Integer> trackIds) {
+		this.artist = new Artist(artistId, artistName);
 		this.id = id;
 		this.name = name;
 		this.year = year;
-		this.coverArtFile = coverArtFile;
-		this.coverArtEmbeddedFile = coverArtEmbeddedFile;
+		this.coverArtPath = coverArtFile;
+		this.coverArtEmbedded = coverArtEmbedded;
 		this.coverArtURL = coverArtURL;
+		this.trackIds = trackIds;
+	}
+	
+	public Album(Artist artist, int id, String name) {
+		this.artist = artist;
+		this.id = id;
+		this.name = name;
 	}
 	
 	public Artist getArtist() {
@@ -61,18 +72,30 @@ public class Album {
 		return year;
 	}
 	
-	public String getCoverArtFile() {
-		return coverArtFile;
+	public String getCoverArtPath() {
+		return coverArtPath;
+	}
+	
+	public void setCoverArtPath(String coverArtPath) {
+		this.coverArtPath = coverArtPath;
 	}
 
-	public String getCoverArtEmbeddedFile() {
-		return coverArtEmbeddedFile;
+	public boolean isCoverArtEmbedded() {
+		return coverArtEmbedded;
 	}
 
 	public String getCoverArtURL() {
 		return coverArtURL;
 	}
+	
+	public void setCoverArtURL(String coverArtURL) {
+		this.coverArtURL = coverArtURL;
+	}
 
+	public List<Integer> getTrackIds() {
+		return trackIds;
+	}
+	
 	public String getName() {
 		return name;
 	}

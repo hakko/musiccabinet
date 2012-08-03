@@ -2,6 +2,7 @@ package com.github.hakko.musiccabinet.parser.lastfm;
 
 import static com.github.hakko.musiccabinet.parser.lastfm.ArtistTopTagsHandler.State.COUNT;
 import static com.github.hakko.musiccabinet.parser.lastfm.ArtistTopTagsHandler.State.NAME;
+import static org.apache.commons.lang.math.NumberUtils.toShort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class ArtistTopTagsHandler extends DefaultHandler {
 			currentTag.setName(chars);
 		} else if (state == COUNT) {
 			String chars = characterData.toString();
-			currentTag.setCount(Short.parseShort(chars));
+			currentTag.setCount(toShort(chars));
 			topTags.add(currentTag);
 		}
 	}

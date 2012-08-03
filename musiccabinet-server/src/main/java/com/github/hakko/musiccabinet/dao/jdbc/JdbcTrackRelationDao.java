@@ -20,10 +20,6 @@ public class JdbcTrackRelationDao implements TrackRelationDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
 	@Override
 	public void createTrackRelations(Track sourceTrack, List<TrackRelation> trackRelations) {
 		if (trackRelations.size() > 0) {
@@ -34,7 +30,7 @@ public class JdbcTrackRelationDao implements TrackRelationDao, JdbcTemplateDao {
 	}
 	
 	private void clearImportTable() {
-		jdbcTemplate.execute("delete from music.trackrelation_import");
+		jdbcTemplate.execute("truncate music.trackrelation_import");
 	}
 
 	private void batchInsert(Track sourceTrack, List<TrackRelation> trackRelations) {
@@ -91,6 +87,12 @@ public class JdbcTrackRelationDao implements TrackRelationDao, JdbcTemplateDao {
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

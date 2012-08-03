@@ -1,7 +1,8 @@
 package com.github.hakko.musiccabinet.service.library;
 
 import static com.github.hakko.musiccabinet.service.library.LibraryUtil.FINISHED_MESSAGE;
-import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
+
+import java.util.Set;
 
 import org.springframework.integration.Message;
 import org.springframework.integration.core.PollableChannel;
@@ -25,6 +26,10 @@ public class LibraryDeletionService implements LibraryReceiverService {
 	public void clearImport() {
 		libraryDeletionDao.clearImport();
 	}
+	
+	public void updateLibrary() {
+		libraryDeletionDao.updateLibrary();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -33,7 +38,6 @@ public class LibraryDeletionService implements LibraryReceiverService {
 		while (true) {
 			message = (Message<DirectoryContent>) libraryDeletionChannel.receive();
 			if (message == null || message.equals(FINISHED_MESSAGE)) {
-				libraryDeletionDao.updateLibrary();
 				break;
 			} else {
 				DirectoryContent content = message.getPayload();
@@ -44,8 +48,8 @@ public class LibraryDeletionService implements LibraryReceiverService {
 		}
 	}
 	
-	public void delete(String... directories) {
-		libraryDeletionDao.deleteSubdirectories(null, set(directories));
+	public void delete(Set<String> directories) {
+		libraryDeletionDao.deleteSubdirectories(null, directories);
 		libraryDeletionDao.updateLibrary();
 	}
 

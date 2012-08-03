@@ -3,7 +3,7 @@ package com.github.hakko.musiccabinet.dao;
 import java.util.List;
 
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
-import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 
 public interface WebserviceHistoryDao {
 
@@ -19,10 +19,11 @@ public interface WebserviceHistoryDao {
 
 	// Block a certain WebserviceInvocation from ever happening again,
 	// by logging it as being executed in an infinite future.
-	void blockWebserviceInvocation(int artistId, WebserviceInvocation.Calltype callType);
+	void blockWebserviceInvocation(int artistId, Calltype callType);
 	
 	boolean isWebserviceInvocationAllowed(WebserviceInvocation webserviceInvocation);
-	
-	List<Artist> getArtistsScheduledForUpdate(WebserviceInvocation.Calltype callType);
+
+	List<String> getArtistNamesWithNoInvocations(Calltype callType);
+	List<String> getArtistNamesWithOldestInvocations(Calltype callType);
 	
 }

@@ -12,10 +12,6 @@ import com.github.hakko.musiccabinet.domain.model.music.Track;
 public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
 	
 	public int getArtistId(String artistName) {
 		int artistId = jdbcTemplate.queryForInt(
@@ -59,6 +55,12 @@ public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	// Spring setters
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 }

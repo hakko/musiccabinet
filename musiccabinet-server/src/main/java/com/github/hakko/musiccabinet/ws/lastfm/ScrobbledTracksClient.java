@@ -2,7 +2,6 @@ package com.github.hakko.musiccabinet.ws.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.GET_SCROBBLED_TRACKS;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -11,7 +10,7 @@ import org.apache.http.message.BasicNameValuePair;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class ScrobbledTracksClient extends AbstractWSClient {
+public class ScrobbledTracksClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "library.gettracks";
 	
@@ -21,7 +20,7 @@ public class ScrobbledTracksClient extends AbstractWSClient {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(GET_SCROBBLED_TRACKS, page);
 
-		List<NameValuePair> params = new ArrayList<>();
+		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_USER, user));
 		params.add(new BasicNameValuePair(PARAM_PAGE, Short.toString(page)));
