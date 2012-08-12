@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -39,7 +40,7 @@ import com.github.hakko.musiccabinet.util.ResourceUtil;
  * 
  * TODO : mock a database and test just this class.
  */
-public class DatabaseAdministrationService {
+public class DatabaseAdministrationService implements InitializingBean {
 
 	private DatabaseAdministrationDao dbAdmDao;
 	
@@ -58,6 +59,10 @@ public class DatabaseAdministrationService {
 	 */
     public boolean isRDBMSRunning() {
     	return dbAdmDao.isRDBMSRunning();
+    }
+
+    public boolean isDatabaseCreated() {
+    	return dbAdmDao.isDatabaseCreated();
     }
 
     /*
@@ -132,6 +137,18 @@ public class DatabaseAdministrationService {
     	String fileUrl = StringUtils.replace(UPDATE_FILE, UPDATE_KEY, ""+update);
     	return new ResourceUtil(fileUrl).getContent();
     }
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		boolean databaseUpdated = isDatabaseUpdated();
+		boolean databaseCreated = isDatabaseCreated();
+		LOG.debug("databaseUpdated = " + databaseUpdated);
+		LOG.debug("databaseCreated = " + databaseCreated);
+		if (!databaseUpdated && databaseCreated) {
+			LOG.debug("Attempt database update.");
+			loadNewDatabasUpdates();
+		}
+	}
     
     // Spring setters
     
