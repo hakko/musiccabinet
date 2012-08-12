@@ -49,6 +49,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	}
 
 	private void logWebserviceInvocation(WebserviceInvocation wi, Date invocationTime) {
+		if (wi == null) return;
+		
 		Integer artistId = null, trackId = null, albumId = null, userId = null;
 		if (wi.getTrack() != null) {
 			trackId = musicDao.getTrackId(wi.getTrack());
@@ -89,7 +91,9 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	 */
 	@Override
 	public boolean isWebserviceInvocationAllowed(WebserviceInvocation wi) {
-		if (wi.getTrack() != null) {
+		if (wi == null) {
+			return true;
+		} else if (wi.getTrack() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getTrack());
 		} else if (wi.getAlbum() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getAlbum());
