@@ -62,5 +62,4 @@ public class JdbcTagInfoDao implements TagInfoDao, JdbcTemplateDao {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
-
 }
