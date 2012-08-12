@@ -124,12 +124,9 @@ public class ScrobbleService {
 	protected void scrobbleTracks() throws ApplicationException {
 		LOG.debug(Thread.currentThread().getName() + " - scrobble tracks");
 		scrobbleFailedTracks();
-		Scrobble head, tail;
+		Scrobble head;
 		for (LastFmUser lastFmUser : userScrobbles.keySet()) {
 			ConcurrentLinkedDeque<Scrobble> deque = userScrobbles.get(lastFmUser);
-			if ((tail = deque.peekLast()) != null && tooClose(tail, new DateTime())) {
-				nowPlayingClient.updateNowPlaying(tail);
-			}
 			while ((head = deque.peekFirst()) != null && !tooClose(head, new DateTime())) {
 				playCountDao.addPlayCount(head.getLastFmUser(), head.getTrack());
 				WSResponse wsResponse = scrobbleClient.scrobble(head);
