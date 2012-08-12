@@ -107,7 +107,7 @@ public class JdbcArtistRecommendationDaoTest {
 	@Test
 	public void validateRecommendedArtists() {
 		List<String> recommendedArtistNames = 
-			artistRecommendationDao.getRecommendedArtistsNotInLibrary(cherId, 10);
+			artistRecommendationDao.getRecommendedArtistsNotInLibrary(cherId, 10, true);
 		
 		Assert.assertNotNull(recommendedArtistNames);
 		Assert.assertEquals(2, recommendedArtistNames.size());
@@ -128,7 +128,7 @@ public class JdbcArtistRecommendationDaoTest {
 	@Test
 	public void validateArtistsInLibrary() {
 		List<ArtistRecommendation> artistRecommendations = 
-			artistRecommendationDao.getRecommendedArtistsInLibrary(cherId, 10);
+			artistRecommendationDao.getRecommendedArtistsInLibrary(cherId, 10, true);
 		
 		Assert.assertNotNull(artistRecommendations);
 		Assert.assertEquals(2, artistRecommendations.size());

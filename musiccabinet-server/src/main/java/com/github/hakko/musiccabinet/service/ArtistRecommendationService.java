@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.github.hakko.musiccabinet.dao.ArtistRecommendationDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
-import com.github.hakko.musiccabinet.exception.ApplicationException;
 
 /*
  * Expose services related to recommending artists.
@@ -18,29 +17,32 @@ import com.github.hakko.musiccabinet.exception.ApplicationException;
  */
 public class ArtistRecommendationService {
 
-	protected ArtistRecommendationDao artistRecommendationDao;
+	protected ArtistRecommendationDao dao;
 	
-	public List<ArtistRecommendation> getRelatedArtistsInLibrary(int artistId, int amount) throws ApplicationException {
-		return artistRecommendationDao.getRecommendedArtistsInLibrary(artistId, amount);
+	public List<ArtistRecommendation> getRelatedArtistsInLibrary(
+			int artistId, int amount, boolean onlyAlbumArtists) {
+		return dao.getRecommendedArtistsInLibrary(artistId, amount, onlyAlbumArtists);
 	}
 	
-	public List<String> getRelatedArtistsNotInLibrary(int artistId, int amount) throws ApplicationException {
-		return artistRecommendationDao.getRecommendedArtistsNotInLibrary(artistId, amount);
+	public List<String> getRelatedArtistsNotInLibrary(
+			int artistId, int amount, boolean onlyAlbumArtists) {
+		return dao.getRecommendedArtistsNotInLibrary(artistId, amount, onlyAlbumArtists);
+	}
+
+	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(
+			String tagName, int offset, int length, boolean onlyAlbumArtists) {
+		return dao.getRecommendedArtistsFromGenre(tagName, offset, length, onlyAlbumArtists);
 	}
 	
 	// TODO : currently not used, should be, but display more nicely on a scale from "Poor" to "Good"
-	public int getMatchingSongs(int artistId) throws ApplicationException {
-		return artistRecommendationDao.getNumberOfRelatedSongs(artistId);
-	}
-
-	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(String tagName, int offset, int length) {
-		return artistRecommendationDao.getRecommendedArtistsFromGenre(tagName, offset, length);
+	public int getMatchingSongs(int artistId) {
+		return dao.getNumberOfRelatedSongs(artistId);
 	}
 
 	// Spring setters
 	
 	public void setArtistRecommendationDao(ArtistRecommendationDao artistRecommendationDao) {
-		this.artistRecommendationDao = artistRecommendationDao;
+		this.dao = artistRecommendationDao;
 	}
 	
 }

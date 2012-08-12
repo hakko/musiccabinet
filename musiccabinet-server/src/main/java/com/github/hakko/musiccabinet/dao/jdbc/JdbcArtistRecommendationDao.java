@@ -15,33 +15,29 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(int artistId, int amount) {
-		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
+	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(
+			int artistId, int amount, boolean onlyAlbumArtists) {
+		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
 			+ " from music.artistinfo ai"
-			+ " inner join music.artist a on ai.artist_id = a.id"
-			+ " inner join music.artistrelation ar on ar.target_id = a.id"
-			+ " where ar.source_id = " + artistId + " and exists"
-			+ " (select 1 from library.artisttoptrackplaycount where artist_id = ar.target_id)"
+			+ " inner join music.artist ma on ai.artist_id = ma.id"
+			+ " inner join library.artist la on la.artist_id = ma.id "
+			+ " inner join music.artistrelation ar on ar.target_id = ma.id"
+			+ " where ar.source_id = " + artistId
+			+ (onlyAlbumArtists ? " and la.hasalbums" : "")
 			+ " order by weight desc limit " + amount;
 
 		return jdbcTemplate.query(sql, new ArtistRecommendationRowMapper());
 	}
 
-	/*
-	 * Return recommended artists, i.e related artists not found in library.
-	 * 
-	 * The query might return artists already in library, if we don't have a
-	 * single matching track for top tracks of said artist (only other rare tracks).
-	 * That's intentional as such an artist would never appear in artist radio,
-	 * so more tracks are needed.
-	 */
 	@Override
-	public List<String> getRecommendedArtistsNotInLibrary(int artistId, int amount) {
+	public List<String> getRecommendedArtistsNotInLibrary(
+			int artistId, int amount, boolean onlyAlbumArtists) {
 		String sql = "select a.artist_name_capitalization from music.artistrelation ar"
 			+ " inner join music.artist a on ar.target_id = a.id"
 			+ " where ar.source_id = " + artistId + " and not exists"
-			+ " (select 1 from library.artisttoptrackplaycount where artist_id = ar.target_id)"
-			+ " order by ar.weight desc limit " + amount;
+			+ " (select 1 from library.artist where artist_id = ar.target_id"
+			+ (onlyAlbumArtists ? " and hasalbums" : "")
+			+ " ) order by ar.weight desc limit " + amount;
 
 		return jdbcTemplate.queryForList(sql, String.class);
 	}
@@ -56,14 +52,16 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	}
 
 	@Override
-	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(String tagName, int offset, int length) {
-		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
+	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(
+			String tagName, int offset, int length, boolean onlyAlbumArtists) {
+		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
-				+ " inner join music.artist a on ai.artist_id = a.id"
-				+ " inner join music.artisttoptag att on att.artist_id = a.id"
-				+ " inner join music.tag t on t.id = att.tag_id where exists"
-				+ " (select 1 from library.artisttoptrackplaycount where artist_id = a.id)"
-				+ " and t.tag_name = ? and att.tag_count > 25"
+				+ " inner join music.artist ma on ai.artist_id = ma.id"
+				+ " inner join library.artist la on la.artist_id = ma.id "
+				+ " inner join music.artisttoptag att on att.artist_id = ma.id"
+				+ " inner join music.tag t on t.id = att.tag_id"
+				+ " where t.tag_name = ? and att.tag_count > 25"
+				+ (onlyAlbumArtists ? " and la.hasalbums" : "")
 				+ " order by (att.tag_count-1)/10 desc, ai.listeners desc"
 				+ " limit " + length + " offset " + offset;
 

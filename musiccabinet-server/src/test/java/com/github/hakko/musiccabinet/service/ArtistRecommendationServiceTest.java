@@ -47,27 +47,27 @@ public class ArtistRecommendationServiceTest {
 	@Test
 	public void serviceConfigured() {
 		Assert.assertNotNull(arService);
-		Assert.assertNotNull(arService.artistRecommendationDao);
+		Assert.assertNotNull(arService.dao);
 	}
 
 	@Test
 	public void canInvokeRelatedArtistsInLibrary() throws ApplicationException {
-		arService.getRelatedArtistsInLibrary(madonnaId, 20);
+		arService.getRelatedArtistsInLibrary(madonnaId, 20, true);
 	}
 
 	@Test
 	public void canInvokeRelatedArtistsNotInLibrary() throws ApplicationException {
-		arService.getRelatedArtistsNotInLibrary(madonnaId, 20);
+		arService.getRelatedArtistsNotInLibrary(madonnaId, 20, true);
 	}
 	
+	@Test
+	public void canInvokeRecommendedArtistsFromGenre() {
+		arService.getRecommendedArtistsFromGenre("outlaw country", 0, 20, true);
+	}
+
 	@Test
 	public void canInvokeMatchingSongs() throws ApplicationException {
 		arService.getMatchingSongs(madonnaId);
 	}
 	
-	@Test
-	public void canInvokeRecommendedArtistsFromGenre() {
-		arService.getRecommendedArtistsFromGenre("outlaw country", 0, 20);
-	}
-
 }

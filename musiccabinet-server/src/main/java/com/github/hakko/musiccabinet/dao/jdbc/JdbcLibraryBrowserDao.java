@@ -44,7 +44,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	@Override
 	public List<Artist> getArtists() {
 		String sql = "select ma.id, ma.artist_name_capitalization from music.artist ma"
-				+ " inner join library.artist la on la.artist_id = ma.id";
+				+ " inner join library.artist la on la.artist_id = ma.id where la.hasalbums";
 		
 		return jdbcTemplate.query(sql, new ArtistRowMapper());
 	}
@@ -55,7 +55,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.artist la on la.artist_id = ma.id"
 				+ " inner join music.artisttoptag att on att.artist_id = ma.id"
 				+ " inner join music.tag t on att.tag_id = t.id"
-				+ " where t.tag_name = ? and att.tag_count > ?";
+				+ " where t.tag_name = ? and att.tag_count > ? and la.hasalbums";
 
 		return jdbcTemplate.query(sql, new Object[]{tag, treshold}, new ArtistRowMapper());
 	}
@@ -67,7 +67,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ (indexLetter < 'A' || indexLetter > 'Z' ? 
 						" where ascii(artist_name) < 65 or ascii(artist_name) > 90" : 
 						" where ascii(artist_name) = " + indexLetter)
-				+ " order by artist_name";
+				+ " and la.hasalbums order by artist_name";
 
 		return jdbcTemplate.query(sql, new ArtistRowMapper());
 	}
