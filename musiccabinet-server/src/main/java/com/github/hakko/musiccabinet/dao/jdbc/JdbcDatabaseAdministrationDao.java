@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import org.postgresql.core.ConnectionFactory;
 import org.postgresql.core.Logger;
+import org.postgresql.core.ProtocolConnection;
 import org.postgresql.core.v3.ConnectionFactoryImpl;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
@@ -120,8 +121,9 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 			Properties info = new Properties();
 			info.setProperty("password", password);
 			ConnectionFactory connectionFactory = new ConnectionFactoryImpl();
-			connectionFactory.openConnectionImpl(
+			ProtocolConnection connection = connectionFactory.openConnectionImpl(
 					host, port, "postgres", "template1", info, logger);
+			connection.close();
 			passwordCorrect = true;
 		} catch (SQLException e) {
 			// expected for wrong password
