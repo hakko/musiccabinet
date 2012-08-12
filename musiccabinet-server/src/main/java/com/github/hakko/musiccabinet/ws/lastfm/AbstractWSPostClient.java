@@ -73,6 +73,7 @@ public abstract class AbstractWSPostClient extends AbstractWSClient {
             	int statusCode = response.getStatusLine().getStatusCode();
             	HttpEntity responseEntity = response.getEntity();
                 String responseBody = EntityUtils.toString(responseEntity);
+                EntityUtils.consume(responseEntity);
             	LOG.debug("post responseBody: " + responseBody);
             	if (statusCode == 200) {
             		wsResponse = new WSResponse(responseBody);
@@ -87,9 +88,9 @@ public abstract class AbstractWSPostClient extends AbstractWSClient {
             }
 		} catch (ClientProtocolException e) {
 			throw new ApplicationException(
-					"The request to fetch data from Last.fm could not be completed!", e);
+					"The request to post data to Last.fm could not be completed!", e);
 		} catch (IOException e) {
-			LOG.warn("Could not fetch data from Last.fm!", e);
+			LOG.warn("Could not post data to Last.fm!", e);
 			wsResponse = new WSResponse(true, -1, "Call failed due to " + e.getMessage());
 		}
 		return wsResponse;
