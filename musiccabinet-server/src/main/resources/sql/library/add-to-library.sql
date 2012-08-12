@@ -189,9 +189,9 @@ begin
 
 	-- update search tables
 	insert into library.artist (artist_id)
-	select distinct coalesce(album_artist_id, artist_id) as artist_id from library.filetag ft
+	select distinct artist_id from library.filetag ft
 	where not exists (
-		select 1 from library.artist where artist_id = coalesce(ft.album_artist_id, ft.artist_id)
+		select 1 from library.artist where artist_id = ft.artist_id
 	);
 
 	insert into library.album (album_id)
@@ -199,6 +199,12 @@ begin
 	where not exists (
 		select 1 from library.album where album_id = ft.album_id
 	);
+
+	update library.artist art
+		set hasalbums = true
+	from library.album la 
+	inner join music.album ma on la.album_id = ma.id 
+	where ma.artist_id = art.artist_id;
 	
 	insert into library.track (track_id, album_id, file_id)
 	select distinct on (coalesce(disc_nr, 0), coalesce(track_nr, 0), track_id, album_id) 

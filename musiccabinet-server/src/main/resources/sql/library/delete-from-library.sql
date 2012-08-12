@@ -60,6 +60,10 @@ begin
 	);
 
 	delete from library.artist where artist_id not in (
+		select artist_id from library.filetag
+	);
+	
+	update library.artist art set hasalbums = false where artist_id not in (
 		select coalesce(album_artist_id, artist_id) from library.filetag
 	);
 
