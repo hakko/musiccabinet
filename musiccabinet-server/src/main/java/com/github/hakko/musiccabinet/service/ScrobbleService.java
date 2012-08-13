@@ -79,7 +79,7 @@ public class ScrobbleService {
 				LOG.debug("Same track was scrobbled just recently, ignore.");
 			} else {
 				addScrobble(scrobble);
-				WSResponse wsResponse = nowPlayingClient.updateNowPlaying(message.getPayload());
+				WSResponse wsResponse = nowPlayingClient.updateNowPlaying(scrobble);
 				LOG.debug("Nowplaying successful: " + wsResponse.wasCallSuccessful());
 				LOG.debug("Nowplaying response: " + wsResponse);
 				if (!wsResponse.wasCallSuccessful()) {
@@ -122,7 +122,6 @@ public class ScrobbleService {
 	}
 
 	protected void scrobbleTracks() throws ApplicationException {
-		LOG.debug(Thread.currentThread().getName() + " - scrobble tracks");
 		scrobbleFailedTracks();
 		Scrobble head;
 		for (LastFmUser lastFmUser : userScrobbles.keySet()) {
