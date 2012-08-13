@@ -10,7 +10,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.springframework.integration.core.PollableChannel;
 import org.springframework.integration.message.GenericMessage;
 
@@ -47,10 +46,7 @@ public class LibraryScanner extends SimpleFileVisitor<Path> {
     	if (attr.size() > Integer.MAX_VALUE) {
     		LOG.warn(file.getFileName() + " has actual file size " + attr.size());
     	}
-    	directoryContent.getFiles().add(new File(file.getParent().toString(), 
-    			file.getFileName().toString(),
-    			new DateTime(attr.lastModifiedTime().toMillis()), 
-    			(int) attr.size()));
+    	directoryContent.getFiles().add(new File(file, attr));
     	
     	return CONTINUE;
     }

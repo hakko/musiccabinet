@@ -1,5 +1,8 @@
 package com.github.hakko.musiccabinet.domain.model.library;
 
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
@@ -11,6 +14,11 @@ public class File {
 	private DateTime modified;
 	private int size;
 	private MetaData metaData;
+	
+	public File(Path path, BasicFileAttributes attr) {
+		this(path.getParent().toString(), path.getFileName().toString(),
+		new DateTime(attr.lastModifiedTime().toMillis()), (int) attr.size());
+	}
 	
 	public File(String directory, String filename, DateTime modified, int size) {
 		this.directory = directory;
