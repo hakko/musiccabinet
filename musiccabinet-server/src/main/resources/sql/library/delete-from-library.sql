@@ -60,11 +60,13 @@ begin
 	);
 
 	delete from library.artist where artist_id not in (
-		select artist_id from library.filetag
+		select artist_id from library.filetag union
+		select album_artist_id from library.filetag where album_artist_id is not null
 	);
 	
 	update library.artist art set hasalbums = false where artist_id not in (
-		select coalesce(album_artist_id, artist_id) from library.filetag
+		select ma.artist_id from library.album la 
+		inner join music.album ma on la.album_id = ma.id 
 	);
 
 	delete from library.artistindex where ascii_code not in (

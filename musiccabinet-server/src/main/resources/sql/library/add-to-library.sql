@@ -189,9 +189,11 @@ begin
 
 	-- update search tables
 	insert into library.artist (artist_id)
-	select distinct artist_id from library.filetag ft
+	select distinct artist_id from 
+	(select artist_id from library.filetag union 
+	 select album_artist_id from library.filetag where album_artist_id is not null) artists
 	where not exists (
-		select 1 from library.artist where artist_id = ft.artist_id
+		select 1 from library.artist where artist_id = artists.artist_id
 	);
 
 	insert into library.album (album_id)
