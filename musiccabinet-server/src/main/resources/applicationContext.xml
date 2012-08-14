@@ -54,6 +54,11 @@
 
 	<!--  SERVICES -->
 
+	<bean id="directoryBrowserService" class="com.github.hakko.musiccabinet.service.DirectoryBrowserService">
+		<property name="directoryBrowserDao" ref="directoryBrowserDao"/>
+		<property name="libraryPresenceDao" ref="libraryPresenceDao"/>
+	</bean>
+
 	<bean id="starService" class="com.github.hakko.musiccabinet.service.StarService">
 		<property name="lastFmUserDao" ref="lastFmUserDao"/>
 		<property name="starDao" ref="starDao"/>
@@ -266,6 +271,10 @@
 
 
 	<!--  DAOs  -->
+
+	<bean id="directoryBrowserDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcDirectoryBrowserDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
 
 	<bean id="libraryPresenceDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryPresenceDao">
 		<property name="dataSource" ref="dataSource"/>

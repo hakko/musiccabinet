@@ -54,7 +54,7 @@ public class LibraryUpdateService {
 				isIndexBeingCreated;
 	}
 	
-	public void createSearchIndex(Set<String> paths, boolean offlineScan, boolean onlyNewArtists) throws ApplicationException {
+	public void createSearchIndex(Set<String> paths, boolean isRootPaths, boolean offlineScan, boolean onlyNewArtists) throws ApplicationException {
 		if (isIndexBeingCreated()) {
 			LOG.debug("Search index is being created. Additional update cancelled.");
 			return;
@@ -64,7 +64,7 @@ public class LibraryUpdateService {
 		LOG.info("Starting library update. Scan " + paths + ", offline = " + offlineScan);
 		
 		long millis = -System.currentTimeMillis();
-		libraryScannerService.add(paths);
+		libraryScannerService.update(paths, isRootPaths);
 		millis += System.currentTimeMillis();
 		LOG.info("Library scanned in " + (millis / 1000) + " seconds.");
 
