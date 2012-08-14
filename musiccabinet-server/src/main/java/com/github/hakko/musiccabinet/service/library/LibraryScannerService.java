@@ -46,8 +46,12 @@ public class LibraryScannerService {
 	protected String fileSeparator = java.io.File.separator;
 	
 	private static final Logger LOG = Logger.getLogger(LibraryScannerService.class);
-	
+
 	public void add(Set<String> paths) throws ApplicationException {
+		update(paths, true);
+	}
+
+	public void update(Set<String> paths, boolean isRootPaths) throws ApplicationException {
 		try {
 			clearImport();
 			startReceivingServices();
@@ -55,7 +59,9 @@ public class LibraryScannerService {
 			for (String path : rootPaths) {
 				Files.walkFileTree(Paths.get(path), new LibraryScanner(libraryPresenceChannel));
 			}
-			libraryPresenceChannel.send(msg(null, rootPaths, new HashSet<File>()));
+			if (isRootPaths) {
+				libraryPresenceChannel.send(msg(null, rootPaths, new HashSet<File>()));
+			}
 			libraryPresenceChannel.send(FINISHED_MESSAGE);
 			workerThreads.await();
 			updateLibrary();
