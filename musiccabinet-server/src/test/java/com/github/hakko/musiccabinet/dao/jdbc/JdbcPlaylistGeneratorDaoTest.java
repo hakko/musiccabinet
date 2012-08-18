@@ -94,7 +94,15 @@ public class JdbcPlaylistGeneratorDaoTest {
 		Assert.assertNotNull(ts);
 		Assert.assertEquals(20, ts.size());
 	}
-	
+
+	@Test
+	public void getRelatedArtists() throws ApplicationException {
+		int artistId = prepareTestdataForArtist();
+		
+		List<Integer> ts = playlistGeneratorDao.getPlaylistForRelatedArtists(artistId, 3, 20);
+		
+		Assert.assertNotNull(ts);
+	}
 	
 	@Test
 	public void addCherSimilarTracksAndGetPlaylist() throws ApplicationException {

@@ -16,7 +16,7 @@ import com.github.hakko.musiccabinet.log.Logger;
  */
 public class PlaylistGeneratorService {
 
-	protected PlaylistGeneratorDao playlistGeneratorDao;
+	protected PlaylistGeneratorDao dao;
 
 	private static final Logger LOG = Logger.getLogger(PlaylistGeneratorService.class);
 	
@@ -41,30 +41,35 @@ public class PlaylistGeneratorService {
 	 */
 	public void updateSearchIndex() {
 		long millis = -System.currentTimeMillis();
-		playlistGeneratorDao.updateSearchIndex();
+		dao.updateSearchIndex();
 		millis += System.currentTimeMillis();
 		LOG.info("Creating materialized view took " + (millis / 1000) + " sec.");
 	}
 
 	public boolean isSearchIndexCreated() {
-		return playlistGeneratorDao.isSearchIndexCreated();
+		return dao.isSearchIndexCreated();
 	}
 	
 	public List<Integer> getTopTracksForArtist(int artistId, int totalCount) throws ApplicationException {
-		return playlistGeneratorDao.getTopTracksForArtist(artistId, totalCount);
+		return dao.getTopTracksForArtist(artistId, totalCount);
 	}
 	
 	public List<Integer> getPlaylistForArtist(int artistId, int artistCount, int totalCount) throws ApplicationException {
-		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForArtist(artistId, artistCount, totalCount);
+		List<PlaylistItem> result = dao.getPlaylistForArtist(artistId, artistCount, totalCount);
 		Collections.shuffle(result);
 		return distributeArtists(result);
 	}
 	
 	public List<Integer> getTopTracksForTags(String[] tags, int artistCount, int totalCount) {
-		List<PlaylistItem> result = playlistGeneratorDao.getPlaylistForTags(tags, artistCount, totalCount);
+		List<PlaylistItem> result = dao.getPlaylistForTags(tags, artistCount, totalCount);
 		Collections.shuffle(result);
 		return distributeArtists(result);
 	}
+	
+	public List<Integer> getPlaylistForRelatedArtists(int artistId, int artistCount, int totalCount) {
+		return dao.getPlaylistForRelatedArtists(artistId, artistCount, totalCount);
+	}
+	
 	
 	/*
 	 * Approach: iterate over list of playlist items.
@@ -104,7 +109,7 @@ public class PlaylistGeneratorService {
 	// Spring setters
 	
 	public void setPlaylistGeneratorDao(PlaylistGeneratorDao playlistGeneratorDao) {
-		this.playlistGeneratorDao = playlistGeneratorDao;
+		this.dao = playlistGeneratorDao;
 	}
 	
 }

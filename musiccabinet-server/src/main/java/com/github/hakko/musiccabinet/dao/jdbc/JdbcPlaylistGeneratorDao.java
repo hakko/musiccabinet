@@ -2,17 +2,15 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.getParameters;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.dao.PlaylistGeneratorDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.PlaylistItemRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
 
 /*
@@ -54,13 +52,7 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 			+ " order by tr.weight desc, t.id"
 			+ " limit 25";
 
-		return jdbcTemplate.query(sql, new RowMapper<PlaylistItem>() {
-			@Override
-			public PlaylistItem mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-				return new PlaylistItem(rs.getInt(1), rs.getInt(2));
-			}
-		});
+		return jdbcTemplate.query(sql, new PlaylistItemRowMapper());
 	}
 
 	/*
@@ -104,15 +96,22 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 			+ "  where ranked_tracks.artist_rank <= " + artistCount
 			+ "  order by random() * ranked_tracks.artist_weight * ranked_tracks.artist_weight desc limit " + totalCount;
 
-		return jdbcTemplate.query(sql, new RowMapper<PlaylistItem>() {
-			@Override
-			public PlaylistItem mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-				return new PlaylistItem(rs.getInt(1), rs.getInt(2));
-			}
-		});
+		return jdbcTemplate.query(sql, new PlaylistItemRowMapper());
 	}
 
+	/*
+	 * Returns a list of tracks, related to one or more genres.
+	 * 
+	 * Uses the same technique as getPlaylistForArtist(), but the ranking of artists
+	 * is based on tag count fetched from last.fm.
+	 * 
+	 * Strategy: start by using tag correction to find max tag_count per tag.
+	 * Then sum the individual max values per tag, for all tags queried for,
+	 * to make up a tag relevance score per artist.
+	 * 
+	 * Use this tag relevance score per artist exactly the same way as artist
+	 * relation score is used in getPlaylistForArtist().
+	 */
 	@Override
 	public List<PlaylistItem> getPlaylistForTags(String[] tags, int artistCount, int totalCount) {
 		if (tags == null || tags.length == 0) {
@@ -122,23 +121,40 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 		String sql = "select artist_id, track_id from ("
 				+ "	  select att.track_id, att.artist_id, tag.tag_count as tag_weight, rank() over" 
 				+ "	  (partition by att.artist_id order by (random()*(110 - rank + (play_count/3))) desc) as artist_rank from library.artisttoptrackplaycount att"
-				+ "	   inner join (select toptag.artist_id, sum(tag_count) as tag_count from music.artisttoptag toptag"
-				+ "			inner join music.tag tag on toptag.tag_id = tag.id"
-				+ "			where tag.tag_name in (" + getParameters(tags.length) + ")"
-				+ "			group by toptag.artist_id) tag"
+				+ "	   inner join ("
+				+ "		select toptag.artist_id, sum(tag_count) as tag_count from ("
+				+ " 	select artist_id, max(tag_count) as tag_count from music.artisttoptag att"
+				+ "		inner join music.tag t on att.tag_id = t.id"
+				+ "		where coalesce(t.corrected_id, t.id) in ("
+				+ "		select id from music.tag where tag_name in (" 
+				+ 			getParameters(tags.length) 
+				+ "		)) group by artist_id, coalesce(t.corrected_id, t.id)) toptag "
+				+ "		group by artist_id"
+				+ "		) tag"
 				+ "		on tag.artist_id = att.artist_id"
 				+ "	  ) ranked_tracks"
 				+ "	  where ranked_tracks.artist_rank <= " + artistCount
 				+ "	  order by random() * ranked_tracks.tag_weight * ranked_tracks.tag_weight desc"
 				+ " limit " + totalCount;
+		
+		return jdbcTemplate.query(sql, tags, new PlaylistItemRowMapper());
+	}
 
-		return jdbcTemplate.query(sql, tags, new RowMapper<PlaylistItem>() {
-			@Override
-			public PlaylistItem mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-				return new PlaylistItem(rs.getInt(1), rs.getInt(2));
-			}
-		});
+	/*
+	 * Returns a list of top (N) rated tracks, for each top (M) related artists.
+	 * Tracks are sorted by artist relevance and track rank.
+	 */
+	@Override
+	public List<Integer> getPlaylistForRelatedArtists(int artistId, int artistCount, int totalCount) {
+		String sql = "select track_id from ("
+			+ "  select att.track_id, att.artist_id, att.rank as track_rank, ar.weight as artist_weight, rank() over" 
+			+ "  (partition by att.artist_id order by rank) as artist_rank from library.artisttoptrackplaycount att"
+			+ "   inner join music.artistrelation ar on ar.target_id = att.artist_id and ar.source_id = " + artistId
+			+ "  ) ranked_tracks"
+			+ "  where ranked_tracks.artist_rank <= " + artistCount
+			+ "  order by ranked_tracks.artist_weight desc, track_rank limit " + (totalCount * artistCount);
+
+		return jdbcTemplate.queryForList(sql, Integer.class);
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class PlaylistGeneratorServiceTest {
 	@Test
 	public void playlistGeneratorServiceConfigured() {
 		Assert.assertNotNull(playlistGeneratorService);
-		Assert.assertNotNull(playlistGeneratorService.playlistGeneratorDao);
+		Assert.assertNotNull(playlistGeneratorService.dao);
 	}
 	
 	@Test
