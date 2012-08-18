@@ -3,20 +3,20 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.getParameters;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.TagDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagOccurrenceRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 
 public class JdbcTagDao implements TagDao, JdbcTemplateDao {
@@ -33,6 +33,28 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		
 		for (String tag : tags) {
 			batchUpdate.update(new Object[]{tag, tag});
+		}
+		batchUpdate.flush();
+	}
+
+	/*
+	 * tagCorrection is a map of <original tag name> -> <corrected tag name>
+	 */
+	@Override
+	public void createTagCorrections(Map<String, String> tagCorrections) {
+		String sql = "update music.tag t set corrected_id = null where corrected_id is not null";
+		jdbcTemplate.execute(sql);
+		
+		sql = "update music.tag t set corrected_id = tc.id"
+				+ " from music.tag tc where t.tag_name = ? and tc.tag_name = ?";
+		
+		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
+		batchUpdate.setBatchSize(1000);
+		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
+
+		for (String tag : tagCorrections.keySet()) {
+			batchUpdate.update(new Object[]{tag, tagCorrections.get(tag)});
 		}
 		batchUpdate.flush();
 	}
@@ -54,22 +76,16 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	@Override
 	public List<TagOccurrence> getAvailableTags() {
 		String sql =
-			"select t.tag_name, occ.count, case when tt.tag_id is null then false else true end from music.tag t"
-			+ " inner join (select tag_id, count(tag_id) from music.artisttoptag group by tag_id) occ on t.id = occ.tag_id"
+			"select t.tag_name, tc.tag_name, occ.count, case when tt.tag_id is null then false else true end from music.tag t"
+			+ " left outer join music.tag tc on t.corrected_id = tc.id"
+			+ " inner join (select tag_id, count(tag_id) from music.artisttoptag where tag_count > 25 group by tag_id) occ on t.id = occ.tag_id"
 			+ " inner join (select tag_id, sum(tag_count) from music.artisttoptag group by tag_id) pop on t.id = pop.tag_id"
 			+ " left outer join (select tag_id from library.toptag) tt on t.id = tt.tag_id"
-			+ " where (occ.count > 10 and pop.sum/occ.count > 25)"
+			+ " where (occ.count > 5 and pop.sum/occ.count > 50)"
 			+ "  or t.id in (select tag_id from library.toptag)"
 			+ " order by t.tag_name";
 		
-		List<TagOccurrence> availableTags = jdbcTemplate.query(sql, new RowMapper<TagOccurrence>() {
-			@Override
-			public TagOccurrence mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new TagOccurrence(rs.getString(1), rs.getInt(2), rs.getBoolean(3));
-			}
-		});
-		
-		return availableTags;
+		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}
 	
 	@Override
@@ -113,19 +129,12 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	@Override
 	public List<TagOccurrence> getTopTagsOccurrence() {
 		String sql = 
-				"select tag.tag_name, 10+ntile(30) over (order by pop.sum) from library.toptag tt"
+				"select tag.tag_name, null, 10+ntile(30) over (order by pop.sum), true from library.toptag tt"
 				+ " inner join music.tag tag on tt.tag_id = tag.id"
 				+ " inner join (select tag_id, sum(tag_count) from music.artisttoptag att group by tag_id) pop on tag.id = pop.tag_id" 
 				+ " order by lower(tag.tag_name)";
 			
-		List<TagOccurrence> topTags = jdbcTemplate.query(sql, new RowMapper<TagOccurrence>() {
-			@Override
-			public TagOccurrence mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new TagOccurrence(rs.getString(1), rs.getInt(2), true);
-			}
-		});
-
-		return topTags;
+		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}
 	
 	@Override

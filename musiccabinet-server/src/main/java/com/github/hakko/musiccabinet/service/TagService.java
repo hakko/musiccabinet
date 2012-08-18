@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.github.hakko.musiccabinet.dao.TagDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
@@ -31,6 +32,10 @@ public class TagService {
 
 	public List<TagOccurrence> getTopTagsOccurrence() {
 		return tagDao.getTopTagsOccurrence();
+	}
+	
+	public void createTagCorrections(Map<String, String> tagCorrections) {
+		tagDao.createTagCorrections(tagCorrections);
 	}
 	
 	// Spring setters

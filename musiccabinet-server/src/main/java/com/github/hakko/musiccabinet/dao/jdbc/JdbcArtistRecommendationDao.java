@@ -58,11 +58,15 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist ma on ai.artist_id = ma.id"
 				+ " inner join library.artist la on la.artist_id = ma.id "
-				+ " inner join music.artisttoptag att on att.artist_id = ma.id"
-				+ " inner join music.tag t on t.id = att.tag_id"
-				+ " where t.tag_name = ? and att.tag_count > 25"
-				+ (onlyAlbumArtists ? " and la.hasalbums" : "")
-				+ " order by (att.tag_count-1)/10 desc, ai.listeners desc"
+				+ " inner join ("
+				+ " select artist_id, max(tag_count) as tag_count from music.artisttoptag att"
+				+ " inner join music.tag t on att.tag_id = t.id"
+				+ " where coalesce(corrected_id, id) in "
+				+ " (select id from music.tag where tag_name = ?)"
+				+ " group by att.artist_id, coalesce(t.corrected_id, t.id)"
+				+ " ) tag on tag.artist_id = ma.id and tag.tag_count > 25"
+				+ (onlyAlbumArtists ? " where la.hasalbums" : "")
+				+ " order by (tag.tag_count-1)/10 desc, ai.listeners desc"
 				+ " limit " + length + " offset " + offset;
 
 		return jdbcTemplate.query(sql, new Object[]{tagName}, new ArtistRecommendationRowMapper());

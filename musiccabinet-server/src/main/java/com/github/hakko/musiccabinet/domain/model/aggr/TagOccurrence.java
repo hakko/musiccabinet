@@ -10,11 +10,13 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class TagOccurrence {
 
 	private String tag;
+	private String correctedTag;
 	private int occurrence;
 	private boolean use;
 	
-	public TagOccurrence(String tag, int occurrence, boolean use) {
+	public TagOccurrence(String tag, String correctedTag, int occurrence, boolean use) {
 		this.tag = tag;
+		this.correctedTag = correctedTag;
 		this.occurrence = occurrence;
 		this.use = use;
 	}
@@ -25,6 +27,14 @@ public class TagOccurrence {
 
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+
+	public String getCorrectedTag() {
+		return correctedTag;
+	}
+
+	public void setCorrectedTag(String correctedTag) {
+		this.correctedTag = correctedTag;
 	}
 
 	public int getOccurrence() {

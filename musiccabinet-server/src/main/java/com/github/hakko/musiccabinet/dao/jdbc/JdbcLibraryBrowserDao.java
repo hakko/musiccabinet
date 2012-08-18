@@ -53,11 +53,13 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	public List<Artist> getArtists(String tag, int treshold) {
 		String sql = "select ma.id, ma.artist_name_capitalization from music.artist ma"
 				+ " inner join library.artist la on la.artist_id = ma.id"
-				+ " inner join music.artisttoptag att on att.artist_id = ma.id"
+				+ " where la.hasalbums and exists (select 1 from"
+				+ " music.artisttoptag att"
 				+ " inner join music.tag t on att.tag_id = t.id"
-				+ " where t.tag_name = ? and att.tag_count > ? and la.hasalbums";
+				+ " where att.artist_id = ma.id and att.tag_count > ? and"
+				+ " coalesce(t.corrected_id, t.id) in (select id from music.tag where tag_name = ?))";
 
-		return jdbcTemplate.query(sql, new Object[]{tag, treshold}, new ArtistRowMapper());
+		return jdbcTemplate.query(sql, new Object[]{treshold, tag}, new ArtistRowMapper());
 	}
 
 	@Override
