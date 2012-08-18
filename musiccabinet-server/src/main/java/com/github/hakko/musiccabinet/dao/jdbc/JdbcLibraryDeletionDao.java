@@ -11,11 +11,14 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.LibraryDeletionDao;
 import com.github.hakko.musiccabinet.domain.model.library.File;
+import com.github.hakko.musiccabinet.log.Logger;
 
 public class JdbcLibraryDeletionDao implements LibraryDeletionDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 
+	private static final Logger LOG = Logger.getLogger(JdbcLibraryDeletionDao.class);
+	
 	@Override
 	public void clearImport() {
 		jdbcTemplate.execute("truncate library.directory_delete");
@@ -49,7 +52,10 @@ public class JdbcLibraryDeletionDao implements LibraryDeletionDao, JdbcTemplateD
 
 	@Override
 	public void updateLibrary() {
+		long ms = -System.currentTimeMillis();
 		jdbcTemplate.execute("select library.delete_from_library()");
+		ms += System.currentTimeMillis();
+		LOG.debug("delete_from_library(): " + ms + " ms");
 	}
 
 	@Override

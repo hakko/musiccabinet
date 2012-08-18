@@ -115,7 +115,7 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 		long ms = -System.currentTimeMillis();
 		jdbcTemplate.execute("select library.add_to_library()");
 		ms += System.currentTimeMillis();
-		LOG.debug("Library update procedure took " + ms + " ms");
+		LOG.debug("add_to_library(): " + ms + " ms");
 	}
 
 	@Override

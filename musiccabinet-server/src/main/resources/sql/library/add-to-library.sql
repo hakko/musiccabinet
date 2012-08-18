@@ -187,13 +187,16 @@ begin
 	select file_id, artist_id, album_artist_id, composer_id, album_id, track_id, track_nr, track_nrs, disc_nr, disc_nrs, year, tag_id, coverart
 		from library.file_headertag_import;
 
-	-- update search tables
 	insert into library.artist (artist_id)
-	select distinct artist_id from 
-	(select artist_id from library.filetag union 
-	 select album_artist_id from library.filetag where album_artist_id is not null) artists
+	select distinct artist_id from library.filetag ft
 	where not exists (
-		select 1 from library.artist where artist_id = artists.artist_id
+		select 1 from library.artist where artist_id = ft.artist_id
+	);
+
+	insert into library.artist (artist_id)
+	select distinct album_artist_id from library.filetag ft
+	where album_artist_id is not null and not exists (
+		select 1 from library.artist where artist_id = ft.album_artist_id
 	);
 
 	insert into library.album (album_id)
@@ -206,7 +209,7 @@ begin
 		set hasalbums = true
 	from library.album la 
 	inner join music.album ma on la.album_id = ma.id 
-	where ma.artist_id = art.artist_id;
+	where ma.artist_id = art.artist_id and not art.hasalbums;
 	
 	insert into library.track (track_id, album_id, file_id)
 	select distinct on (coalesce(disc_nr, 0), coalesce(track_nr, 0), track_id, album_id) 
@@ -239,11 +242,13 @@ begin
 
 	-- set album year from file metadata
 	update library.album a set year = ft.year
-	from library.filetag ft where a.album_id = ft.album_id and ft.year is not null;
+	from library.filetag ft where a.album_id = ft.album_id and ft.year is not null
+		and (a.year is null or a.year != ft.year);
 
 	-- set album embedded cover art from file metadata
 	update library.album a set embeddedcoverartfile_id = ft.file_id 
-	from library.filetag ft where a.album_id = ft.album_id and ft.coverart;
+	from library.filetag ft where a.album_id = ft.album_id and ft.coverart
+		and a.embeddedcoverartfile_id is null;
 
 	-- set album cover art from found image files. we need to:
 	-- * find most prioritized image per folder (in case of multiple cover images
@@ -262,7 +267,7 @@ begin
 		select distinct f.directory_id, ft.album_id from library.filetag ft
 		inner join library.file f on ft.file_id = f.id
 	) da on f.directory_id = da.directory_id
-	where da.album_id = a.album_id;
+	where da.album_id = a.album_id and a.coverartfile_id is null;
 
 	--  add artist sort for artist
 	insert into library.artistsort (artist_id, artistsort_id)
@@ -282,7 +287,7 @@ begin
 	
 	-- create set of unique first letters from artist names
 	truncate library.artistindex;
-	
+
 	insert into library.artistindex (ascii_code)
 	select distinct ascii(artist_name) from music.artist ma 
 	inner join library.artist la on la.artist_id = ma.id

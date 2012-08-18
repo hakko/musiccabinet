@@ -55,23 +55,27 @@ begin
 		select id from library.file where deleted
 	);
 
-	delete from library.album where album_id not in (
-		select album_id from library.filetag
+	delete from library.album la where not exists (
+		select 1 from library.filetag where album_id = la.album_id
 	);
 
-	delete from library.artist where artist_id not in (
-		select artist_id from library.filetag union
-		select album_artist_id from library.filetag where album_artist_id is not null
+	delete from library.artist la where not exists (
+		select 1 from library.filetag where artist_id = la.artist_id
+	) and not exists (
+		select 1 from library.filetag where album_artist_id = la.artist_id
 	);
 	
-	update library.artist art set hasalbums = false where artist_id not in (
-		select ma.artist_id from library.album la 
-		inner join music.album ma on la.album_id = ma.id 
+	update library.artist art set hasalbums = false where not exists (
+		select 1 from library.album la 
+		inner join music.album ma on la.album_id = ma.id
+		where ma.artist_id = art.artist_id
 	);
 
-	delete from library.artistindex where ascii_code not in (
-		select distinct ascii(artist_name) from music.artist ma 
-		inner join library.artist la on la.artist_id = ma.id	
+	delete from library.artistindex ai where not exists (
+		select 1 from music.artist ma 
+		inner join library.artist la on la.artist_id = ma.id
+		where ascii(ma.artist_name) = ai.ascii_code or
+			(ascii(ma.artist_name) > 90 and ai.ascii_code = ascii('#'))
 	);
 	
 	delete from library.file where deleted;
