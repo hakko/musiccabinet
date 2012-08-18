@@ -80,11 +80,9 @@ public abstract class AbstractWSClient {
 	 * minutes has passed. Then give up.
 	 */
 	protected WSResponse invokeCall(List<NameValuePair> params) throws ApplicationException {
-		LOG.debug("invokeCall for params");
 		WSResponse wsResponse = null;
 		int callAttempts = 0;
 		while (++callAttempts <= getCallAttempts()) {
-			LOG.debug("call " + callAttempts + " out of " + getCallAttempts());
 			wsResponse = invokeSingleCall(params);
 			if (wsResponse.wasCallSuccessful()) {
 				break;
