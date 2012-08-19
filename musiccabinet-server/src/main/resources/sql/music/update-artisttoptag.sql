@@ -9,14 +9,13 @@ begin
 
 	-- create missing tag(s)
 	insert into music.tag (tag_name)
-	select distinct tag_name from music.artisttoptag_import
-		where not exists (select 1 from music.tag 
-			where music.artisttoptag_import.tag_name = music.tag.tag_name);
+	select distinct tag_name from music.artisttoptag_import imp
+		where not exists (select 1 from music.tag t 
+			where imp.tag_name = t.tag_name);
 
 	-- update all import rows to correct tag id
-	update music.artisttoptag_import set tag_id = music.tag.id
-	from music.tag
-		where music.artisttoptag_import.tag_name = music.tag.tag_name;
+	update music.artisttoptag_import imp set tag_id = t.id
+	from music.tag t where imp.tag_name = t.tag_name;
 
 	-- clear previous tags for artist
 	delete from music.artisttoptag where artist_id = artistid;
