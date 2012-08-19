@@ -169,6 +169,12 @@
 		<property name="userTopArtistsDao" ref="userTopArtistsDao"/>
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 	</bean>
+
+	<bean id="tagTopArtistsService" class="com.github.hakko.musiccabinet.service.lastfm.TagTopArtistsService">
+		<property name="tagTopArtistsClient" ref="tagTopArtistsClient"/>
+		<property name="tagDao" ref="tagDao"/>
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+	</bean>
 	
 	<bean id="searchIndexUpdateSettingsService" class="com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateSettingsService">
 	</bean>
@@ -209,6 +215,7 @@
         <property name="scrobbledTracksService" ref="scrobbledTracksService"/>
         <property name="playlistGeneratorService" ref="playlistGeneratorService"/>
         <property name="tagInfoService" ref="tagInfoService"/>
+        <property name="tagTopArtistsService" ref="tagTopArtistsService"/>
         <property name="userTopArtistsService" ref="userTopArtistsService"/>
         <property name="searchIndexUpdateExecutorService" ref="searchIndexUpdateExecutorService"/>
         <property name="searchIndexUpdateSettingsService" ref="searchIndexUpdateSettingsService"/>
@@ -265,6 +272,11 @@
 	</bean>
 
 	<bean id="userTopArtistsClient" class="com.github.hakko.musiccabinet.ws.lastfm.UserTopArtistsClient">
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="throttleService" ref="throttleService"/>
+	</bean>
+
+	<bean id="tagTopArtistsClient" class="com.github.hakko.musiccabinet.ws.lastfm.TagTopArtistsClient">
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 		<property name="throttleService" ref="throttleService"/>
 	</bean>

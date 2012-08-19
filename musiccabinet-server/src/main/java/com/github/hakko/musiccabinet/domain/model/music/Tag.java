@@ -5,8 +5,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Tag {
 
+	private int id;
 	private String name;
 	private short count;
+	
+	public Tag(int id, String name) {
+		setId(id);
+		setName(name);
+	}
 	
 	public Tag(String name, short count) {
 		setName(name);
@@ -17,20 +23,28 @@ public class Tag {
 		
 	}
 	
-	public final void setName(String name) {
-		this.name = name.toLowerCase();
+	public int getId() {
+		return id;
 	}
 
-	public final void setCount(short count) {
-		this.count = count;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name.toLowerCase();
+	}
+
 	public short getCount() {
 		return count;
+	}
+
+	public void setCount(short count) {
+		this.count = count;
 	}
 
 	@Override

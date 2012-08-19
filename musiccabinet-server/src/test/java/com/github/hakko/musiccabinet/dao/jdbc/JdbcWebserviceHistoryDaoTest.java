@@ -10,6 +10,7 @@ import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvoc
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
@@ -44,6 +46,8 @@ public class JdbcWebserviceHistoryDaoTest {
 	@Autowired
 	private JdbcMusicDao musicDao;
 
+	@Autowired JdbcTagDao tagDao;
+	
 	@Autowired
 	private JdbcLibraryAdditionDao additionDao;
 	
@@ -268,6 +272,55 @@ public class JdbcWebserviceHistoryDaoTest {
 
 		dao.logWebserviceInvocation(topArtists2);
 		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
+	}
+
+	@Test
+	public void importTagRelatedDataNotPossibleTwice() {
+		
+		tagDao.createTags(Arrays.asList("disco"));
+		Tag tag = tagDao.getTags().get(0);
+		
+		Calltype TOP_ARTISTS = Calltype.TAG_GET_TOP_ARTISTS;
+		WebserviceInvocation topArtists = new WebserviceInvocation(TOP_ARTISTS, tag);
+		
+		deleteWebserviceInvocations();
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists));
+		dao.logWebserviceInvocation(topArtists);
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists));
+	}
+
+
+	@Test
+	public void tagHistoryAllowanceIsBasedOnId() {
+		
+		tagDao.createTags(Arrays.asList("disco", "sludge"));
+		Tag tag1 = tagDao.getTags().get(0);
+		Tag tag2 = tagDao.getTags().get(1);
+		Calltype TOP_ARTISTS = Calltype.TAG_GET_TOP_ARTISTS;
+
+		WebserviceInvocation topArtists1 = new WebserviceInvocation(TOP_ARTISTS, tag1);
+		WebserviceInvocation topArtists2 = new WebserviceInvocation(TOP_ARTISTS, tag2);
+		
+		deleteWebserviceInvocations();
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists2));
+
+		dao.logWebserviceInvocation(topArtists2);
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
+		
+		dao.logWebserviceInvocation(topArtists2);
+
+		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
+
+		dao.logWebserviceInvocation(topArtists1);
+
+		assertFalse(dao.isWebserviceInvocationAllowed(topArtists1));
 		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
 	}
 

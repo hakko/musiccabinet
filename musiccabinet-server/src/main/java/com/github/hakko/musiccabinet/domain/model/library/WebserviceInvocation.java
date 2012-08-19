@@ -2,6 +2,7 @@ package com.github.hakko.musiccabinet.domain.model.library;
 
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 
 public class WebserviceInvocation {
@@ -17,7 +18,8 @@ public class WebserviceInvocation {
 		ARTIST_GET_TOP_TAGS		(4, 10),
 		ARTIST_GET_INFO			(5, 15),
 		ALBUM_GET_INFO			(6, 15),
-		USER_GET_TOP_ARTISTS	(7, 7);
+		USER_GET_TOP_ARTISTS	(7, 7),
+		TAG_GET_TOP_ARTISTS		(8, 20);
 		
 		private final int databaseId;
 		private final int daysToCache;
@@ -40,6 +42,7 @@ public class WebserviceInvocation {
 	private Album album;
 	private Track track;
 	private LastFmUser user;
+	private Tag tag;
 	private Calltype callType;
 	private Short page;
 	
@@ -81,6 +84,14 @@ public class WebserviceInvocation {
 		this.page = days;
 	}
 
+	public WebserviceInvocation(Calltype callType, Tag tag) {
+		if (tag == null) {
+			throw new IllegalArgumentException("Cannot create WebserviceInvocation for tag null!");
+		}
+		this.callType = callType;
+		this.tag = tag;
+	}
+
 	public Artist getArtist() {
 		return artist;
 	}
@@ -97,6 +108,10 @@ public class WebserviceInvocation {
 		return user;
 	}
 
+	public Tag getTag() {
+		return tag;
+	}
+	
 	public Calltype getCallType() {
 		return callType;
 	}
@@ -119,6 +134,9 @@ public class WebserviceInvocation {
 		}
 		if (user != null) {
 			sb.append(", " + user);
+		}
+		if (tag != null) {
+			sb.append(", " + tag);
 		}
 		if (page != null) {
 			sb.append(", page " + page);

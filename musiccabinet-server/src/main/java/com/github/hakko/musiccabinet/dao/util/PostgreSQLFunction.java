@@ -29,7 +29,9 @@ public enum PostgreSQLFunction {
 		"sql/music/update-artisttoptag.sql"),
 	UPDATE_TAGINFO("music", "update_taginfo",
 		"sql/music/update-taginfo.sql"),
-		
+	UPDATE_TAG_TOP_ARTISTS("music", "update_tagtopartists", 
+		"sql/music/update-tagtopartists.sql"),
+	
 	/* Library schema */
 	GET_LASTFMUSER_ID("library", "get_lastfmuser_id", "sql/library/get-lastfmuser-id.sql"),
 	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 

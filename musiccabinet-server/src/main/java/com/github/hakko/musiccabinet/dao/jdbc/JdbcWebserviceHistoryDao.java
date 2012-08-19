@@ -18,6 +18,7 @@ import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 
 public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHistoryDao {
@@ -51,7 +52,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	private void logWebserviceInvocation(WebserviceInvocation wi, Date invocationTime) {
 		if (wi == null) return;
 		
-		Integer artistId = null, trackId = null, albumId = null, userId = null;
+		Integer artistId = null, trackId = null, albumId = null, userId = null, tagId = null;
 		if (wi.getTrack() != null) {
 			trackId = musicDao.getTrackId(wi.getTrack());
 		} else if (wi.getAlbum() != null) {
@@ -60,6 +61,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			artistId = musicDao.getArtistId(wi.getArtist());
 		} else if (wi.getUser() != null) {
 			userId = lastFmUserDao.getLastFmUserId(wi.getUser().getLastFmUsername());
+		} else if (wi.getTag() != null) {
+			tagId = wi.getTag().getId();
 		}
 		
 		StringBuilder deleteSql = new StringBuilder(
@@ -73,13 +76,17 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			deleteSql.append(" and track_id = " + trackId);
 		if (userId != null)
 			deleteSql.append(" and lastfmuser_id = " + userId);
+		if (tagId != null)
+			deleteSql.append(" and tag_id = " + tagId);
 		if (wi.getPage() != null)
 			deleteSql.append(" and page = " + wi.getPage());
 
 		jdbcTemplate.update(deleteSql.toString());
-		jdbcTemplate.update("insert into library.webservice_history "
-				+ "(artist_id, album_id, track_id, lastfmuser_id, calltype_id, page, invocation_time)"
-				+ "values (?, ?, ?, ?, ?, ?, ?)", artistId, albumId, trackId, userId, 
+		jdbcTemplate.update("insert into library.webservice_history"
+				+ " (artist_id, album_id, track_id, lastfmuser_id, tag_id,"
+				+ " calltype_id, page, invocation_time)"
+				+ " values (?, ?, ?, ?, ?, ?, ?,?)", 
+				artistId, albumId, trackId, userId, tagId, 
 				wi.getCallType().getDatabaseId(), wi.getPage(), invocationTime);
 	}
 	
@@ -101,6 +108,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getArtist());
 		} else if (wi.getUser() != null && wi.getPage() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getUser(), wi.getPage());
+		} else if (wi.getTag() != null) {
+			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getTag());
 		} else if (wi.getPage() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getPage());
 		} else {
@@ -156,6 +165,15 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			+ " and u.lastfm_user = upper(?) and h.page = ?";
 		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{
 				user.getLastFmUsername(), page}, Timestamp.class);
+		return isWebserviceInvocationAllowed(callType, lastInvocation);
+	}
+
+
+	protected boolean isWebserviceInvocationAllowed(Calltype callType, Tag tag) {
+		String sql = "select max(invocation_time) from library.webservice_history h"
+			+ " where calltype_id = " + callType.getDatabaseId()
+			+ " and h.tag_id = " + tag.getId();
+		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, Timestamp.class);
 		return isWebserviceInvocationAllowed(callType, lastInvocation);
 	}
 

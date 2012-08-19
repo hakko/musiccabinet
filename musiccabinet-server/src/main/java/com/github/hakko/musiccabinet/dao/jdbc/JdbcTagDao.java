@@ -17,7 +17,11 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.TagDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagOccurrenceRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
+import com.github.hakko.musiccabinet.domain.model.aggr.TagTopArtists;
+import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.Tag;
 
 public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 
@@ -37,6 +41,12 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		batchUpdate.flush();
 	}
 
+	public List<Tag> getTags() {
+		String sql = "select id, tag_name from music.tag";
+		
+		return jdbcTemplate.query(sql, new TagRowMapper());
+	}
+	
 	/*
 	 * tagCorrection is a map of <original tag name> -> <corrected tag name>
 	 */
@@ -125,6 +135,8 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	 * 
 	 * Right now, the popularity comes distributed in the interval 10-40, to support a
 	 * tag cloud using the popularity as font size.
+	 * 
+	 * TODO : turn min & max values into parameters
 	 */
 	@Override
 	public List<TagOccurrence> getTopTagsOccurrence() {
@@ -136,7 +148,54 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 			
 		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}
-	
+
+	@Override
+	public List<Tag> getTagsWithoutTopArtists() {
+		String sql =
+				"select t.id, t.tag_name from music.tag t"
+				+ " left outer join (select tag_id, count(tag_id) from music.artisttoptag where tag_count > 25 group by tag_id) occ on t.id = occ.tag_id"
+				+ " left outer join (select tag_id, sum(tag_count) from music.artisttoptag group by tag_id) pop on t.id = pop.tag_id"
+				+ " left outer join (select tag_id from library.toptag) tt on t.id = tt.tag_id"
+				+ " where ((occ.count > 5 and pop.sum/occ.count > 50)"
+				+ " or t.id in (select tag_id from library.toptag))"
+				+ " and not exists (select 1 from music.tagtopartist where tag_id = t.id)";
+
+		return jdbcTemplate.query(sql, new TagRowMapper());
+	}
+
+	@Override
+	public void createTopArtists(List<TagTopArtists> tagTopArtists) {
+		if (tagTopArtists.size() > 0) {
+			clearImportTable();
+			for (TagTopArtists tta : tagTopArtists) {
+				batchInsert(tta.getTagName(), tta.getArtists());
+			}
+			updateUserTopArtists();
+		}
+	}
+
+	private void clearImportTable() {
+		jdbcTemplate.execute("truncate music.tagtopartist_import");
+	}
+
+	private void batchInsert(String tagName, List<Artist> artists) {
+		String sql = "insert into music.tagtopartist_import (tag_name, artist_name, rank) values (?,?,?)";
+		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
+		batchUpdate.setBatchSize(1000);
+		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("artist_name", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("rank", Types.INTEGER));
+		
+		for (int i = 0; i < artists.size(); i++) {
+			batchUpdate.update(new Object[]{tagName, artists.get(i).getName(), i});
+		}
+		batchUpdate.flush();
+	}
+
+	private void updateUserTopArtists() {
+		jdbcTemplate.execute("select music.update_tagtopartists()");
+	}
+
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;

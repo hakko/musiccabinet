@@ -20,6 +20,7 @@ import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateExecutorSer
 import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateService;
 import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateSettingsService;
 import com.github.hakko.musiccabinet.service.lastfm.TagInfoService;
+import com.github.hakko.musiccabinet.service.lastfm.TagTopArtistsService;
 import com.github.hakko.musiccabinet.service.lastfm.UserTopArtistsService;
 import com.github.hakko.musiccabinet.service.library.LibraryScannerService;
 
@@ -34,6 +35,7 @@ public class LibraryUpdateService {
     private ArtistInfoService artistInfoService;
     private AlbumInfoService albumInfoService;
     private TagInfoService tagInfoService;
+    private TagTopArtistsService tagTopArtistsService;
     private UserTopArtistsService userTopArtistsService;
     private ScrobbledTracksService scrobbledTracksService;
     
@@ -90,7 +92,8 @@ public class LibraryUpdateService {
     	long millis = -System.currentTimeMillis();
     	executorService.updateSearchIndex(onlyUpdateNewArtists ? 
     			getUpdateServicesForNewArtists() : getUpdateServices());
-    	executorService.updateSearchIndex(asList(tagInfoService)); // re-run for new tags
+    	executorService.updateSearchIndex(asList(
+    			tagInfoService, tagTopArtistsService)); // re-run for new tags
     	millis += System.currentTimeMillis();
 
     	int total = 0;
@@ -134,7 +137,8 @@ public class LibraryUpdateService {
         		artistRelationService, artistTopTracksService,
     			artistTopTagsService, artistInfoService, 
     			albumInfoService, tagInfoService, 
-    			userTopArtistsService, scrobbledTracksService);
+    			tagTopArtistsService, userTopArtistsService, 
+    			scrobbledTracksService);
     }
     
 	public List<SearchIndexUpdateProgress> getSearchIndexUpdateProgress() {
@@ -188,6 +192,10 @@ public class LibraryUpdateService {
 
 	public void setTagInfoService(TagInfoService tagInfoService) {
 		this.tagInfoService = tagInfoService;
+	}
+
+	public void setTagTopArtistsService(TagTopArtistsService tagTopArtistsService) {
+		this.tagTopArtistsService = tagTopArtistsService;
 	}
 
 	public void setUserTopArtistsService(UserTopArtistsService userTopArtistsService) {
