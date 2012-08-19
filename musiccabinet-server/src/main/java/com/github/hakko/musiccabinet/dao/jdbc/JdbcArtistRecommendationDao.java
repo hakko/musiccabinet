@@ -15,7 +15,7 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(
+	public List<ArtistRecommendation> getRelatedArtistsInLibrary(
 			int artistId, int amount, boolean onlyAlbumArtists) {
 		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
 			+ " from music.artistinfo ai"
@@ -30,7 +30,7 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	}
 
 	@Override
-	public List<String> getRecommendedArtistsNotInLibrary(
+	public List<String> getRelatedArtistsNotInLibrary(
 			int artistId, int amount, boolean onlyAlbumArtists) {
 		String sql = "select a.artist_name_capitalization from music.artistrelation ar"
 			+ " inner join music.artist a on ar.target_id = a.id"
@@ -43,16 +43,7 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	}
 
 	@Override
-	public int getNumberOfRelatedSongs(int artistId) {
-		String sql = "select count(*) from library.artisttoptrackplaycount attpc"
-			+ " inner join music.artistrelation ar"
-			+ " on attpc.artist_id = ar.target_id and ar.source_id = " + artistId;
-		
-		return jdbcTemplate.queryForInt(sql);
-	}
-
-	@Override
-	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(
+	public List<ArtistRecommendation> getGenreArtistsInLibrary(
 			String tagName, int offset, int length, boolean onlyAlbumArtists) {
 		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
@@ -70,6 +61,20 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 				+ " limit " + length + " offset " + offset;
 
 		return jdbcTemplate.query(sql, new Object[]{tagName}, new ArtistRecommendationRowMapper());
+	}
+
+	@Override
+	public List<String> getGenreArtistsNotInLibrary(
+			String tagName, int amount, boolean onlyAlbumArtists) {
+		String sql = "select a.artist_name_capitalization from music.tagtopartist tta"
+			+ " inner join music.artist a on tta.artist_id = a.id"
+			+ " inner join music.tag t on tta.tag_id = t.id"
+			+ " where t.tag_name = ? and not exists"
+			+ " (select 1 from library.artist where artist_id = tta.artist_id"
+			+ (onlyAlbumArtists ? " and hasalbums" : "")
+			+ " ) order by tta.rank asc limit " + amount;
+
+		return jdbcTemplate.queryForList(sql, new Object[]{tagName}, String.class);
 	}
 
 	@Override

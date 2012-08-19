@@ -21,22 +21,22 @@ public class ArtistRecommendationService {
 	
 	public List<ArtistRecommendation> getRelatedArtistsInLibrary(
 			int artistId, int amount, boolean onlyAlbumArtists) {
-		return dao.getRecommendedArtistsInLibrary(artistId, amount, onlyAlbumArtists);
+		return dao.getRelatedArtistsInLibrary(artistId, amount, onlyAlbumArtists);
 	}
 	
 	public List<String> getRelatedArtistsNotInLibrary(
 			int artistId, int amount, boolean onlyAlbumArtists) {
-		return dao.getRecommendedArtistsNotInLibrary(artistId, amount, onlyAlbumArtists);
+		return dao.getRelatedArtistsNotInLibrary(artistId, amount, onlyAlbumArtists);
 	}
 
-	public List<ArtistRecommendation> getRecommendedArtistsFromGenre(
+	public List<ArtistRecommendation> getGenreArtistsInLibrary(
 			String tagName, int offset, int length, boolean onlyAlbumArtists) {
-		return dao.getRecommendedArtistsFromGenre(tagName, offset, length, onlyAlbumArtists);
+		return dao.getGenreArtistsInLibrary(tagName, offset, length, onlyAlbumArtists);
 	}
-	
-	// TODO : currently not used, should be, but display more nicely on a scale from "Poor" to "Good"
-	public int getMatchingSongs(int artistId) {
-		return dao.getNumberOfRelatedSongs(artistId);
+
+	public List<String> getGenreArtistsNotInLibrary(
+			String tagName, int amount, boolean onlyAlbumArtists) {
+		return dao.getGenreArtistsNotInLibrary(tagName, amount, onlyAlbumArtists);
 	}
 
 	// Spring setters

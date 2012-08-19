@@ -62,12 +62,7 @@ public class ArtistRecommendationServiceTest {
 	
 	@Test
 	public void canInvokeRecommendedArtistsFromGenre() {
-		arService.getRecommendedArtistsFromGenre("outlaw country", 0, 20, true);
+		arService.getGenreArtistsInLibrary("outlaw country", 0, 20, true);
 	}
 
-	@Test
-	public void canInvokeMatchingSongs() throws ApplicationException {
-		arService.getMatchingSongs(madonnaId);
-	}
-	
 }

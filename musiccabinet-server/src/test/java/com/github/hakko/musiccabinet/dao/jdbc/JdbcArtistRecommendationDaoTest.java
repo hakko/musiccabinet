@@ -20,8 +20,10 @@ import com.github.hakko.musiccabinet.dao.ArtistRelationDao;
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
 import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.MusicDao;
+import com.github.hakko.musiccabinet.dao.TagDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
+import com.github.hakko.musiccabinet.domain.model.aggr.TagTopArtists;
 import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.ArtistInfo;
@@ -40,7 +42,10 @@ public class JdbcArtistRecommendationDaoTest {
 
 	@Autowired
 	private ArtistRelationDao artistRelationDao;
-	
+
+	@Autowired
+	private TagDao tagDao;
+
 	@Autowired
 	private ArtistTopTracksDao artistTopTracksDao;
 	
@@ -74,6 +79,9 @@ public class JdbcArtistRecommendationDaoTest {
 		}
 		artistRelationDao.createArtistRelations(cher, artistRelations);
 
+		tagDao.createTopArtists(Arrays.asList(new TagTopArtists("disco",
+				Arrays.asList(cher, madonna, cyndi, celine, kylie))));
+		
 		Track track1, track2, track3;
 		artistTopTracksDao.createTopTracks(madonna, Arrays.asList(
 				track1 = new Track(madonna, "Like A Prayer"),
@@ -103,17 +111,37 @@ public class JdbcArtistRecommendationDaoTest {
 		}
 		artistInfoDao.createArtistInfo(artistInfos);
 	}
+
+	@Test
+	public void validateRelatedArtistsInLibrary() {
+		List<ArtistRecommendation> relatedArtists = 
+			artistRecommendationDao.getRelatedArtistsInLibrary(cherId, 10, true);
+		
+		Assert.assertNotNull(relatedArtists);
+		Assert.assertEquals(2, relatedArtists.size());
+
+		List<Artist> artists = Arrays.asList(
+				new Artist(relatedArtists.get(0).getArtistName()), 
+				new Artist(relatedArtists.get(1).getArtistName()));
+
+		Assert.assertTrue(artists.contains(madonna));
+		Assert.assertTrue(artists.contains(cyndi));
+
+		Assert.assertFalse(artists.contains(cher));
+		Assert.assertFalse(artists.contains(celine));
+		Assert.assertFalse(artists.contains(kylie));
+	}
 	
 	@Test
-	public void validateRecommendedArtists() {
-		List<String> recommendedArtistNames = 
-			artistRecommendationDao.getRecommendedArtistsNotInLibrary(cherId, 10, true);
+	public void validateRelatedArtistsNotInLibrary() {
+		List<String> relatedArtistNames = 
+			artistRecommendationDao.getRelatedArtistsNotInLibrary(cherId, 10, true);
 		
-		Assert.assertNotNull(recommendedArtistNames);
-		Assert.assertEquals(2, recommendedArtistNames.size());
+		Assert.assertNotNull(relatedArtistNames);
+		Assert.assertEquals(2, relatedArtistNames.size());
 
 		List<Artist> artists = new ArrayList<>();
-		for (String artistName : recommendedArtistNames) {
+		for (String artistName : relatedArtistNames) {
 			artists.add(new Artist(artistName));
 		}
 
@@ -126,30 +154,24 @@ public class JdbcArtistRecommendationDaoTest {
 	}
 
 	@Test
-	public void validateArtistsInLibrary() {
-		List<ArtistRecommendation> artistRecommendations = 
-			artistRecommendationDao.getRecommendedArtistsInLibrary(cherId, 10, true);
+	public void validateGenreArtistsNotInLibrary() {
+		List<String> relatedArtistNames = 
+			artistRecommendationDao.getGenreArtistsNotInLibrary("disco", 10, true);
 		
-		Assert.assertNotNull(artistRecommendations);
-		Assert.assertEquals(2, artistRecommendations.size());
+		Assert.assertNotNull(relatedArtistNames);
+		Assert.assertEquals(3, relatedArtistNames.size());
 
-		List<Artist> artists = Arrays.asList(
-				new Artist(artistRecommendations.get(0).getArtistName()), 
-				new Artist(artistRecommendations.get(1).getArtistName()));
+		List<Artist> artists = new ArrayList<>();
+		for (String artistName : relatedArtistNames) {
+			artists.add(new Artist(artistName));
+		}
 
-		Assert.assertTrue(artists.contains(madonna));
-		Assert.assertTrue(artists.contains(cyndi));
+		Assert.assertTrue(artists.contains(celine));
+		Assert.assertTrue(artists.contains(kylie));
+		Assert.assertTrue(artists.contains(cher));
 
-		Assert.assertFalse(artists.contains(cher));
-		Assert.assertFalse(artists.contains(celine));
-		Assert.assertFalse(artists.contains(kylie));
-	}
-	
-	@Test
-	public void validateMatchingSongCount() {
-		int matchingSongs = artistRecommendationDao.getNumberOfRelatedSongs(cherId);
-
-		Assert.assertEquals(3, matchingSongs);
+		Assert.assertFalse(artists.contains(madonna));
+		Assert.assertFalse(artists.contains(cyndi));
 	}
 
 }
