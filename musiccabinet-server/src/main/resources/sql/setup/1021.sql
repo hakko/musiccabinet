@@ -1,8 +1,8 @@
 alter table library.artist add column hasalbums boolean not null default false;
 
 insert into library.artist (artist_id)
-select distinct artist_id from library.filetag
-where artist_id not in (select artist_id from library.artist);
+select distinct artist_id from library.filetag ft
+where not exists (select 1 from library.artist where artist_id = ft.artist_id);
 
 update library.artist la
 	set artist_name_search = to_tsvector('english', artist_name)
