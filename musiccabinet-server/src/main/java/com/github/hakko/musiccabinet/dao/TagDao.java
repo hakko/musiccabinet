@@ -12,6 +12,7 @@ public interface TagDao {
 	void createTags(List<String> tags);
 	List<Tag> getTags();
 	void createTagCorrections(Map<String, String> tagCorrections);
+	Map<String, String> getCorrectedTags();
 	List<TagOccurrence> getAvailableTags();
 	List<String> getTopTags();
 	void setTopTags(List<String> topTags);

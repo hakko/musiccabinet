@@ -3,8 +3,10 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.getParameters;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 
@@ -54,7 +57,13 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	public void createTagCorrections(Map<String, String> tagCorrections) {
 		String sql = "update music.tag t set corrected_id = null where corrected_id is not null";
 		jdbcTemplate.execute(sql);
+
+		if (tagCorrections.size() == 0) return;
 		
+		sql = getCreateMissingTagsSql(tagCorrections.size());
+		jdbcTemplate.update(sql, (Object[]) tagCorrections.values().
+				toArray(new String[tagCorrections.size()]));
+
 		sql = "update music.tag t set corrected_id = tc.id"
 				+ " from music.tag tc where t.tag_name = ? and tc.tag_name = ?";
 		
@@ -67,6 +76,32 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 			batchUpdate.update(new Object[]{tag, tagCorrections.get(tag)});
 		}
 		batchUpdate.flush();
+	}
+
+	protected String getCreateMissingTagsSql(int tags) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert into music.tag (tag_name) select tag_name from (values (?)");
+		for (int i = 1; i < tags; i++) {
+			sb.append(",(?)");
+		}
+		sb.append(") t (tag_name) where not exists ");
+		sb.append("(select 1 from music.tag where tag_name = t.tag_name)");
+		return sb.toString();
+	}
+	
+	@Override
+	public Map<String, String> getCorrectedTags() {
+		String sql = "select t.tag_name, tc.tag_name from music.tag t"
+				+ " inner join music.tag tc on t.corrected_id = tc.id";
+		
+		final Map<String, String> correctedTags = new HashMap<>();
+		jdbcTemplate.query(sql, new RowCallbackHandler() {
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				correctedTags.put(rs.getString(1), rs.getString(2));
+			}
+		});
+		return correctedTags;
 	}
 	
 	/*
