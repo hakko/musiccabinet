@@ -3,7 +3,9 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import static java.util.Arrays.asList;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -113,7 +115,43 @@ public class JdbcTagDaoTest {
 		Assert.assertEquals(1, tags.size());
 		Assert.assertEquals("sludge", tags.get(0).getName());
 	}
-
+	
+	@Test
+	public void createsTagCorrections() {
+		deleteTags();
+		
+		dao.createTags(Arrays.asList("disco", "80s", "pop"));
+		
+		Map<String, String> corrections = new HashMap<>();
+		corrections.put("80s", "disco");
+		dao.createTagCorrections(corrections);
+		
+		Map<String, String> correctedTags = dao.getCorrectedTags();
+		
+		Assert.assertNotNull(correctedTags);
+		Assert.assertEquals(1, correctedTags.size());
+		Assert.assertTrue(correctedTags.containsKey("80s"));
+		Assert.assertEquals("disco", correctedTags.get("80s"));
+	}
+	
+	@Test
+	public void createsNewTagsWhenCreatingCorrections() {
+		deleteTags();
+		
+		Map<String, String> corrections = new HashMap<>();
+		corrections.put("sludge", "drone");
+		
+		dao.createTags(Arrays.asList("disco", "sludge"));
+		dao.createTagCorrections(corrections);
+		
+		List<Tag> tags = dao.getTags();
+		Assert.assertNotNull(tags);
+		Assert.assertEquals(3, tags.size());
+		for (String tagName : Arrays.asList("disco", "sludge", "drone")) {
+			Assert.assertTrue(tags.contains(new Tag(tagName, (short) 0)));
+		}
+	}
+	
 	private void deleteTags() {
 		dao.getJdbcTemplate().execute("truncate music.tag cascade");
 	}
