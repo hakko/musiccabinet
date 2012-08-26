@@ -7,7 +7,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class RadioTuneClient extends AbstractWSPostAuthenticatedClient {
+public class RadioTuneClient extends AbstractWSPostClient {
 
 	public static final String METHOD = "radio.tune";
 	

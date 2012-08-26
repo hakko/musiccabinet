@@ -11,6 +11,10 @@ public class TagInfoClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "tag.getinfo";
 
+	public TagInfoClient() {
+		super(WSConfiguration.UNAUTHENTICATED_UNLOGGED);
+	}
+	
 	/*
 	 * Default behavior is to always check if a call to Last.fm is allowed, by
 	 * controlling if an identical call has already been made shortly before.

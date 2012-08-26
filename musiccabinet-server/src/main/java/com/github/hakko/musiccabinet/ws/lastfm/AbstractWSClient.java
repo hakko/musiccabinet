@@ -31,7 +31,7 @@ public abstract class AbstractWSClient {
 	 * Placed as class variable to allow for unit testing.
 	 */
 	protected HttpClient httpClient;
-
+	
 	public static final String PARAM_METHOD = "method";
 	public static final String PARAM_ARTIST = "artist";
 	public static final String PARAM_ALBUM = "album";
@@ -58,13 +58,6 @@ public abstract class AbstractWSClient {
 	protected static final int TIMEOUT = 60 * 1000; // 60 sec
 
 	protected static final Logger LOG = Logger.getLogger(AbstractWSClient.class);
-
-	private Comparator<NameValuePair> paramComparator = new Comparator<NameValuePair>() {
-		@Override
-		public int compare(NameValuePair nvp1, NameValuePair nvp2) {
-			return nvp1.getName().compareTo(nvp2.getName());
-		}
-	};
 	
 	public AbstractWSClient() {
 		// default values for a production environment
@@ -74,29 +67,10 @@ public abstract class AbstractWSClient {
 		HttpConnectionParams.setSoTimeout(params, TIMEOUT);
 	}
 
-	/*
-	 * Try calling the web service. If invocation fails but it is marked as
-	 * recoverable, sleep for five minutes and try again until fifteen
-	 * minutes has passed. Then give up.
-	 */
-	protected WSResponse invokeCall(List<NameValuePair> params) throws ApplicationException {
-		WSResponse wsResponse = null;
-		int callAttempts = 0;
-		while (++callAttempts <= getCallAttempts()) {
-			wsResponse = invokeSingleCall(params);
-			if (wsResponse.wasCallSuccessful()) {
-				break;
-			}
-			if (!wsResponse.isErrorRecoverable()) {
-				break;
-			}
-			try {
-				Thread.sleep(getSleepTime());
-			} catch (InterruptedException e) {
-				// we can't do much about this
-			}
-		}
-		return wsResponse;
+	protected List<NameValuePair> getDefaultParameterList() {
+		List<NameValuePair> params = new ArrayList<>();
+		params.add(new BasicNameValuePair(PARAM_API_KEY, API_KEY));
+		return params;
 	}
 	
 	/*
@@ -119,34 +93,24 @@ public abstract class AbstractWSClient {
 			throw new ApplicationException("Can not make authenticated call!", e);
 		}
 	}
+
+	private Comparator<NameValuePair> paramComparator = new Comparator<NameValuePair>() {
+		@Override
+		public int compare(NameValuePair nvp1, NameValuePair nvp2) {
+			return nvp1.getName().compareTo(nvp2.getName());
+		}
+	};
 	
 	public void close() {
 		httpClient.getConnectionManager().shutdown();
 	}
-
-	protected List<NameValuePair> getDefaultParameterList() {
-		List<NameValuePair> params = new ArrayList<>();
-		params.add(new BasicNameValuePair(PARAM_API_KEY, API_KEY));
-		return params;
-	}
-	
-	/*
-	 * Placed here to allow sub-classes to override (for unit testing).
-	 */
-	protected long getSleepTime() {
-		return 1000 * 60 * 5;
-	}
-	
-	protected int getCallAttempts() {
-		return 3;
-	}
-
-	protected abstract WSResponse invokeSingleCall(List<NameValuePair> params) throws ApplicationException;
 	
 	protected HttpClient getHttpClient() {
 		return httpClient;
 	}
 
+	// Spring setter(s)
+	
 	public void setHttpClient(HttpClient httpClient) {
 		this.httpClient = httpClient;
 	}

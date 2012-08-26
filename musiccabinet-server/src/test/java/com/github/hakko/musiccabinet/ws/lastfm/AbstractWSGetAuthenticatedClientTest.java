@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.ws.lastfm;
 
 import static com.github.hakko.musiccabinet.configuration.CharSet.UTF8;
+import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.API_SEC;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.PARAM_API_KEY;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.PARAM_API_SIG;
 import static com.github.hakko.musiccabinet.ws.lastfm.AbstractWSClient.PARAM_METHOD;
@@ -32,7 +33,7 @@ public class AbstractWSGetAuthenticatedClientTest {
 		String signature = 
 				PARAM_API_KEY + API_KEY + 
 				PARAM_METHOD + METHOD + 
-				PARAM_TOKEN + TOKEN + AbstractWSGetAuthenticatedClient.API_SEC;
+				PARAM_TOKEN + TOKEN + API_SEC;
 		final String API_SIG = new String(encodeHex(getInstance("md5").digest(signature.getBytes(UTF8))));
 
 		List<NameValuePair> params = new ArrayList<>();

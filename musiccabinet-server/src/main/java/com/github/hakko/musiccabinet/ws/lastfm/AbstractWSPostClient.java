@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -45,47 +44,21 @@ public abstract class AbstractWSPostClient extends AbstractWSClient {
 	 * case. Make sure to use proper capitalization.
 	 */
 	protected WSResponse executeWSRequest(List<NameValuePair> params) throws ApplicationException {
-		return invokeCall(params);
-	}
-	
-	/*
-	 * Make a single call to a Last.fm web service, and return a packaged result.
-	 */
-	protected WSResponse invokeSingleCall(List<NameValuePair> params) throws ApplicationException {
-		LOG.debug("invokeSingleCall for params");
+		authenticateParameterList(params);
 		WSResponse wsResponse;
 		HttpClient httpClient = getHttpClient();
 		try {
 			HttpPost httpPost = new HttpPost(getURI(params));
 			httpPost.setEntity(new UrlEncodedFormEntity(params, CharSet.UTF8));
-			LOG.debug("httpPost: " + httpPost);
-			for (Header header : httpPost.getAllHeaders()) {
-				LOG.debug("httpPost header: " + header);
-			}
-			LOG.debug("httpPost method: " + httpPost.getMethod());
-			LOG.debug("httpPost URI: " + httpPost.getURI());
-			for (NameValuePair param : params) {
-				LOG.debug("param: " + param);
-			}
-            LOG.debug("httpClient: " + httpClient + ", manager: " + httpClient.getConnectionManager());
-            try {
-            	HttpResponse response = httpClient.execute(httpPost);
-            	int statusCode = response.getStatusLine().getStatusCode();
-            	HttpEntity responseEntity = response.getEntity();
-                String responseBody = EntityUtils.toString(responseEntity);
-                EntityUtils.consume(responseEntity);
-            	LOG.debug("post responseBody: " + responseBody);
-            	if (statusCode == 200) {
-            		wsResponse = new WSResponse(responseBody);
-            	} else {
-    				wsResponse = new WSResponse(isHttpRecoverable(statusCode), 
-    						statusCode, responseBody);
-            	}
-            	wsResponse = new WSResponse(responseBody);
-            } catch (Throwable t) {
-            	LOG.warn("execution post threw exception", t);
-            	throw t;
-            }
+			HttpResponse response = httpClient.execute(httpPost);
+			int statusCode = response.getStatusLine().getStatusCode();
+			HttpEntity responseEntity = response.getEntity();
+			String responseBody = EntityUtils.toString(responseEntity);
+			EntityUtils.consume(responseEntity);
+			LOG.debug("post responseBody: " + responseBody);
+			wsResponse = (statusCode == 200) ? 
+					new WSResponse(responseBody) :
+					new WSResponse(isHttpRecoverable(statusCode), statusCode, responseBody);
 		} catch (ClientProtocolException e) {
 			throw new ApplicationException(
 					"The request to post data to Last.fm could not be completed!", e);

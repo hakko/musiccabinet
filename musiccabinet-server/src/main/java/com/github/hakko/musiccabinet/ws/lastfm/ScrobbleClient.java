@@ -8,7 +8,7 @@ import org.apache.http.message.BasicNameValuePair;
 import com.github.hakko.musiccabinet.domain.model.aggr.Scrobble;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class ScrobbleClient extends AbstractWSPostAuthenticatedClient {
+public class ScrobbleClient extends AbstractWSPostClient {
 
 	public static final String METHOD = "track.scrobble";
 	

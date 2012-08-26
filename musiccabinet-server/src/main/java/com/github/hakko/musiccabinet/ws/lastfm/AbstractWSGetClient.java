@@ -17,11 +17,9 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.message.BasicNameValuePair;
 
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
-import com.github.hakko.musiccabinet.service.LastFmService;
 import com.github.hakko.musiccabinet.service.lastfm.ThrottleService;
 import com.github.hakko.musiccabinet.service.lastfm.WebserviceHistoryService;
 
@@ -54,6 +52,18 @@ public abstract class AbstractWSGetClient extends AbstractWSClient {
 	 * second, averaged over a 5 minute period".
 	 */
 	private ThrottleService throttleService;
+
+	protected final WSConfiguration wsConfiguration;
+
+	public AbstractWSGetClient() {
+		super();
+		this.wsConfiguration = WSConfiguration.UNAUTHENTICATED_LOGGED;
+	}
+	
+	public AbstractWSGetClient(WSConfiguration wsConfiguration) {
+		super();
+		this.wsConfiguration = wsConfiguration;
+	}
 	
 	/*
 	 * Executes a request to a Last.fm web service.
@@ -72,7 +82,15 @@ public abstract class AbstractWSGetClient extends AbstractWSClient {
 	 */
 	protected WSResponse executeWSRequest(WebserviceInvocation wi,
 			List<NameValuePair> params) throws ApplicationException {
-		params.add(new BasicNameValuePair(PARAM_API_KEY, LastFmService.API_KEY));
+		if (wsConfiguration.isAuthenticated()) {
+			authenticateParameterList(params);
+		}
+		return wsConfiguration.isLogInvocation() ?
+				invokeLoggedCall(wi, params) :
+				invokeCall(params);
+	}
+	
+	private WSResponse invokeLoggedCall(WebserviceInvocation wi, List<NameValuePair> params) throws ApplicationException {
 		WSResponse wsResponse;
 		if (getHistoryService().isWebserviceInvocationAllowed(wi)) {
 			wsResponse = invokeCall(params);
@@ -88,11 +106,36 @@ public abstract class AbstractWSGetClient extends AbstractWSClient {
 		}
 		return wsResponse;
 	}
+
+	/*
+	 * Try calling the web service. If invocation fails but it is marked as
+	 * recoverable, sleep for five minutes and try again until fifteen
+	 * minutes has passed. Then give up.
+	 */
+	private WSResponse invokeCall(List<NameValuePair> params) throws ApplicationException {
+		WSResponse wsResponse = null;
+		int callAttempts = 0;
+		while (++callAttempts <= wsConfiguration.getCallAttempts()) {
+			wsResponse = invokeSingleCall(params);
+			if (wsResponse.wasCallSuccessful()) {
+				break;
+			}
+			if (!wsResponse.isErrorRecoverable()) {
+				break;
+			}
+			try {
+				Thread.sleep(wsConfiguration.getSleepTime());
+			} catch (InterruptedException e) {
+				// we can't do much about this
+			}
+		}
+		return wsResponse;
+	}
 	
 	/*
 	 * Make a single call to a Last.fm web service, and return a packaged result.
 	 */
-	protected WSResponse invokeSingleCall(List<NameValuePair> params) throws ApplicationException {
+	private WSResponse invokeSingleCall(List<NameValuePair> params) throws ApplicationException {
 		if (throttleService != null) {
 			throttleService.awaitAllowance();
 		}

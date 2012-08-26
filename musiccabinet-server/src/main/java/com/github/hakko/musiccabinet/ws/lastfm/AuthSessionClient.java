@@ -7,11 +7,12 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class AuthSessionClient extends AbstractWSGetAuthenticatedClient {
+public class AuthSessionClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "auth.getSession";
 	
 	public AuthSessionClient() {
+		super(WSConfiguration.AUTHENTICATED_UNLOGGED);
 	}
 	
 	public WSResponse getAuthSession(String token) throws ApplicationException {

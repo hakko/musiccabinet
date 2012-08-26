@@ -6,7 +6,7 @@ import org.apache.http.NameValuePair;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class TestWSPostAuthenticatedClient extends AbstractWSPostAuthenticatedClient {
+public class TestWSPostAuthenticatedClient extends AbstractWSPostClient {
 
 	private List<NameValuePair> params = getDefaultParameterList();
 	

@@ -7,9 +7,13 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class RadioPlaylistClient extends AbstractWSGetAuthenticatedClient {
+public class RadioPlaylistClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "radio.getPlaylist";
+	
+	public RadioPlaylistClient() {
+		super(WSConfiguration.AUTHENTICATED_UNLOGGED);
+	}
 	
 	public WSResponse getRadioPlaylist() throws ApplicationException {
 		List<NameValuePair> params = getDefaultParameterList();

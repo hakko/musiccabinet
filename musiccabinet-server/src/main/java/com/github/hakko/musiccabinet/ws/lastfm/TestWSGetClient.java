@@ -13,17 +13,13 @@ public class TestWSGetClient extends AbstractWSGetClient {
 	private List<NameValuePair> params;
 	
 	public TestWSGetClient(WebserviceInvocation invocation, List<NameValuePair> params) {
+		super(WSConfiguration.UNAUTHENTICATED_LOGGED_TEST);
 		this.invocation = invocation;
 		this.params = params;
 	}
 	
 	public WSResponse testCall() throws ApplicationException {
 		return executeWSRequest(invocation, params);
-	}
-	
-	@Override
-	protected long getSleepTime() {
-		return 0L;
 	}
 
 }

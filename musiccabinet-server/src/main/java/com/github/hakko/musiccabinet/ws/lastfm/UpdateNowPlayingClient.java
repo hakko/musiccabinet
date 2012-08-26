@@ -8,7 +8,7 @@ import org.apache.http.message.BasicNameValuePair;
 import com.github.hakko.musiccabinet.domain.model.aggr.Scrobble;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
-public class UpdateNowPlayingClient extends AbstractWSPostAuthenticatedClient {
+public class UpdateNowPlayingClient extends AbstractWSPostClient {
 
 	public static final String METHOD = "track.updateNowPlaying";
 	
@@ -20,16 +20,6 @@ public class UpdateNowPlayingClient extends AbstractWSPostAuthenticatedClient {
 		params.add(new BasicNameValuePair(PARAM_SK, scrobble.getLastFmUser().getSessionKey()));
 		
 		return executeWSRequest(params);
-	}
-	
-	@Override
-	protected int getCallAttempts() {
-		return 1;
-	}
-	
-	@Override
-	public long getSleepTime() {
-		return 0;
 	}
 	
 }
