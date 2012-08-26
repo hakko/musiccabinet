@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.service;
 
+import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 
 import java.net.InetSocketAddress;
@@ -21,6 +22,7 @@ import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateService;
 import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateSettingsService;
 import com.github.hakko.musiccabinet.service.lastfm.TagInfoService;
 import com.github.hakko.musiccabinet.service.lastfm.TagTopArtistsService;
+import com.github.hakko.musiccabinet.service.lastfm.UserRecommendedArtistsService;
 import com.github.hakko.musiccabinet.service.lastfm.UserTopArtistsService;
 import com.github.hakko.musiccabinet.service.library.LibraryScannerService;
 
@@ -37,6 +39,7 @@ public class LibraryUpdateService {
     private TagInfoService tagInfoService;
     private TagTopArtistsService tagTopArtistsService;
     private UserTopArtistsService userTopArtistsService;
+    private UserRecommendedArtistsService userRecommendedArtistsService;
     private ScrobbledTracksService scrobbledTracksService;
     
     private PlaylistGeneratorService playlistGeneratorService;
@@ -64,7 +67,11 @@ public class LibraryUpdateService {
 		
 		isIndexBeingCreated = true;
 		LOG.info("Starting library update. Scan " + paths + ", offline = " + offlineScan);
-		
+
+    	for (SearchIndexUpdateService updateService : getUpdateServices()) {
+    		updateService.reset();
+    	}
+
 		long millis = -System.currentTimeMillis();
 		libraryScannerService.update(paths, isRootPaths);
 		millis += System.currentTimeMillis();
@@ -86,9 +93,6 @@ public class LibraryUpdateService {
 	private void updateLastFmData(boolean onlyUpdateNewArtists) {
 		LOG.debug("Starting last.fm update.");
 		settingsService.setOnlyUpdateNewArtists(onlyUpdateNewArtists);
-    	for (SearchIndexUpdateService updateService : getUpdateServices()) {
-    		updateService.reset();
-    	}
     	long millis = -System.currentTimeMillis();
     	executorService.updateSearchIndex(onlyUpdateNewArtists ? 
     			getUpdateServicesForNewArtists() : getUpdateServices());
@@ -98,7 +102,7 @@ public class LibraryUpdateService {
 
     	int total = 0;
     	for (SearchIndexUpdateService updateService : getUpdateServices()) {
-    		total += updateService.getProgress().getTotalOperations();
+    		total += max(0, updateService.getProgress().getTotalOperations());
     		LOG.info(updateService.getProgress().getTotalOperations() + " " + 
     				updateService.getUpdateDescription() + ".");
     	}
@@ -138,7 +142,7 @@ public class LibraryUpdateService {
     			artistTopTagsService, artistInfoService, 
     			albumInfoService, tagInfoService, 
     			tagTopArtistsService, userTopArtistsService, 
-    			scrobbledTracksService);
+    			userRecommendedArtistsService, scrobbledTracksService);
     }
     
 	public List<SearchIndexUpdateProgress> getSearchIndexUpdateProgress() {
@@ -200,6 +204,10 @@ public class LibraryUpdateService {
 
 	public void setUserTopArtistsService(UserTopArtistsService userTopArtistsService) {
 		this.userTopArtistsService = userTopArtistsService;
+	}
+
+	public void setUserRecommendedArtistsService(UserRecommendedArtistsService userRecommendedArtistsService) {
+		this.userRecommendedArtistsService = userRecommendedArtistsService;
 	}
 
 	public void setSearchIndexUpdateExecutorService(SearchIndexUpdateExecutorService executorService) {

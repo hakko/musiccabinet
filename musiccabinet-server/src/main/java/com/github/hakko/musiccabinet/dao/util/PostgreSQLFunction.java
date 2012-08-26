@@ -38,6 +38,8 @@ public enum PostgreSQLFunction {
 		"sql/library/update-trackplaycount.sql"),
 	UPDATE_USER_TOP_ARTISTS("library", "update_usertopartists", 
 		"sql/library/update-usertopartists.sql"),
+	UPDATE_USER_RECOMMENDED_ARTISTS("library", "update_userrecartists", 
+		"sql/library/update-userrecommendedartists.sql"),
 		
 	ADD_TO_LIBRARY("library", "add_to_library",
 		"sql/library/add-to-library.sql"),

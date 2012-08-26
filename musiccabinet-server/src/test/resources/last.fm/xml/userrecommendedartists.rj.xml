@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lfm status="ok">
+<recommendations user="rj" page="4" perPage="50" totalPages="6" total="276">
+  <artist>
+    <name>ABBA</name>
+    <mbid/>
+    <url>http://www.last.fm/music/ABBA</url>
+    <streamable>0</streamable>
+    <image size="small">...</image>
+    <image size="medium">...</image>
+    <image size="large">...</image>
+  </artist>
+</recommendations></lfm>

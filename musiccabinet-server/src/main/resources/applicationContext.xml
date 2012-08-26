@@ -170,6 +170,12 @@
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 	</bean>
 
+	<bean id="userRecommendedArtistsService" class="com.github.hakko.musiccabinet.service.lastfm.UserRecommendedArtistsService">
+		<property name="userRecommendedArtistsClient" ref="userRecommendedArtistsClient"/>
+		<property name="userRecommendedArtistsDao" ref="userRecommendedArtistsDao"/>
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+	</bean>
+
 	<bean id="tagTopArtistsService" class="com.github.hakko.musiccabinet.service.lastfm.TagTopArtistsService">
 		<property name="tagTopArtistsClient" ref="tagTopArtistsClient"/>
 		<property name="tagDao" ref="tagDao"/>
@@ -217,6 +223,7 @@
         <property name="tagInfoService" ref="tagInfoService"/>
         <property name="tagTopArtistsService" ref="tagTopArtistsService"/>
         <property name="userTopArtistsService" ref="userTopArtistsService"/>
+        <property name="userRecommendedArtistsService" ref="userRecommendedArtistsService"/>
         <property name="searchIndexUpdateExecutorService" ref="searchIndexUpdateExecutorService"/>
         <property name="searchIndexUpdateSettingsService" ref="searchIndexUpdateSettingsService"/>
 	</bean>
@@ -267,13 +274,18 @@
 	</bean>
 	
 	<bean id="tagInfoClient" class="com.github.hakko.musiccabinet.ws.lastfm.TagInfoClient">
-		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 		<property name="throttleService" ref="throttleService"/>
 	</bean>
 
 	<bean id="userTopArtistsClient" class="com.github.hakko.musiccabinet.ws.lastfm.UserTopArtistsClient">
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 		<property name="throttleService" ref="throttleService"/>
+	</bean>
+
+	<bean id="userRecommendedArtistsClient" class="com.github.hakko.musiccabinet.ws.lastfm.UserRecommendedArtistsClient">
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="throttleService" ref="throttleService"/>
+		<property name="lastFmUserDao" ref="lastFmUserDao"/>
 	</bean>
 
 	<bean id="tagTopArtistsClient" class="com.github.hakko.musiccabinet.ws.lastfm.TagTopArtistsClient">
@@ -375,6 +387,10 @@
 	</bean>
 
 	<bean id="userTopArtistsDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcUserTopArtistsDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<bean id="userRecommendedArtistsDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcUserRecommendedArtistsDao">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
 	

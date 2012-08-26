@@ -50,8 +50,6 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	}
 
 	private void logWebserviceInvocation(WebserviceInvocation wi, Date invocationTime) {
-		if (wi == null) return;
-		
 		Integer artistId = null, trackId = null, albumId = null, userId = null, tagId = null;
 		if (wi.getTrack() != null) {
 			trackId = musicDao.getTrackId(wi.getTrack());
@@ -98,9 +96,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	 */
 	@Override
 	public boolean isWebserviceInvocationAllowed(WebserviceInvocation wi) {
-		if (wi == null) {
-			return true;
-		} else if (wi.getTrack() != null) {
+		if (wi.getTrack() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getTrack());
 		} else if (wi.getAlbum() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getAlbum());
@@ -108,6 +104,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getArtist());
 		} else if (wi.getUser() != null && wi.getPage() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getUser(), wi.getPage());
+		} else if (wi.getUser() != null) {
+			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getUser());
 		} else if (wi.getTag() != null) {
 			return isWebserviceInvocationAllowed(wi.getCallType(), wi.getTag());
 		} else if (wi.getPage() != null) {
@@ -168,6 +166,15 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 		return isWebserviceInvocationAllowed(callType, lastInvocation);
 	}
 
+	protected boolean isWebserviceInvocationAllowed(Calltype callType, LastFmUser user) {
+		String sql = "select max(invocation_time) from library.webservice_history h"
+			+ " inner join library.lastfmuser u on h.lastfmuser_id = u.id"
+			+ " where calltype_id = " + callType.getDatabaseId()
+			+ " and u.lastfm_user = upper(?)";
+		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{
+				user.getLastFmUsername()}, Timestamp.class);
+		return isWebserviceInvocationAllowed(callType, lastInvocation);
+	}
 
 	protected boolean isWebserviceInvocationAllowed(Calltype callType, Tag tag) {
 		String sql = "select max(invocation_time) from library.webservice_history h"

@@ -39,6 +39,16 @@ public class ArtistRecommendationService {
 		return dao.getGenreArtistsNotInLibrary(tagName, amount, onlyAlbumArtists);
 	}
 
+	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(
+			String lastFmUsername, int offset, int limit, boolean onlyAlbumArtists) {
+		return dao.getRecommendedArtistsInLibrary(lastFmUsername, offset, limit, onlyAlbumArtists);
+	}
+
+	public List<String> getRecommendedArtistsNotInLibrary(
+			String lastFmUsername, int amount, boolean onlyAlbumArtists) {
+		return dao.getRecommendedArtistsNotInLibrary(lastFmUsername, amount, onlyAlbumArtists);
+	}
+
 	// Spring setters
 	
 	public void setArtistRecommendationDao(ArtistRecommendationDao artistRecommendationDao) {

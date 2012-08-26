@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<properties>
-		<version.musiccabinet>0.7.7</version.musiccabinet>
+		<version.musiccabinet>0.7.8</version.musiccabinet>
 		<version.commons-lang>2.5</version.commons-lang>
 		<version.commons-io>2.4</version.commons-io>
 		<version.joda-time>2.0</version.joda-time>

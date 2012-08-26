@@ -78,6 +78,38 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	}
 
 	@Override
+	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(
+			String lastFmUsername, int offset, int limit, boolean onlyAlbumArtists) {
+		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
+				+ " from music.artistinfo ai"
+				+ " inner join music.artist ma on ai.artist_id = ma.id"
+				+ " inner join library.artist la on la.artist_id = ma.id"
+				+ " inner join library.userrecommendedartist ura on ura.artist_id = ma.id"
+				+ " inner join library.lastfmuser u on ura.lastfmuser_id = u.id"
+				+ " where u.lastfm_user = upper(?)"
+				+ (onlyAlbumArtists ? " and la.hasalbums" : "")
+				+ " order by rank offset ? limit ?";
+
+		return jdbcTemplate.query(sql,
+				new Object[]{lastFmUsername, offset, limit},
+				new ArtistRecommendationRowMapper());
+	}
+
+	@Override
+	public List<String> getRecommendedArtistsNotInLibrary(
+			String lastFmUsername, int amount, boolean onlyAlbumArtists) {
+		String sql = "select ma.artist_name_capitalization from library.userrecommendedartist ura"
+				+ " inner join music.artist ma on ura.artist_id = ma.id"
+				+ " inner join library.lastfmuser u on ura.lastfmuser_id = u.id"
+				+ " where u.lastfm_user = upper(?) and not exists"
+				+ " (select 1 from library.artist where artist_id = ura.artist_id"
+				+ (onlyAlbumArtists ? " and hasalbums" : "")
+				+ " ) order by rank limit " + amount;
+		
+		return jdbcTemplate.queryForList(sql, new Object[]{lastFmUsername}, String.class);
+	}
+
+	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}

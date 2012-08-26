@@ -11,15 +11,16 @@ public class WebserviceInvocation {
 	 * This enum matches one-to-one with database table library.webservice_calltype on id.
 	 */
 	public enum Calltype { 
-		GET_SCROBBLED_TRACKS	(0, 1), 
-		ARTIST_GET_SIMILAR		(1, 10), 
-		ARTIST_GET_TOP_TRACKS	(2, 10),
-		TRACK_GET_SIMILAR		(3, 10),
-		ARTIST_GET_TOP_TAGS		(4, 10),
-		ARTIST_GET_INFO			(5, 15),
-		ALBUM_GET_INFO			(6, 15),
-		USER_GET_TOP_ARTISTS	(7, 7),
-		TAG_GET_TOP_ARTISTS		(8, 20);
+		GET_SCROBBLED_TRACKS			(0, 1), 
+		ARTIST_GET_SIMILAR				(1, 10), 
+		ARTIST_GET_TOP_TRACKS			(2, 10),
+		TRACK_GET_SIMILAR				(3, 10),
+		ARTIST_GET_TOP_TAGS				(4, 10),
+		ARTIST_GET_INFO					(5, 15),
+		ALBUM_GET_INFO					(6, 15),
+		USER_GET_TOP_ARTISTS			(7, 7),
+		TAG_GET_TOP_ARTISTS				(8, 20),
+		USER_GET_RECOMMENDED_ARTISTS	(9, 7);
 		
 		private final int databaseId;
 		private final int daysToCache;
@@ -73,6 +74,14 @@ public class WebserviceInvocation {
 		}
 		this.callType = callType;
 		this.track = track;
+	}
+
+	public WebserviceInvocation(Calltype callType, LastFmUser user) {
+		if (user == null) {
+			throw new IllegalArgumentException("Cannot create WebserviceInvocation for user null!");
+		}
+		this.callType = callType;
+		this.user = user;
 	}
 	
 	public WebserviceInvocation(Calltype callType, LastFmUser user, short days) {
