@@ -16,10 +16,9 @@ public class JdbcLastFmUserDao implements LastFmUserDao, JdbcTemplateDao {
 	private JdbcTemplate jdbcTemplate;
 
 	public int getLastFmUserId(String lastFmUsername) {
-		int userId = jdbcTemplate.queryForInt(
-				"select * from library.get_lastfmuser_id(?)", 
-				new Object[]{lastFmUsername});
-		return userId;
+		String sql = "select * from library.get_lastfmuser_id(?)";
+		
+		return jdbcTemplate.queryForInt(sql, lastFmUsername);
 	}
 
 	@Override

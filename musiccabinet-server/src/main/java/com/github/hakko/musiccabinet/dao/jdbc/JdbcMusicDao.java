@@ -14,10 +14,8 @@ public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 	private JdbcTemplate jdbcTemplate;
 	
 	public int getArtistId(String artistName) {
-		int artistId = jdbcTemplate.queryForInt(
-			"select * from music.get_artist_id(?)", 
-			new Object[]{artistName});
-		return artistId;
+		return jdbcTemplate.queryForInt(
+			"select * from music.get_artist_id(?)", artistName);
 	}
 	
 	public int getArtistId(Artist artist) {
@@ -30,10 +28,9 @@ public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 	}
 
 	public int getAlbumId(String artistName, String albumName) {
-		int albumId = jdbcTemplate.queryForInt(
+		return jdbcTemplate.queryForInt(
 				"select * from music.get_album_id(?,?)",
-				new Object[]{artistName, albumName});
-		return albumId;
+				artistName, albumName);
 	}
 	
 	public int getAlbumId(Album album) {
@@ -41,10 +38,9 @@ public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 	}
 	
 	public int getTrackId(String artistName, String trackName) {
-		int trackId = jdbcTemplate.queryForInt(
+		return jdbcTemplate.queryForInt(
 			"select * from music.get_track_id(?,?)", 
-			new Object[]{artistName, trackName});
-		return trackId;
+			artistName, trackName);
 	}
 	
 	public int getTrackId(Track track) {
