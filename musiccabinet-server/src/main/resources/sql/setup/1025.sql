@@ -1,0 +1,4 @@
+create table library.userrecommendedartist (lastfmuser_id integer references library.lastfmuser (id) not null, artist_id integer references music.artist (id) not null, rank integer not null, contextartist1_id integer references music.artist (id), contextartist2_id integer references music.artist (id));
+create table library.userrecommendedartist_import (lastfmuser_id integer references library.lastfmuser (id), lastfm_user text not null, artist_id integer references music.artist (id), artist_name text not null, rank integer not null, contextartist1_id integer references music.artist (id), contextartist1_name text, contextartist2_id integer references music.artist (id), contextartist2_name text);
+
+insert into library.webservice_calltype (id, description) values (9, 'Last.fm user.getRecommendedArtists');
