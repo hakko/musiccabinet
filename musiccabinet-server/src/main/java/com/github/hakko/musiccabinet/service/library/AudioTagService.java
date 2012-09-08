@@ -104,9 +104,11 @@ public class AudioTagService {
 			}
 
 			file.setMetaData(metaData);
-
+			
 		} catch (CannotReadException | IOException | TagException
-				| ReadOnlyFileException | InvalidAudioFrameException e) {
+				| ReadOnlyFileException | InvalidAudioFrameException 
+				| RuntimeException e) { 
+			// AudioFileIO has been seen to throw NumberFormatException
 			LOG.warn("Could not read metadata of file " + file.getFilename()
 					+ " from " + file.getDirectory(), e);
 		}
@@ -122,7 +124,8 @@ public class AudioTagService {
     		AudioFile audioFile = AudioFileIO.read(file);
     		tag = audioFile.getTag();
     	} catch (CannotReadException | IOException | TagException
-    			| ReadOnlyFileException | InvalidAudioFrameException e) {
+    			| ReadOnlyFileException | InvalidAudioFrameException 
+    			| RuntimeException e) {
     		throw new ApplicationException("Failed reading artwork from file " + file, e);
     	}
         return tag == null ? null : tag.getFirstArtwork();
