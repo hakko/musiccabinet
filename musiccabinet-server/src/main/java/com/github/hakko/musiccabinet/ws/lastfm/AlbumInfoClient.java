@@ -15,9 +15,6 @@ public class AlbumInfoClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "album.getinfo";
 	
-	public AlbumInfoClient() {
-	}
-	
 	public WSResponse getAlbumInfo(Album album) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ALBUM_GET_INFO, album);

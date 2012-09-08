@@ -15,9 +15,6 @@ public class TagTopArtistsClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "tag.gettopartists";
 	
-	public TagTopArtistsClient() {
-	}
-	
 	public WSResponse getTopArtists(Tag tag) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(TAG_GET_TOP_ARTISTS, tag);

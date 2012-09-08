@@ -16,9 +16,6 @@ public class UserTopArtistsClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "user.gettopartists";
 	
-	public UserTopArtistsClient() {
-	}
-	
 	public WSResponse getUserTopArtists(LastFmUser user, Period period) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(USER_GET_TOP_ARTISTS, user, period.getDays());

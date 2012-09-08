@@ -15,9 +15,6 @@ public class ArtistSimilarityClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "artist.getsimilar";
 	
-	public ArtistSimilarityClient() {
-	}
-	
 	public WSResponse getArtistSimilarity(Artist artist) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ARTIST_GET_SIMILAR, artist);

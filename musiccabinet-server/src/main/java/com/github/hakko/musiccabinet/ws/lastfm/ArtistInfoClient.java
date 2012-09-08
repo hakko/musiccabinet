@@ -15,9 +15,6 @@ public class ArtistInfoClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "artist.getinfo";
 	
-	public ArtistInfoClient() {
-	}
-	
 	public WSResponse getArtistInfo(Artist artist) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ARTIST_GET_INFO, artist);
