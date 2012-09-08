@@ -224,18 +224,18 @@ begin
 
 	-- update search tables text search index
 	update library.artist la
-		set artist_name_search = to_tsvector('english', artist_name)
+		set artist_name_search = array_to_string(array(select unnest(string_to_array(artist_name, ' ')) order by 1), ' ')
 	from music.artist ma
 	where ma.id = la.artist_id and la.artist_name_search is null;
 
 	update library.album la
-		set album_name_search = to_tsvector('english', artist_name || ' ' || album_name)
+		set album_name_search = array_to_string(array(select unnest(string_to_array(artist_name || ' ' || album_name, ' ')) order by 1), ' ')
 	from music.album malb
 	inner join music.artist mart on malb.artist_id = mart.id
 	where malb.id = la.album_id and la.album_name_search is null;
 
 	update library.track lt
-		set track_name_search = to_tsvector('english', artist_name || ' ' || album_name || ' ' || track_name)
+		set track_name_search = array_to_string(array(select unnest(string_to_array(artist_name || ' ' || album_name || ' ' || track_name, ' ')) order by 1), ' ')
 	from music.album malb, music.track mt 
 	inner join music.artist mart on mt.artist_id = mart.id
 	where mt.id = lt.track_id and malb.id = lt.album_id and lt.track_name_search is null;

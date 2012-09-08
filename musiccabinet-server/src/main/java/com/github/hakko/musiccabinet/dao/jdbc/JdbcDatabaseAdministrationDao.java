@@ -212,7 +212,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		
 		System.out.println("Version " + version + " loaded, result code " + result);
 	}
-	
+
 	/*
 	 * We know for sure that the DataSource is a ComboPooledDataSource,
 	 * since we specified it in applicationContext.xml.

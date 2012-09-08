@@ -55,10 +55,11 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 	@Autowired
 	private JdbcStarDao starDao;
 	
-	private String userName1 = "user1", userName2 = "user2";
+	private String userName1 = "rj", userName2 = "joanofarctan";
 	private LastFmUser user1;
-	private String artistName1 = "artist", artistName2 = "artist2";
-	private String albumName1 = "album1", albumName2 = "album2";
+	private String artistName1 = "Madonna", artistName2 = "Kylie Minogue";
+	private String albumName1 = "Fever", albumName2 = "Like A Virgin";
+	private String trackName1 = "Title";
 	private Artist artist1;
 	private Album album1, album2;
 	private Track track1, track2;
@@ -70,9 +71,8 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 		browserDao.getJdbcTemplate().execute("truncate music.artist cascade");
 		browserDao.getJdbcTemplate().execute("truncate library.file cascade");
 
-		String title = "Title";
-		submitFile(additionDao, UnittestLibraryUtil.getFile(artistName1, albumName1, title));
-		submitFile(additionDao, UnittestLibraryUtil.getFile(artistName1, albumName2, title));
+		submitFile(additionDao, UnittestLibraryUtil.getFile(artistName1, albumName1, trackName1));
+		submitFile(additionDao, UnittestLibraryUtil.getFile(artistName1, albumName2, trackName1));
 
 		List<Artist> artists = browserDao.getArtists();
 		Assert.assertEquals(1, artists.size());
@@ -106,7 +106,7 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 
 	@Test
 	public void filterArtistsByGenre() {
-		String artist = "Artist", indieArtist = "Indie Artist", jazzArtist = "Jazz Artist";
+		String artist = artistName1, indieArtist = "Indie Artist", jazzArtist = "Jazz Artist";
 		String indie = "indie", jazz = "jazz";
 		submitFile(additionDao, UnittestLibraryUtil.getFile(artist, "Album", "Title"));
 		submitFile(additionDao, UnittestLibraryUtil.getFile(indieArtist, "Album", "Title"));
@@ -141,14 +141,14 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 		Collections.sort(indexes);
 		Assert.assertEquals(4, indexes.size());
 		Assert.assertEquals('#', indexes.get(0).intValue());
-		Assert.assertEquals('A', indexes.get(1).intValue());
-		Assert.assertEquals('E', indexes.get(2).intValue());
-		Assert.assertEquals('F', indexes.get(3).intValue());
+		Assert.assertEquals('E', indexes.get(1).intValue());
+		Assert.assertEquals('F', indexes.get(2).intValue());
+		Assert.assertEquals('M', indexes.get(3).intValue());
 		
-		Assert.assertEquals(1, browserDao.getArtists('A').size());
 		Assert.assertEquals(1, browserDao.getArtists('E').size());
 		Assert.assertEquals(2, browserDao.getArtists('F').size());
 		Assert.assertEquals(0, browserDao.getArtists('G').size());
+		Assert.assertEquals(1, browserDao.getArtists('M').size());
 		Assert.assertEquals(1, browserDao.getArtists('0').size());
 		Assert.assertEquals(1, browserDao.getArtists('#').size());
 		Assert.assertEquals(1, browserDao.getArtists('~').size());
@@ -156,9 +156,8 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 
 	@Test
 	public void returnsRecentlyAddedAlbums() {
-		String artist = "artist", album1 = "album1", album2 = "album2", title = "Title";
-		submitFile(additionDao, UnittestLibraryUtil.getFile(artist, album1, title));
-		submitFile(additionDao, UnittestLibraryUtil.getFile(artist, album2, title));
+		submitFile(additionDao, UnittestLibraryUtil.getFile(artistName1, albumName1, trackName1));
+		submitFile(additionDao, UnittestLibraryUtil.getFile(artistName1, albumName2, trackName1));
 		
 		List<Album> albums = browserDao.getRecentlyAddedAlbums(0, 10, null);
 		Assert.assertNotNull(albums);
@@ -167,17 +166,17 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 		albums = browserDao.getRecentlyAddedAlbums(0, 1, null);
 		Assert.assertNotNull(albums);
 		Assert.assertEquals(1, albums.size());
-		Assert.assertEquals(album2, albums.get(0).getName());
+		Assert.assertEquals(albumName2, albums.get(0).getName());
 
 		albums = browserDao.getRecentlyAddedAlbums(1, 1, null);
 		Assert.assertNotNull(albums);
 		Assert.assertEquals(1, albums.size());
-		Assert.assertEquals(album1, albums.get(0).getName());
+		Assert.assertEquals(albumName1, albums.get(0).getName());
 
-		albums = browserDao.getRecentlyAddedAlbums(0, 10, "album1");
+		albums = browserDao.getRecentlyAddedAlbums(0, 10, albumName1);
 		Assert.assertNotNull(albums);
 		Assert.assertEquals(1, albums.size());
-		Assert.assertEquals(album1, albums.get(0).getName());
+		Assert.assertEquals(albumName1, albums.get(0).getName());
 	}
 	
 	@Test

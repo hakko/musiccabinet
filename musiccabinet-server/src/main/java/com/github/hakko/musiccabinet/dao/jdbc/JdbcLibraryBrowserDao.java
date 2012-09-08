@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.getNameQuery;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.getIdParameters;
 import static java.io.File.separatorChar;
 
@@ -75,8 +76,6 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	}
 
 	public List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
@@ -88,18 +87,16 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
 				+ ") pc on pc.artist_id = a.id"
-				+ (tsQuery == null ? "" : " where la.artist_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " where la.artist_name_search like ?") 
 				+ " order by last_invocation_time desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
 	}
 
 	public List<ArtistRecommendation> getMostPlayedArtists(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
@@ -111,12 +108,12 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
 				+ ") pc on pc.artist_id = a.id"
-				+ (tsQuery == null ? "" : " where la.artist_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " where la.artist_name_search like ?") 
 				+ " order by cnt desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
 	}
 
@@ -131,8 +128,6 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	}
 
 	public List<ArtistRecommendation> getStarredArtists(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
@@ -140,12 +135,12 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.starredartist sa on sa.artist_id = la.artist_id"
 				+ " inner join library.lastfmuser u on sa.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
-				+ (tsQuery == null ? "" : " and la.artist_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " and la.artist_name_search like ?") 
 				+ " order by sa.added desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
 	}
 
@@ -195,8 +190,6 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 
 	@Override
 	public List<Album> getRecentlyAddedAlbums(int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.sort_id"
@@ -205,7 +198,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select la.album_id, la.id as sort_id "
 				+ "  from library.album la "
-				+ (tsQuery == null ? "" : " where la.album_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " where la.album_name_search like ?") 
 				+ "  order by la.id desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.sort_id) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -218,15 +211,13 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by sort_id desc"; 
 
-		Object[] params = tsQuery == null ? 
-				new Object[]{offset, limit} : new Object[]{tsQuery, offset, limit};
+		Object[] params = query == null ? 
+				new Object[]{offset, limit} : new Object[]{getNameQuery(query), offset, limit};
 		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
 	}
 	
 	@Override
 	public List<Album> getRecentlyPlayedAlbums(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.last_invocation_time"
@@ -238,7 +229,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
 				+"  inner join library.album la on pc.album_id = la.album_id"
 				+ " where u.lastfm_user = upper(?)"
-				+ (tsQuery == null ? "" : " and la.album_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " and la.album_name_search like ?") 
 				+ " group by la.album_id order by last_invocation_time desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.last_invocation_time) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -251,17 +242,15 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by last_invocation_time desc"; 
 
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 
 		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
 	}
 
 	@Override
 	public List<Album> getMostPlayedAlbums(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.cnt"
@@ -273,7 +262,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
 				+"  inner join library.album la on pc.album_id = la.album_id"
 				+ " where u.lastfm_user = upper(?)"
-				+ (tsQuery == null ? "" : " and la.album_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " and la.album_name_search like ?") 
 				+ " group by la.album_id order by cnt desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.cnt) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -286,9 +275,9 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by cnt desc"; 
 
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 
 		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
 	}
@@ -318,8 +307,6 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	
 	@Override
 	public List<Album> getStarredAlbums(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.added"
@@ -330,7 +317,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.album la on sa.album_id = la.album_id"
 				+ " inner join library.lastfmuser u on sa.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
-				+ (tsQuery == null ? "" : " and la.album_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " and la.album_name_search like ?") 
 				+ " order by sa.added desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.added) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -343,17 +330,11 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by added desc"; 
 
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 
 		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
-	}
-
-	// TODO : move to common library?
-	private String getTsQuery(final String userQuery) {
-		String sql = "select plainto_tsquery('english', ?)";
-		return jdbcTemplate.queryForObject(sql, new Object[]{userQuery}, String.class);
 	}
 
 	private String getFileName(String directory, String filename) {
@@ -408,8 +389,6 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	
 	@Override
 	public List<Integer> getRecentlyPlayedTrackIds(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, max(invocation_time) as last_invocation_time"
 				+ " from library.playcount pc"
@@ -417,19 +396,17 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
-				+ (tsQuery == null ? "" : " where lt.track_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " where lt.track_name_search like ?") 
 				+ " order by last_invocation_time desc offset ? limit ?";
 
-		Object[] params = tsQuery == null ?
+		Object[] params = query == null ?
 				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 		return jdbcTemplate.queryForList(sql, params, Integer.class);
 	}
 
 	@Override
 	public List<Integer> getMostPlayedTrackIds(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
-
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, count(track_id) as cnt"
 				+ " from library.playcount pc"
@@ -437,28 +414,27 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
-				+ (tsQuery == null ? "" : " where lt.track_name_search @@ to_tsquery(?)") 
+				+ (query == null ? "" : " where lt.track_name_search like ?") 
 				+ " order by cnt desc offset ? limit ?";
 
-		Object[] params = tsQuery == null ?
+		Object[] params = query == null ?
 				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, query, offset, limit};
 		return jdbcTemplate.queryForList(sql, params, Integer.class);
 	}
 
 	@Override
 	public List<Integer> getStarredTrackIds(String lastFmUsername, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
 		String sql = "select lt.id from library.starredtrack st"
 				+ " inner join library.track lt on st.album_id = lt.album_id and st.track_id = lt.track_id"
 				+ " inner join library.lastfmuser u on st.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
-				+ (tsQuery == null ? "" : " and lt.track_name_search @@ to_tsquery(?)")
+				+ (query == null ? "" : " and lt.track_name_search like ?")
 				+ " order by added desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, tsQuery, offset, limit};
+				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
 		return jdbcTemplate.queryForList(sql, params, Integer.class);
 	}
 	
@@ -527,6 +503,25 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		
 		String directory = FilenameUtils.getFullPathNoEndSeparator(absolutePath);
 		String filename = FilenameUtils.getName(absolutePath);
+
+		try {
+			return jdbcTemplate.queryForInt(sql, directory, filename);
+		} catch (DataAccessException e) {
+			return getCaseInsensitiveTrackId(absolutePath);
+		}
+	}
+
+	/*
+	 * Fix for platforms like Windows, that alternates between using C: and c:.
+	 */
+	private int getCaseInsensitiveTrackId(String absolutePath) {
+		String sql = "select lt.id from library.file f"
+		+ " inner join library.directory d on f.directory_id = d.id"
+		+ " inner join library.track lt on lt.file_id = f.id"
+		+ " where lower(d.path) = ? and lower(f.filename) = ?";
+		
+		String directory = FilenameUtils.getFullPathNoEndSeparator(absolutePath.toLowerCase());
+		String filename = FilenameUtils.getName(absolutePath.toLowerCase());
 
 		try {
 			return jdbcTemplate.queryForInt(sql, directory, filename);

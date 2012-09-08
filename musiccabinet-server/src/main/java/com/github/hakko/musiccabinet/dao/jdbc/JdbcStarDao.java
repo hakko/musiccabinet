@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.getNameQuery;
+
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -31,16 +33,15 @@ public class JdbcStarDao implements StarDao, JdbcTemplateDao {
 
 	@Override
 	public List<Integer> getStarredArtistIds(LastFmUser lastFmUser, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
 		String sql = "select sa.artist_id from library.starredartist sa"
 				+ " inner join library.artist la on sa.artist_id = la.artist_id"
 				+ " where sa.lastfmuser_id = ?"
-				+ (tsQuery == null ? "" : " and la.artist_name_search @@ to_tsquery(?)")
+				+ (query == null ? "" : " and la.artist_name_search like ?")
 				+ " order by added desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUser.getId(), offset, limit} : 
-				new Object[]{lastFmUser.getId(), tsQuery, offset, limit};
+				new Object[]{lastFmUser.getId(), getNameQuery(query), offset, limit};
 		return jdbcTemplate.queryForList(sql, params, Integer.class);
 	}
 
@@ -62,16 +63,15 @@ public class JdbcStarDao implements StarDao, JdbcTemplateDao {
 
 	@Override
 	public List<Integer> getStarredAlbumIds(LastFmUser lastFmUser, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
 		String sql = "select sa.album_id from library.starredalbum sa"
 				+ " inner join library.album la on sa.album_id = la.album_id"
 				+ " where sa.lastfmuser_id = ?"
-				+ (tsQuery == null ? "" : " and la.album_name_search @@ to_tsquery(?)")
+				+ (query == null ? "" : " and la.album_name_search like ?")
 				+ " order by added desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUser.getId(), offset, limit} : 
-				new Object[]{lastFmUser.getId(), tsQuery, offset, limit};
+				new Object[]{lastFmUser.getId(), getNameQuery(query), offset, limit};
 		return jdbcTemplate.queryForList(sql, params, Integer.class);
 	}
 
@@ -100,24 +100,17 @@ public class JdbcStarDao implements StarDao, JdbcTemplateDao {
 
 	@Override
 	public List<Integer> getStarredTrackIds(LastFmUser lastFmUser, int offset, int limit, String query) {
-		String tsQuery = query == null ? null : getTsQuery(query);
 		String sql = "select lt.id from library.starredtrack st"
 				+ " inner join library.track lt on st.album_id = lt.album_id"
 				+ "  and st.track_id = lt.track_id"
 				+ " where st.lastfmuser_id = ?"
-				+ (tsQuery == null ? "" : " and lt.track_name_search @@ to_tsquery(?)")
+				+ (query == null ? "" : " and lt.track_name_search like ?")
 				+ " order by added desc offset ? limit ?";
 		
-		Object[] params = tsQuery == null ? 
+		Object[] params = query == null ? 
 				new Object[]{lastFmUser.getId(), offset, limit} : 
-				new Object[]{lastFmUser.getId(), tsQuery, offset, limit};
+				new Object[]{lastFmUser.getId(), getNameQuery(query), offset, limit};
 		return jdbcTemplate.queryForList(sql, params, Integer.class);
-	}
-
-	// TODO : move to common library?
-	private String getTsQuery(final String userQuery) {
-		String sql = "select plainto_tsquery('english', ?)";
-		return jdbcTemplate.queryForObject(sql, new Object[]{userQuery}, String.class);
 	}
 
 	@Override

@@ -12,5 +12,4 @@ public interface DatabaseAdministrationDao {
 	
 	int getDatabaseVersion();
 	void loadDatabaseUpdate(int versionNumber, String statement);
-	
 }

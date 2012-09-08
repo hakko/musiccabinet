@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.ADD_TO_LIBRARY;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
 
 import java.util.Collections;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction;
+import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
@@ -38,11 +41,11 @@ public class JdbcStarDaoTest {
 	@Autowired
 	private JdbcLastFmUserDao lastFmUserDao;
 
-	private String user1 = "user1", user2 = "user2";
+	private String user1 = "joanofarctan", user2 = "rj";
 	private LastFmUser lastFmUser1, lastFmUser2;
-	private String artistName1 = "artist1", artistName2 = "artist2";
-	private String albumName1 = "album1", albumName2 = "album2";
-	private String trackName1 = "track1", trackName2 = "track2";
+	private String artistName1 = "Kylie Minogue", artistName2 = "Madonna";
+	private String albumName1 = "Fever", albumName2 = "Like A Virgin";
+	private String trackName1 = "More More More", trackName2 = "Material Girl";
 	private Artist artist1, artist2;
 	private Album album1, album2;
 	private Track track1, track2;
@@ -56,6 +59,8 @@ public class JdbcStarDaoTest {
 
 	@Before
 	public void prepareTestData() throws ApplicationException {
+		PostgreSQLUtil.loadFunction(starDao, ADD_TO_LIBRARY);
+		
 		starDao.getJdbcTemplate().execute("truncate music.artist cascade");
 		starDao.getJdbcTemplate().execute("truncate library.file cascade");
 
