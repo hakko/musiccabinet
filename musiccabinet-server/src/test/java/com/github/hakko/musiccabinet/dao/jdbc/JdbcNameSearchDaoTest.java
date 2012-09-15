@@ -56,34 +56,34 @@ public class JdbcNameSearchDaoTest {
 		NameSearchResult<Artist> artists = searchDao.getArtists(artistName, 0, 10);
 		
 		Assert.assertNotNull(artists);
-		return artists.getTotalHits() == 1;
+		return artists.getResults().size() == 1;
 	}
 
 	@Test
 	public void findsAlbums() {
 		NameSearchResult<Album> albums = searchDao.getAlbums("Casiotone", 0, 10);
-		Assert.assertEquals(2, albums.getTotalHits());
+		Assert.assertEquals(2, albums.getResults().size());
 		
 		albums = searchDao.getAlbums("young shield", 0, 10);
-		Assert.assertEquals(1, albums.getTotalHits());
+		Assert.assertEquals(1, albums.getResults().size());
 
 		albums = searchDao.getAlbums("etiquett", 0, 10);
-		Assert.assertEquals(1, albums.getTotalHits());
+		Assert.assertEquals(1, albums.getResults().size());
 	}
 
 	@Test
 	public void findsTracks() {
 		NameSearchResult<Track> tracks = searchDao.getTracks("Casiotone", 0, 10);
-		Assert.assertEquals(3, tracks.getTotalHits());
+		Assert.assertEquals(3, tracks.getResults().size());
 		
 		tracks = searchDao.getTracks("casiotone etiquette", 0, 10);
-		Assert.assertEquals(2, tracks.getTotalHits());
+		Assert.assertEquals(2, tracks.getResults().size());
 
 		tracks = searchDao.getTracks("young shield", 0, 10);
-		Assert.assertEquals(1, tracks.getTotalHits());
+		Assert.assertEquals(1, tracks.getResults().size());
 
 		tracks = searchDao.getTracks("kiss", 0, 10);
-		Assert.assertEquals(1, tracks.getTotalHits());
+		Assert.assertEquals(1, tracks.getResults().size());
 
 	}
 

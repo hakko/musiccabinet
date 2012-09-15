@@ -1,9 +1,5 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.NameSearchType.ALBUM;
-import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.NameSearchType.ARTIST;
-import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.NameSearchType.TRACK;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -16,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.dao.NameSearchDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.NameSearchResult;
 import com.github.hakko.musiccabinet.domain.model.library.MetaData;
@@ -27,12 +24,8 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 
-	enum NameSearchType { ARTIST, ALBUM, TRACK };
-
 	@Override
 	public NameSearchResult<Artist> getArtists(String userQuery, int offset, int limit) {
-		int totalHits = getTotalHits(userQuery, ARTIST);
-
 		String sql = "select ma.id, ma.artist_name_capitalization"
 				+ " from library.artist la"
 				+ " inner join music.artist ma on la.artist_id = ma.id" 
@@ -41,35 +34,32 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " offset ? limit ?";
 		List<Artist> artists = jdbcTemplate.query(sql, 
 				new Object[]{getNameQuery(userQuery), offset, limit}, new ArtistRowMapper());
-		return new NameSearchResult<>(artists, offset, totalHits);
+		return new NameSearchResult<>(artists, offset);
 	}
 	
 	@Override
 	public NameSearchResult<Album> getAlbums(String userQuery, int offset, int limit) {
-		int totalHits = getTotalHits(userQuery, ALBUM);
-
 		String sql = "select mart.id, mart.artist_name_capitalization,"
-				+ " malb.id, malb.album_name_capitalization from library.album la"
+				+ " malb.id, malb.album_name_capitalization, la.year,"
+				+ " d1.path, f1.filename, d2.path, f2.filename, null, array[]::int[]"
+				+ " from library.album la"
 				+ " inner join music.album malb on la.album_id = malb.id"
 				+ " inner join music.artist mart on malb.artist_id = mart.id" 
+				+ " left outer join library.file f1 on f1.id = la.embeddedcoverartfile_id"
+				+ " left outer join library.directory d1 on f1.directory_id = d1.id"
+				+ " left outer join library.file f2 on f2.id = la.coverartfile_id"
+				+ " left outer join library.directory d2 on f2.directory_id = d2.id"
 				+ " where la.album_name_search like ?"
 				+ " order by la.album_name_search"
 				+ " offset ? limit ?";
 		List<Album> albums = jdbcTemplate.query(sql, 
-				new Object[]{getNameQuery(userQuery), offset, limit}, new RowMapper<Album>() {
-			@Override
-			public Album mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Artist artist = new Artist(rs.getInt(1), rs.getString(2));
-				return new Album(artist, rs.getInt(3), rs.getString(4));
-			}
-		});
-		return new NameSearchResult<>(albums, offset, totalHits);
+				new Object[]{getNameQuery(userQuery), offset, limit}, new AlbumRowMapper());
+		
+		return new NameSearchResult<>(albums, offset);
 	}
 
 	@Override
 	public NameSearchResult<Track> getTracks(String userQuery, int offset, int limit) {
-		int totalHits = getTotalHits(userQuery, TRACK);
-
 		String sql = "select mart.id, mart.artist_name_capitalization,"
 				+ " malb.id, malb.album_name_capitalization,"
 				+ " lt.id, mt.track_name_capitalization from library.track lt"
@@ -92,13 +82,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 			}
 		});
 		
-		return new NameSearchResult<>(albums, offset, totalHits);
-	}
-	
-	private int getTotalHits(String userQuery, NameSearchType searchType) {
-		String type = searchType.name().toLowerCase();
-		String sql = "select count(*) from library." + type + " where " + type + "_name_search like ?";
-		return jdbcTemplate.queryForInt(sql, getNameQuery(userQuery));
+		return new NameSearchResult<>(albums, offset);
 	}
 
 	/*
@@ -118,9 +102,9 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 	 * This method returns such a name search query, for a user query and a search type. 
 	 */
 	protected static String getNameQuery(String userQuery) {
-		StringUtils.replaceChars(userQuery, '%', ' ');
-		StringUtils.replaceChars(userQuery, '*', ' ');
-		StringUtils.replaceChars(userQuery, '"', ' ');
+		userQuery = StringUtils.replaceChars(userQuery, '%', ' ');
+		userQuery = StringUtils.replaceChars(userQuery, '*', ' ');
+		userQuery = StringUtils.replaceChars(userQuery, '"', ' ');
 		String[] words = StringUtils.split(userQuery.toUpperCase(), ' ');
 		Arrays.sort(words);
 		String likeQuery = '%' + StringUtils.join(words, '%') + '%';
