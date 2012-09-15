@@ -40,6 +40,7 @@ public abstract class AbstractWSClient {
 	public static final String PARAM_LIMIT = "limit";
 	public static final String PARAM_PAGE = "page";
 	public static final String PARAM_USER = "user";
+	public static final String PARAM_GROUP = "group";
 	public static final String PARAM_TAG = "tag";
 	public static final String PARAM_PERIOD = "period";
 	public static final String PARAM_TIMESTAMP = "timestamp";

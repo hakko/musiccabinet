@@ -2,16 +2,22 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.object.BatchSqlUpdate;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import com.github.hakko.musiccabinet.dao.LastFmDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.LastFmGroupRowMapper;
+import com.github.hakko.musiccabinet.domain.model.library.LastFmGroup;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 
-public class JdbcLastFmUserDao implements LastFmUserDao, JdbcTemplateDao {
+public class JdbcLastFmDao implements LastFmDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 
@@ -41,6 +47,37 @@ public class JdbcLastFmUserDao implements LastFmUserDao, JdbcTemplateDao {
 				+ " where id = ?";
 		
 		jdbcTemplate.update(sql, user.getLastFmUsername(), user.getSessionKey(), user.getId());
+	}
+
+	@Override
+	public int getLastFmGroupId(String lastFmGroupName) {
+		String sql = "select * from music.get_lastfmgroup_id(?)";
+		
+		return jdbcTemplate.queryForInt(sql, lastFmGroupName);
+	}
+
+	@Override
+	public List<LastFmGroup> getLastFmGroups() {
+		String sql = "select group_name_capitalization from music.lastfmgroup"
+			+ " where enabled order by group_name";
+
+		return jdbcTemplate.query(sql, new LastFmGroupRowMapper());
+	}
+
+	@Override
+	public void setLastFmGroups(List<LastFmGroup> lastFmGroups) {
+		jdbcTemplate.update("truncate music.lastfmgroup_import");
+		
+		String sql = "insert into music.lastfmgroup_import (group_name) values (?)";
+		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
+		batchUpdate.setBatchSize(1000);
+		batchUpdate.declareParameter(new SqlParameter("group_name", Types.VARCHAR));
+		for (LastFmGroup group : lastFmGroups) {
+			batchUpdate.update(new Object[]{group.getName()});
+		}
+		batchUpdate.flush();
+		
+		jdbcTemplate.execute("select music.update_lastfmgroup()");
 	}
 
 	@Override

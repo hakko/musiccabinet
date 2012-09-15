@@ -12,6 +12,9 @@ public interface ArtistRecommendationDao {
 	List<ArtistRecommendation> getGenreArtistsInLibrary(String tagName, int offset, int length, boolean onlyAlbumArtists);
 	List<String> getGenreArtistsNotInLibrary(String tagName, int amount, boolean onlyAlbumArtists);
 
+	List<ArtistRecommendation> getGroupArtistsInLibrary(String lastFmGroupName, int offset, int length, boolean onlyAlbumArtists);
+	List<String> getGroupArtistsNotInLibrary(String lastFmGroupName, int amount, boolean onlyAlbumArtists);
+
 	List<ArtistRecommendation> getRecommendedArtistsInLibrary(String lastFmUsername, int offset, int length, boolean onlyAlbumArtists);
 	List<String> getRecommendedArtistsNotInLibrary(String lastFmUsername, int amount, boolean onlyAlbumArtists);
 

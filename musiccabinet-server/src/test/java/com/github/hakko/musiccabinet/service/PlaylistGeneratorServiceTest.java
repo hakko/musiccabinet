@@ -97,7 +97,7 @@ public class PlaylistGeneratorServiceTest {
 	
 	@Test
 	public void invokeGetTopPlaylistItemsForTags() {
-		playlistGeneratorService.getTopTracksForTags(new String[]{"indie", "pop"}, 1, 25);
+		playlistGeneratorService.getPlaylistForTags(new String[]{"indie", "pop"}, 1, 25);
 	}
 	
 	@Test

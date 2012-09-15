@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import com.github.hakko.musiccabinet.dao.LastFmDao;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -16,14 +16,14 @@ public class UserRecommendedArtistsClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "user.getrecommendedartists";
 	
-	private LastFmUserDao lastFmUserDao;
+	private LastFmDao lastFmDao;
 	
 	public UserRecommendedArtistsClient() {
 		super(WSConfiguration.AUTHENTICATED_LOGGED);
 	}
 	
 	public WSResponse getUserRecommendedArtists(String lastFmUsername) throws ApplicationException {
-		LastFmUser user = lastFmUserDao.getLastFmUser(lastFmUsername);
+		LastFmUser user = lastFmDao.getLastFmUser(lastFmUsername);
 		
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(USER_GET_RECOMMENDED_ARTISTS, user);
@@ -36,8 +36,8 @@ public class UserRecommendedArtistsClient extends AbstractWSGetClient {
 		return executeWSRequest(webserviceInvocation, params);
 	}
 
-	public void setLastFmUserDao(LastFmUserDao lastFmUserDao) {
-		this.lastFmUserDao = lastFmUserDao;
+	public void setLastFmDao(LastFmDao lastFmDao) {
+		this.lastFmDao = lastFmDao;
 	}
 	
 }

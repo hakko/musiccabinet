@@ -20,7 +20,7 @@ import org.springframework.integration.Message;
 import org.springframework.integration.core.PollableChannel;
 import org.springframework.integration.message.GenericMessage;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import com.github.hakko.musiccabinet.dao.LastFmDao;
 import com.github.hakko.musiccabinet.dao.PlayCountDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.Scrobble;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
@@ -40,7 +40,7 @@ public class ScrobbleService {
 	protected PollableChannel scrobbleChannel;
 	protected UpdateNowPlayingClient nowPlayingClient;
 	protected ScrobbleClient scrobbleClient;
-	private LastFmUserDao lastFmUserDao;
+	private LastFmDao lastFmDao;
 	private PlayCountDao playCountDao;
 
 	private AtomicBoolean started = new AtomicBoolean(false);
@@ -56,7 +56,7 @@ public class ScrobbleService {
 
 	/* Async method that registers scrobbles and delegates submissions, in case last.fm is down. */
 	public void scrobble(String lastFmUsername, Track track, boolean submission) {
-		LastFmUser lastFmUser = lastFmUserDao.getLastFmUser(lastFmUsername);
+		LastFmUser lastFmUser = lastFmDao.getLastFmUser(lastFmUsername);
 		Scrobble scrobble = new Scrobble(lastFmUser, track, submission);
 		
 		scrobbleChannel.send(new GenericMessage<Scrobble>(scrobble));
@@ -199,8 +199,8 @@ public class ScrobbleService {
 		this.scrobbleChannel = scrobbleChannel;
 	}
 
-	public void setLastFmUserDao(LastFmUserDao lastFmUserDao) {
-		this.lastFmUserDao = lastFmUserDao;
+	public void setLastFmDao(LastFmDao lastFmDao) {
+		this.lastFmDao = lastFmDao;
 	}
 
 	public void setPlayCountDao(PlayCountDao playCountDao) {

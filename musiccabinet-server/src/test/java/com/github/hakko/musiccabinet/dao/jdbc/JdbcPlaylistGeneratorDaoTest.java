@@ -55,7 +55,7 @@ public class JdbcPlaylistGeneratorDaoTest {
 	
 	@Autowired
 	private LibraryAdditionDao additionDao;
-
+	
 	private static final String CHER_SIMILAR_ARTISTS = 
 		"last.fm/xml/similarartists.cher.xml";
 	private static final String CHER_TOP_TRACKS = 
@@ -128,6 +128,13 @@ public class JdbcPlaylistGeneratorDaoTest {
 		
 		Assert.assertNotNull(ts);
 		Assert.assertEquals(2, ts.size());
+	}
+	
+	@Test
+	public void getGroupPlaylist() {
+		List<PlaylistItem> ts = playlistGeneratorDao.getPlaylistForGroup("unknown group", 3, 20);
+		
+		Assert.assertNotNull(ts);
 	}
 	
 	private int prepareTestdataForArtist() throws ApplicationException {

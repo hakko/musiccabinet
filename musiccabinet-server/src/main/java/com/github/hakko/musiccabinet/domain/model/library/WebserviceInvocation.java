@@ -20,7 +20,8 @@ public class WebserviceInvocation {
 		ALBUM_GET_INFO					(6, 15),
 		USER_GET_TOP_ARTISTS			(7, 7),
 		TAG_GET_TOP_ARTISTS				(8, 20),
-		USER_GET_RECOMMENDED_ARTISTS	(9, 7);
+		USER_GET_RECOMMENDED_ARTISTS	(9, 7),
+		GROUP_WEEKLY_ARTIST_CHART		(10, 7);
 		
 		private final int databaseId;
 		private final int daysToCache;
@@ -43,6 +44,7 @@ public class WebserviceInvocation {
 	private Album album;
 	private Track track;
 	private LastFmUser user;
+	private LastFmGroup group;
 	private Tag tag;
 	private Calltype callType;
 	private Short page;
@@ -92,6 +94,14 @@ public class WebserviceInvocation {
 		this.user = user;
 		this.page = days;
 	}
+	
+	public WebserviceInvocation(Calltype callType, LastFmGroup group) {
+		if (group == null) {
+			throw new IllegalArgumentException("Cannot create WebserviceInvocation for user null!");
+		}
+		this.callType = callType;
+		this.group = group;
+	}
 
 	public WebserviceInvocation(Calltype callType, Tag tag) {
 		if (tag == null) {
@@ -115,6 +125,10 @@ public class WebserviceInvocation {
 	
 	public LastFmUser getUser() {
 		return user;
+	}
+	
+	public LastFmGroup getGroup() {
+		return group;
 	}
 
 	public Tag getTag() {
@@ -143,6 +157,9 @@ public class WebserviceInvocation {
 		}
 		if (user != null) {
 			sb.append(", " + user);
+		}
+		if (group != null) {
+			sb.append(", " + group);
 		}
 		if (tag != null) {
 			sb.append(", " + tag);

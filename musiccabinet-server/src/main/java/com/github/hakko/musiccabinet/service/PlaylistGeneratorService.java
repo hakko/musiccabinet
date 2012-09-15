@@ -60,12 +60,18 @@ public class PlaylistGeneratorService {
 		return distributeArtists(result);
 	}
 	
-	public List<Integer> getTopTracksForTags(String[] tags, int artistCount, int totalCount) {
+	public List<Integer> getPlaylistForTags(String[] tags, int artistCount, int totalCount) {
 		List<PlaylistItem> result = dao.getPlaylistForTags(tags, artistCount, totalCount);
 		Collections.shuffle(result);
 		return distributeArtists(result);
 	}
-	
+
+	public List<Integer> getPlaylistForGroup(String lastFmGroup, int artistCount, int totalCount) {
+		List<PlaylistItem> result = dao.getPlaylistForGroup(lastFmGroup, artistCount, totalCount);
+		Collections.shuffle(result);
+		return distributeArtists(result);
+	}
+
 	public List<Integer> getPlaylistForRelatedArtists(int artistId, int artistCount, int totalCount) {
 		return dao.getPlaylistForRelatedArtists(artistId, artistCount, totalCount);
 	}

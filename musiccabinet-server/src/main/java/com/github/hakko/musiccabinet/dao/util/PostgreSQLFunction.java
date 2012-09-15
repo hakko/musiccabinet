@@ -15,6 +15,8 @@ public enum PostgreSQLFunction {
 	GET_ARTIST_ID("music", "get_artist_id", "sql/music/get-artist-id.sql"),
 	GET_ALBUM_ID("music", "get_album_id", "sql/music/get-album-id.sql"),
 	GET_TRACK_ID("music", "get_track_id", "sql/music/get-track-id.sql"),
+	GET_LASTFMGROUP_ID("music", "get_lastfmgroup_id", "sql/music/get-lastfmgroup-id.sql"),
+	UPDATE_LASTFMGROUP("music", "update_lastfmgroup", "sql/music/update-lastfmgroup.sql"),
 	UPDATE_TRACKRELATION("music", "update_trackrelation", 
 		"sql/music/update-trackrelation.sql"),
 	UPDATE_ARTISTINFO("music", "update_artistinfo",
@@ -31,6 +33,8 @@ public enum PostgreSQLFunction {
 		"sql/music/update-taginfo.sql"),
 	UPDATE_TAG_TOP_ARTISTS("music", "update_tagtopartists", 
 		"sql/music/update-tagtopartists.sql"),
+	UPDATE_GROUP_WEEKLY_ARTIST_CHART("music", "update_groupartistchart", 
+		"sql/music/update-groupweeklyartistchart.sql"),
 	
 	/* Library schema */
 	GET_LASTFMUSER_ID("library", "get_lastfmuser_id", "sql/library/get-lastfmuser-id.sql"),

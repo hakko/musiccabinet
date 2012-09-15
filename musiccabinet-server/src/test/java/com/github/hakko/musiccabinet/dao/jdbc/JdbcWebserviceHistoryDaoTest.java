@@ -3,6 +3,7 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_ARTIST_ID;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_TRACK_ID;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_LASTFMUSER_ID;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_LASTFMGROUP_ID;
 import static com.github.hakko.musiccabinet.domain.model.library.Period.OVERALL;
 import static com.github.hakko.musiccabinet.domain.model.library.Period.SIX_MONTHS;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_INFO;
@@ -27,6 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.File;
+import com.github.hakko.musiccabinet.domain.model.library.LastFmGroup;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
@@ -46,7 +48,8 @@ public class JdbcWebserviceHistoryDaoTest {
 	@Autowired
 	private JdbcMusicDao musicDao;
 
-	@Autowired JdbcTagDao tagDao;
+	@Autowired 
+	private JdbcTagDao tagDao;
 	
 	@Autowired
 	private JdbcLibraryAdditionDao additionDao;
@@ -56,6 +59,7 @@ public class JdbcWebserviceHistoryDaoTest {
 		PostgreSQLUtil.loadFunction(dao, GET_ARTIST_ID);
 		PostgreSQLUtil.loadFunction(dao, GET_TRACK_ID);
 		PostgreSQLUtil.loadFunction(dao, GET_LASTFMUSER_ID);
+		PostgreSQLUtil.loadFunction(dao, GET_LASTFMGROUP_ID);
 	}
 	
 	@Test
@@ -273,6 +277,39 @@ public class JdbcWebserviceHistoryDaoTest {
 		dao.logWebserviceInvocation(topArtists2);
 		assertTrue(dao.isWebserviceInvocationAllowed(topArtists1));
 		assertFalse(dao.isWebserviceInvocationAllowed(topArtists2));
+	}
+
+	@Test
+	public void importGroupRelatedDataNotPossibleTwice() {
+		Calltype GROUP_ARTISTS = Calltype.GROUP_WEEKLY_ARTIST_CHART;
+		LastFmGroup group = new LastFmGroup("Brainwashed");
+		WebserviceInvocation groupArtists = new WebserviceInvocation(GROUP_ARTISTS, group);
+		
+		deleteWebserviceInvocations();
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(groupArtists));
+		dao.logWebserviceInvocation(groupArtists);
+		assertFalse(dao.isWebserviceInvocationAllowed(groupArtists));
+	}
+
+	@Test
+	public void differentGroupsDontInterfere() {
+		Calltype GROUP_ARTISTS = Calltype.GROUP_WEEKLY_ARTIST_CHART;
+		LastFmGroup group1 = new LastFmGroup("Brainwashed");
+		LastFmGroup group2 = new LastFmGroup("Dark Ambient");
+
+		WebserviceInvocation groupArtists1 = new WebserviceInvocation(GROUP_ARTISTS, group1);
+		WebserviceInvocation groupArtists2 = new WebserviceInvocation(GROUP_ARTISTS, group2);
+		
+		deleteWebserviceInvocations();
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(groupArtists1));
+		assertTrue(dao.isWebserviceInvocationAllowed(groupArtists2));
+
+		dao.logWebserviceInvocation(groupArtists2);
+		
+		assertTrue(dao.isWebserviceInvocationAllowed(groupArtists1));
+		assertFalse(dao.isWebserviceInvocationAllowed(groupArtists2));
 	}
 
 	@Test

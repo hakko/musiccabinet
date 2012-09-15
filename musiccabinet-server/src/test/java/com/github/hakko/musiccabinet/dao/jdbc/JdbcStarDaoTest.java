@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
@@ -39,7 +38,7 @@ public class JdbcStarDaoTest {
 	private JdbcLibraryBrowserDao browserDao;
 
 	@Autowired
-	private JdbcLastFmUserDao lastFmUserDao;
+	private JdbcLastFmDao lastFmDao;
 
 	private String user1 = "joanofarctan", user2 = "rj";
 	private LastFmUser lastFmUser1, lastFmUser2;
@@ -77,9 +76,9 @@ public class JdbcStarDaoTest {
 		track2 = browserDao.getTracks(album2.getTrackIds()).get(0);
 
 		lastFmUser1 = new LastFmUser(user1);
-		lastFmUserDao.createOrUpdateLastFmUser(lastFmUser1);
+		lastFmDao.createOrUpdateLastFmUser(lastFmUser1);
 		lastFmUser2 = new LastFmUser(user2);
-		lastFmUserDao.createOrUpdateLastFmUser(lastFmUser2);
+		lastFmDao.createOrUpdateLastFmUser(lastFmUser2);
 	}
 
 	@Test

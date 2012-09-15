@@ -26,7 +26,7 @@ public class DatabaseAdministrationServiceTest {
 	public void serviceFindsAllDatabaseUpdates() {
 		List<Integer> updates = dbAdmService.getDatabaseUpdates();
 
-		final int NR_OF_UPDATES = 27;
+		final int NR_OF_UPDATES = 28;
 		
 		Assert.assertNotNull(updates);
 		Assert.assertEquals(NR_OF_UPDATES, updates.size());

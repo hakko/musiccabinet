@@ -44,7 +44,7 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 	private JdbcPlayCountDao playCountDao;
 
 	@Autowired
-	private JdbcLastFmUserDao lastFmUserDao;
+	private JdbcLastFmDao lastFmDao;
 
 	@Autowired
 	private JdbcArtistInfoDao artistInfoDao;
@@ -90,7 +90,7 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 		track2 = browserDao.getTracks(album2.getTrackIds()).get(0);
 		
 		user1 = new LastFmUser(userName1);
-		lastFmUserDao.createOrUpdateLastFmUser(user1);
+		lastFmDao.createOrUpdateLastFmUser(user1);
 		
 		artistInfoDao.createArtistInfo(asList(new ArtistInfo(new Artist(artistName1), "img")));
 	}

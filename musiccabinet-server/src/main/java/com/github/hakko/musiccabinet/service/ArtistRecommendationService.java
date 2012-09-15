@@ -7,13 +7,6 @@ import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 
 /*
  * Expose services related to recommending artists.
- * 
- * - Using the artist relations created through {@link ArtistRelationService},
- * we can pick closely related artists, also distinguishing between those already
- * present in library and those who aren't.
- * 
- * - By using artist tags and global artist playcount, we can recommend most
- * relevant artists from a given genre.
  */
 public class ArtistRecommendationService {
 
@@ -37,6 +30,16 @@ public class ArtistRecommendationService {
 	public List<String> getGenreArtistsNotInLibrary(
 			String tagName, int amount, boolean onlyAlbumArtists) {
 		return dao.getGenreArtistsNotInLibrary(tagName, amount, onlyAlbumArtists);
+	}
+
+	public List<ArtistRecommendation> getGroupArtistsInLibrary(
+			String lastFmGroupName, int offset, int length, boolean onlyAlbumArtists) {
+		return dao.getGroupArtistsInLibrary(lastFmGroupName, offset, length, onlyAlbumArtists);
+	}
+	
+	public List<String> getGroupArtistsNotInLibrary(
+			String lastFmGroupName, int amount, boolean onlyAlbumArtists) {
+		return dao.getGroupArtistsNotInLibrary(lastFmGroupName, amount, onlyAlbumArtists);
 	}
 
 	public List<ArtistRecommendation> getRecommendedArtistsInLibrary(

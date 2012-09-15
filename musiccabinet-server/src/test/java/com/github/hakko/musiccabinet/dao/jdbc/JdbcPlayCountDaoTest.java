@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import com.github.hakko.musiccabinet.dao.LastFmDao;
 import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.LibraryBrowserDao;
 import com.github.hakko.musiccabinet.domain.model.library.File;
@@ -37,7 +37,7 @@ public class JdbcPlayCountDaoTest {
 	private JdbcPlayCountDao dao;
 	
 	@Autowired
-	private LastFmUserDao lastFmUserDao;
+	private LastFmDao lastFmDao;
 	
 	@Autowired
 	private LibraryAdditionDao additionDao;
@@ -73,8 +73,8 @@ public class JdbcPlayCountDaoTest {
 		
 		user1 = new LastFmUser(username1 = "user1");
 		user2 = new LastFmUser(username2 = "user2");
-		lastFmUserDao.createOrUpdateLastFmUser(user1);
-		lastFmUserDao.createOrUpdateLastFmUser(user2);
+		lastFmDao.createOrUpdateLastFmUser(user1);
+		lastFmDao.createOrUpdateLastFmUser(user2);
 
 		File file1 = UnittestLibraryUtil.getFile("artist1", "album1", "title1");
 		File file2 = UnittestLibraryUtil.getFile("artist1", "album1", "title2");

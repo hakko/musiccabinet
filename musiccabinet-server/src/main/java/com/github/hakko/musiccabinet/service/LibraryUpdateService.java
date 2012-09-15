@@ -16,6 +16,7 @@ import com.github.hakko.musiccabinet.service.lastfm.ArtistInfoService;
 import com.github.hakko.musiccabinet.service.lastfm.ArtistRelationService;
 import com.github.hakko.musiccabinet.service.lastfm.ArtistTopTagsService;
 import com.github.hakko.musiccabinet.service.lastfm.ArtistTopTracksService;
+import com.github.hakko.musiccabinet.service.lastfm.GroupWeeklyArtistChartService;
 import com.github.hakko.musiccabinet.service.lastfm.ScrobbledTracksService;
 import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateExecutorService;
 import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateService;
@@ -38,6 +39,7 @@ public class LibraryUpdateService {
     private AlbumInfoService albumInfoService;
     private TagInfoService tagInfoService;
     private TagTopArtistsService tagTopArtistsService;
+    private GroupWeeklyArtistChartService groupWeeklyArtistChartService;
     private UserTopArtistsService userTopArtistsService;
     private UserRecommendedArtistsService userRecommendedArtistsService;
     private ScrobbledTracksService scrobbledTracksService;
@@ -140,7 +142,8 @@ public class LibraryUpdateService {
     	return asList(
         		artistRelationService, artistTopTracksService,
     			artistTopTagsService, artistInfoService, 
-    			albumInfoService, tagInfoService, 
+    			albumInfoService, tagInfoService,
+    			groupWeeklyArtistChartService,
     			tagTopArtistsService, userTopArtistsService, 
     			userRecommendedArtistsService, scrobbledTracksService);
     }
@@ -200,6 +203,10 @@ public class LibraryUpdateService {
 
 	public void setTagTopArtistsService(TagTopArtistsService tagTopArtistsService) {
 		this.tagTopArtistsService = tagTopArtistsService;
+	}
+
+	public void setGroupWeeklyArtistChartService(GroupWeeklyArtistChartService groupWeeklyArtistChartService) {
+		this.groupWeeklyArtistChartService = groupWeeklyArtistChartService;
 	}
 
 	public void setUserTopArtistsService(UserTopArtistsService userTopArtistsService) {

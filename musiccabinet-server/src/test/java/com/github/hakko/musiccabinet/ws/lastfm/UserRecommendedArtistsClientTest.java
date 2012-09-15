@@ -8,7 +8,7 @@ import org.apache.http.NameValuePair;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import com.github.hakko.musiccabinet.dao.LastFmDao;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype;
@@ -42,10 +42,10 @@ public class UserRecommendedArtistsClientTest extends AbstractWSImplementationTe
 		
 		client.setWebserviceHistoryService(Mockito.mock(WebserviceHistoryService.class));
 		
-		LastFmUserDao dao = Mockito.mock(LastFmUserDao.class);
+		LastFmDao dao = Mockito.mock(LastFmDao.class);
 		Mockito.when(dao.getLastFmUser(Mockito.anyString())).thenReturn(
 				new LastFmUser(lastFmUser, sessionKey));
-		client.setLastFmUserDao(dao);
+		client.setLastFmDao(dao);
 		
 		client.getUserRecommendedArtists(lastFmUser);
 	}

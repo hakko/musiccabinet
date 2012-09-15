@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import com.github.hakko.musiccabinet.dao.LastFmDao;
 import com.github.hakko.musiccabinet.dao.StarDao;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 
@@ -21,7 +21,7 @@ public class StarService {
 	private Map<String, LastFmUser> cachedUsers = new HashMap<>();
 	
 	private StarDao starDao;
-	private LastFmUserDao lastFmUserDao;
+	private LastFmDao lastFmDao;
 	
 	public void starArtist(String lastFmUsername, int artistId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
@@ -88,7 +88,7 @@ public class StarService {
 		if (cachedUsers.containsKey(lastFmUsername)) {
 			return cachedUsers.get(lastFmUsername);
 		}
-		LastFmUser lastFmUser = lastFmUserDao.getLastFmUser(lastFmUsername);
+		LastFmUser lastFmUser = lastFmDao.getLastFmUser(lastFmUsername);
 		cachedUsers.put(lastFmUsername, lastFmUser);
 		return lastFmUser;
 	}
@@ -131,8 +131,8 @@ public class StarService {
 		this.starDao = starDao;
 	}
 
-	public void setLastFmUserDao(LastFmUserDao lastFmUserDao) {
-		this.lastFmUserDao = lastFmUserDao;
+	public void setLastFmDao(LastFmDao lastFmDao) {
+		this.lastFmDao = lastFmDao;
 	}
 
 }

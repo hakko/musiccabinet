@@ -109,6 +109,39 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 		return jdbcTemplate.queryForList(sql, new Object[]{lastFmUsername}, String.class);
 	}
 
+
+	@Override
+	public List<ArtistRecommendation> getGroupArtistsInLibrary(
+			String lastFmGroupName, int offset, int limit, boolean onlyAlbumArtists) {
+		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
+				+ " from music.artistinfo ai"
+				+ " inner join music.artist ma on ai.artist_id = ma.id"
+				+ " inner join library.artist la on la.artist_id = ma.id"
+				+ " inner join music.groupweeklyartistchart gwac on gwac.artist_id = ma.id"
+				+ " inner join music.lastfmgroup g on gwac.lastfmgroup_id = g.id"
+				+ " where g.group_name = upper(?)"
+				+ (onlyAlbumArtists ? " and la.hasalbums" : "")
+				+ " order by gwac.playcount desc offset ? limit ?";
+
+		return jdbcTemplate.query(sql,
+				new Object[]{lastFmGroupName, offset, limit},
+				new ArtistRecommendationRowMapper());
+	}
+
+	@Override
+	public List<String> getGroupArtistsNotInLibrary(
+			String lastFmGroupName, int amount, boolean onlyAlbumArtists) {
+		String sql = "select ma.artist_name_capitalization from music.groupweeklyartistchart gwac"
+				+ " inner join music.artist ma on gwac.artist_id = ma.id"
+				+ " inner join music.lastfmgroup g on gwac.lastfmgroup_id = g.id"
+				+ " where g.group_name = upper(?) and not exists"
+				+ " (select 1 from library.artist where artist_id = gwac.artist_id"
+				+ (onlyAlbumArtists ? " and hasalbums" : "")
+				+ " ) order by gwac.playcount desc limit " + amount;
+		
+		return jdbcTemplate.queryForList(sql, new Object[]{lastFmGroupName}, String.class);
+	}
+
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;

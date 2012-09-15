@@ -140,6 +140,20 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 		return jdbcTemplate.query(sql, tags, new PlaylistItemRowMapper());
 	}
 
+	@Override
+	public List<PlaylistItem> getPlaylistForGroup(String lastFmGroup, int artistCount, int totalCount) {
+		String sql = "select artist_id, track_id from ("
+				+ "  select att.track_id, att.artist_id, gwac.playcount as artist_weight, rank() over" 
+				+ "  (partition by att.artist_id order by (random()*(110 - rank + (play_count/3))) desc) as artist_rank from library.artisttoptrackplaycount att"
+				+ "   inner join music.groupweeklyartistchart gwac on gwac.artist_id = att.artist_id" 
+				+ "	  inner join music.lastfmgroup g on gwac.lastfmgroup_id = g.id where g.group_name = upper(?)"
+				+ "  ) ranked_tracks"
+				+ "  where ranked_tracks.artist_rank <= " + artistCount
+				+ "  order by random() * ranked_tracks.artist_weight * ranked_tracks.artist_weight desc limit " + totalCount;
+		
+		return jdbcTemplate.query(sql, new Object[]{lastFmGroup}, new PlaylistItemRowMapper());
+	}
+
 	/*
 	 * Returns a list of top (N) rated tracks, for each top (M) related artists.
 	 * Tracks are sorted by artist relevance and track rank.

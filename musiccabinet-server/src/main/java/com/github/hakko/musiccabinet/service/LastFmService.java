@@ -1,6 +1,9 @@
 package com.github.hakko.musiccabinet.service;
 
-import com.github.hakko.musiccabinet.dao.LastFmUserDao;
+import java.util.List;
+
+import com.github.hakko.musiccabinet.dao.LastFmDao;
+import com.github.hakko.musiccabinet.domain.model.library.LastFmGroup;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -18,7 +21,7 @@ public class LastFmService {
 	public static final String API_KEY = new ResourceUtil(API_KEY_RESOURCE).getContent();
 
 	private AuthSessionClient authSessionClient;
-	private LastFmUserDao lastFmUserDao;
+	private LastFmDao lastFmDao;
 
 	private static final Logger LOG = Logger.getLogger(LastFmService.class);
 
@@ -38,21 +41,29 @@ public class LastFmService {
 	}
 	
 	public LastFmUser getLastFmUser(String lastFmUsername) {
-		return lastFmUserDao.getLastFmUser(lastFmUsername);
+		return lastFmDao.getLastFmUser(lastFmUsername);
 	}
 	
 	public void createOrUpdateLastFmUser(LastFmUser lastFmUser) {
-		lastFmUserDao.createOrUpdateLastFmUser(lastFmUser);
+		lastFmDao.createOrUpdateLastFmUser(lastFmUser);
 	}
 
+	public List<LastFmGroup> getLastFmGroups() {
+		return lastFmDao.getLastFmGroups();
+	}
+	
+	public void setLastFmGroups(List<LastFmGroup> lastFmGroups) {
+		lastFmDao.setLastFmGroups(lastFmGroups);
+	}
+	
 	// Spring setters
 
 	public void setAuthSessionClient(AuthSessionClient authSessionClient) {
 		this.authSessionClient = authSessionClient;
 	}
 
-	public void setLastFmUserDao(LastFmUserDao lastFmUserDao) {
-		this.lastFmUserDao = lastFmUserDao;
+	public void setLastFmDao(LastFmDao lastFmDao) {
+		this.lastFmDao = lastFmDao;
 	}
 	
 }
