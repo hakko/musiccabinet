@@ -178,8 +178,10 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		String sql = 
 				"select tag.tag_name, null, 10+ntile(30) over (order by pop.sum), true from library.toptag tt"
 				+ " inner join music.tag tag on tt.tag_id = tag.id"
-				+ " inner join (select tag_id, sum(tag_count) from music.artisttoptag att group by tag_id) pop on tag.id = pop.tag_id" 
-				+ " order by lower(tag.tag_name)";
+				+ " inner join (select coalesce(t.corrected_id, t.id) as tag_id, sum(tag_count)"
+				+ "  from music.artisttoptag att inner join music.tag t on att.tag_id = t.id"
+				+ "  group by coalesce(t.corrected_id, t.id)) pop on tag.id = pop.tag_id" 
+				+ " order by tag.tag_name";
 			
 		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}
