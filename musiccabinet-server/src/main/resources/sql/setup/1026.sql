@@ -1,4 +1,4 @@
-create extension pg_trgm;
+create extension if not exists pg_trgm;
 
 alter table library.artist drop column artist_name_search;
 alter table library.album drop column album_name_search;
