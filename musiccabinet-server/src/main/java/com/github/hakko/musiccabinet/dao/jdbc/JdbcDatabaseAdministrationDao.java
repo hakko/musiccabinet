@@ -122,7 +122,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 			info.setProperty("password", password);
 			ConnectionFactory connectionFactory = new ConnectionFactoryImpl();
 			ProtocolConnection connection = connectionFactory.openConnectionImpl(
-					host, port, "postgres", "template1", info, logger);
+					host, port, getDataSource().getUser(), "template1", info, logger);
 			connection.close();
 			passwordCorrect = true;
 		} catch (SQLException e) {
@@ -157,8 +157,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		// we know it's ComboPooledDataSource, as we define it in applicationContext.xml
 		// this is the primary reason for using C3P0 rather than Apache DBCP, since it
 		// doesn't support password updates.
-		ComboPooledDataSource dataSource = 
-				(ComboPooledDataSource) jdbcTemplate.getDataSource();
+		ComboPooledDataSource dataSource = getDataSource();
 		ComboPooledDataSource initialDataSource = 
 				(ComboPooledDataSource) initialJdbcTemplate.getDataSource();
 		dataSource.setPassword(password);
@@ -221,7 +220,7 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 	 * which is on form jdbc:postgresql://localhost:5432/musiccabinet.
 	 */
 	private void parseJDBCURL() {
-		ComboPooledDataSource ds = (ComboPooledDataSource) jdbcTemplate.getDataSource();
+		ComboPooledDataSource ds = getDataSource();
 
 		String url = ds.getJdbcUrl();
 		int i1 = url.indexOf("://") + 3;
@@ -233,11 +232,15 @@ public class JdbcDatabaseAdministrationDao implements DatabaseAdministrationDao,
 		database = url.substring(i3 + 1);
 	}
 
+	private ComboPooledDataSource getDataSource() {
+		return (ComboPooledDataSource) jdbcTemplate.getDataSource();
+	}
+
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
-
+	
 	// Spring setters
 	
 	public void setDataSource(DataSource dataSource) {
