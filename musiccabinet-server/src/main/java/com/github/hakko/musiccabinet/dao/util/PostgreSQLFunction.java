@@ -15,7 +15,12 @@ public enum PostgreSQLFunction {
 	GET_ARTIST_ID("music", "get_artist_id", "sql/music/get-artist-id.sql"),
 	GET_ALBUM_ID("music", "get_album_id", "sql/music/get-album-id.sql"),
 	GET_TRACK_ID("music", "get_track_id", "sql/music/get-track-id.sql"),
+	GET_LASTFMUSER_ID("music", "get_lastfmuser_id", "sql/music/get-lastfmuser-id.sql"),
 	GET_LASTFMGROUP_ID("music", "get_lastfmgroup_id", "sql/music/get-lastfmgroup-id.sql"),
+	UPDATE_USER_TOP_ARTISTS("music", "update_usertopartists", 
+		"sql/music/update-usertopartists.sql"),
+	UPDATE_USER_RECOMMENDED_ARTISTS("music", "update_userrecartists", 
+		"sql/music/update-userrecommendedartists.sql"),
 	UPDATE_LASTFMGROUP("music", "update_lastfmgroup", "sql/music/update-lastfmgroup.sql"),
 	UPDATE_TRACKRELATION("music", "update_trackrelation", 
 		"sql/music/update-trackrelation.sql"),
@@ -37,13 +42,8 @@ public enum PostgreSQLFunction {
 		"sql/music/update-groupweeklyartistchart.sql"),
 	
 	/* Library schema */
-	GET_LASTFMUSER_ID("library", "get_lastfmuser_id", "sql/library/get-lastfmuser-id.sql"),
 	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 
 		"sql/library/update-trackplaycount.sql"),
-	UPDATE_USER_TOP_ARTISTS("library", "update_usertopartists", 
-		"sql/library/update-usertopartists.sql"),
-	UPDATE_USER_RECOMMENDED_ARTISTS("library", "update_userrecartists", 
-		"sql/library/update-userrecommendedartists.sql"),
 		
 	ADD_TO_LIBRARY("library", "add_to_library",
 		"sql/library/add-to-library.sql"),

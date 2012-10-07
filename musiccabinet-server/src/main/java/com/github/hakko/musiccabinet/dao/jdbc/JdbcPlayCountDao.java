@@ -28,7 +28,7 @@ public class JdbcPlayCountDao implements PlayCountDao, JdbcTemplateDao {
 		String sql = "select artist_id from ("
 				+ " select artist_id, max(invocation_time) as last_invocation_time "
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
 				+ ") pc order by last_invocation_time desc offset ? limit ?";
@@ -41,7 +41,7 @@ public class JdbcPlayCountDao implements PlayCountDao, JdbcTemplateDao {
 		String sql = "select album_id from ("
 				+ " select album_id, max(invocation_time) as last_invocation_time "
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by album_id"
 				+ ") pc order by last_invocation_time desc offset ? limit ?";
@@ -54,7 +54,7 @@ public class JdbcPlayCountDao implements PlayCountDao, JdbcTemplateDao {
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, max(invocation_time) as last_invocation_time"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
@@ -67,7 +67,7 @@ public class JdbcPlayCountDao implements PlayCountDao, JdbcTemplateDao {
 	public List<Integer> getMostPlayedArtists(String lastFmUser, int offset, int limit) {
 		String sql = "select artist_id"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
 				+ " order by count(artist_id) desc offset ? limit ?";
@@ -79,7 +79,7 @@ public class JdbcPlayCountDao implements PlayCountDao, JdbcTemplateDao {
 	public List<Integer> getMostPlayedAlbums(String lastFmUser, int offset, int limit) {
 		String sql = "select album_id"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by album_id"
 				+ " order by count(album_id) desc offset ? limit ?";
@@ -93,7 +93,7 @@ public class JdbcPlayCountDao implements PlayCountDao, JdbcTemplateDao {
 				+ " inner join ("
 				+ " select track_id, album_id"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by track_id, album_id"
 				+ " order by count(track_id) desc) pc"

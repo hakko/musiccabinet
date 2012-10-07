@@ -166,7 +166,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 
 	protected boolean isWebserviceInvocationAllowed(Calltype callType, LastFmUser user, short page) {
 		String sql = "select max(invocation_time) from library.webservice_history h"
-			+ " inner join library.lastfmuser u on h.lastfmuser_id = u.id"
+			+ " inner join music.lastfmuser u on h.lastfmuser_id = u.id"
 			+ " where calltype_id = " + callType.getDatabaseId()
 			+ " and u.lastfm_user = upper(?) and h.page = ?";
 		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{
@@ -176,7 +176,7 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 
 	protected boolean isWebserviceInvocationAllowed(Calltype callType, LastFmUser user) {
 		String sql = "select max(invocation_time) from library.webservice_history h"
-			+ " inner join library.lastfmuser u on h.lastfmuser_id = u.id"
+			+ " inner join music.lastfmuser u on h.lastfmuser_id = u.id"
 			+ " where calltype_id = " + callType.getDatabaseId()
 			+ " and u.lastfm_user = upper(?)";
 		Timestamp lastInvocation = jdbcTemplate.queryForObject(sql, new Object[]{

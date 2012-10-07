@@ -83,7 +83,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join ("
 				+ " select artist_id, max(invocation_time) as last_invocation_time"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
 				+ ") pc on pc.artist_id = a.id"
@@ -104,7 +104,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join ("
 				+ " select artist_id, count(artist_id) as cnt"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
 				+ ") pc on pc.artist_id = a.id"
@@ -133,7 +133,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join music.artist a on ai.artist_id = a.id"
 				+ " inner join library.artist la on la.artist_id = a.id"
 				+ " inner join library.starredartist sa on sa.artist_id = la.artist_id"
-				+ " inner join library.lastfmuser u on sa.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on sa.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ (query == null ? "" : " and la.artist_name_search like ?") 
 				+ " order by sa.added desc offset ? limit ?";
@@ -226,7 +226,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select la.album_id, max(invocation_time) as last_invocation_time"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+"  inner join library.album la on pc.album_id = la.album_id"
 				+ " where u.lastfm_user = upper(?)"
 				+ (query == null ? "" : " and la.album_name_search like ?") 
@@ -259,7 +259,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select la.album_id, count(la.album_id) as cnt"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+"  inner join library.album la on pc.album_id = la.album_id"
 				+ " where u.lastfm_user = upper(?)"
 				+ (query == null ? "" : " and la.album_name_search like ?") 
@@ -315,7 +315,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select sa.album_id, sa.added from library.starredalbum sa "
 				+ " inner join library.album la on sa.album_id = la.album_id"
-				+ " inner join library.lastfmuser u on sa.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on sa.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ (query == null ? "" : " and la.album_name_search like ?") 
 				+ " order by sa.added desc offset ? limit ?) filter on lt.album_id = filter.album_id"
@@ -392,7 +392,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, max(invocation_time) as last_invocation_time"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
@@ -410,7 +410,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, count(track_id) as cnt"
 				+ " from library.playcount pc"
-				+ " inner join library.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
@@ -427,7 +427,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	public List<Integer> getStarredTrackIds(String lastFmUsername, int offset, int limit, String query) {
 		String sql = "select lt.id from library.starredtrack st"
 				+ " inner join library.track lt on st.album_id = lt.album_id and st.track_id = lt.track_id"
-				+ " inner join library.lastfmuser u on st.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on st.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ (query == null ? "" : " and lt.track_name_search like ?")
 				+ " order by added desc offset ? limit ?";

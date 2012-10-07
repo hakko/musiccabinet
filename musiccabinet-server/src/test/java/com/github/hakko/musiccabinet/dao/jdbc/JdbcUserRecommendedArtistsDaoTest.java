@@ -177,7 +177,7 @@ public class JdbcUserRecommendedArtistsDaoTest {
 	}
 	
 	private void deleteUserRecommendedArtists() {
-		dao.getJdbcTemplate().execute("truncate library.userrecommendedartist cascade");
+		dao.getJdbcTemplate().execute("truncate music.userrecommendedartist cascade");
 	}
 
 }

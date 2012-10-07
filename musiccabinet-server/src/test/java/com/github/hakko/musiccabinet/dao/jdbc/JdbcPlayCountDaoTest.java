@@ -67,7 +67,7 @@ public class JdbcPlayCountDaoTest {
 
 	@Before
 	public void prepareTestData() throws ApplicationException {
-		dao.getJdbcTemplate().execute("truncate library.lastfmuser cascade");
+		dao.getJdbcTemplate().execute("truncate music.lastfmuser cascade");
 		dao.getJdbcTemplate().execute("truncate library.file cascade");
 		dao.getJdbcTemplate().execute("truncate music.artist cascade");
 		

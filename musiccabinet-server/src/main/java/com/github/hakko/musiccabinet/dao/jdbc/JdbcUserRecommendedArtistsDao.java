@@ -34,11 +34,11 @@ public class JdbcUserRecommendedArtistsDao implements UserRecommendedArtistsDao,
 	}
 	
 	private void clearImportTable() {
-		jdbcTemplate.execute("truncate library.userrecommendedartist_import");
+		jdbcTemplate.execute("truncate music.userrecommendedartist_import");
 	}
 
 	private void batchInsert(List<RecommendedArtist> artists, LastFmUser user) {
-		String sql = "insert into library.userrecommendedartist_import"
+		String sql = "insert into music.userrecommendedartist_import"
 				+ " (lastfm_user, artist_name, rank, contextartist1_name, contextartist2_name)"
 				+ " values (?,?,?,?,?)";
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
@@ -69,11 +69,11 @@ public class JdbcUserRecommendedArtistsDao implements UserRecommendedArtistsDao,
 	public List<RecommendedArtist> getUserRecommendedArtists(String lastFmUsername) {
 		String sql = "select a.artist_name_capitalization,"
 				+ " ca1.artist_name_capitalization, ca2.artist_name_capitalization"
-				+ " from library.userrecommendedartist ura"
+				+ " from music.userrecommendedartist ura"
 				+ " inner join music.artist a on ura.artist_id = a.id"
 				+ " inner join music.artist ca1 on ura.contextartist1_id = ca1.id"
 				+ " inner join music.artist ca2 on ura.contextartist2_id = ca2.id"
-				+ " inner join library.lastfmuser u on ura.lastfmuser_id = u.id"
+				+ " inner join music.lastfmuser u on ura.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " order by rank";
 

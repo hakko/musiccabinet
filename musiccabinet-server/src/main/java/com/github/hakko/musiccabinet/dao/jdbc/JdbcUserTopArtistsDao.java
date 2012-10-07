@@ -33,11 +33,11 @@ public class JdbcUserTopArtistsDao implements UserTopArtistsDao, JdbcTemplateDao
 	}
 	
 	private void clearImportTable() {
-		jdbcTemplate.execute("truncate library.usertopartist_import");
+		jdbcTemplate.execute("truncate music.usertopartist_import");
 	}
 
 	private void batchInsert(List<Artist> artists, LastFmUser user, Period period) {
-		String sql = "insert into library.usertopartist_import (lastfm_user, artist_name, rank, days) values (?,?,?,?)";
+		String sql = "insert into music.usertopartist_import (lastfm_user, artist_name, rank, days) values (?,?,?,?)";
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batchUpdate.setBatchSize(1000);
 		batchUpdate.declareParameter(new SqlParameter("lastfm_user", Types.VARCHAR));
@@ -61,8 +61,8 @@ public class JdbcUserTopArtistsDao implements UserTopArtistsDao, JdbcTemplateDao
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
-				+ " inner join library.usertopartist uta on uta.artist_id = a.id"
-				+ " inner join library.lastfmuser u on uta.lastfmuser_id = u.id"
+				+ " inner join music.usertopartist uta on uta.artist_id = a.id"
+				+ " inner join music.lastfmuser u on uta.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?) and uta.days = ? and exists"
 				+ " (select 1 from library.track lt"
 				+ "  inner join music.track mt on lt.track_id = mt.id"

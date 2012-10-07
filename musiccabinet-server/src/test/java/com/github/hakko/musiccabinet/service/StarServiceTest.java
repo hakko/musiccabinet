@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.github.hakko.musiccabinet.dao.jdbc.JdbcLastFmDao;
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryBrowserDao;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
@@ -33,6 +34,9 @@ public class StarServiceTest {
 	@Autowired
 	private JdbcLibraryBrowserDao browserDao;
 	
+	@Autowired
+	private JdbcLastFmDao lastFmDao;
+	
 	private Artist artist;
 	private Album album;
 	private Track track;
@@ -49,6 +53,9 @@ public class StarServiceTest {
 		artist = browserDao.getArtists().get(0);
 		album = browserDao.getAlbums(artist.getId(), true).get(0);
 		track = browserDao.getTracks(album.getTrackIds()).get(0);
+		
+		lastFmDao.getLastFmUserId(user1);
+		lastFmDao.getLastFmUserId(user2);
 	}
 	
 	@Test

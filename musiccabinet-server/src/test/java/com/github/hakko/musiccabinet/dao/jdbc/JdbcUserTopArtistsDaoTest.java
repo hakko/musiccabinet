@@ -173,7 +173,7 @@ public class JdbcUserTopArtistsDaoTest {
 	}
 	
 	private void deleteUserTopArtists() {
-		dao.getJdbcTemplate().execute("truncate library.usertopartist cascade");
+		dao.getJdbcTemplate().execute("truncate music.usertopartist cascade");
 	}
 
 }

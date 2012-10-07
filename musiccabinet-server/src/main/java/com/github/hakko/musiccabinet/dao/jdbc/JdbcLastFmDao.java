@@ -22,7 +22,7 @@ public class JdbcLastFmDao implements LastFmDao, JdbcTemplateDao {
 	private JdbcTemplate jdbcTemplate;
 
 	public int getLastFmUserId(String lastFmUsername) {
-		String sql = "select * from library.get_lastfmuser_id(?)";
+		String sql = "select * from music.get_lastfmuser_id(?)";
 		
 		return jdbcTemplate.queryForInt(sql, lastFmUsername);
 	}
@@ -30,7 +30,7 @@ public class JdbcLastFmDao implements LastFmDao, JdbcTemplateDao {
 	@Override
 	public LastFmUser getLastFmUser(String lastFmUsername) {
 		String sql = "select id, lastfm_user_capitalization, session_key"
-				+ " from library.lastfmuser where lastfm_user = upper(?)";
+				+ " from music.lastfmuser where lastfm_user = upper(?)";
 		return jdbcTemplate.queryForObject(sql, new Object[]{lastFmUsername}, new RowMapper<LastFmUser>() {
 			@Override
 			public LastFmUser mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -43,7 +43,7 @@ public class JdbcLastFmDao implements LastFmDao, JdbcTemplateDao {
 	public void createOrUpdateLastFmUser(LastFmUser user) {
 		user.setId(getLastFmUserId(user.getLastFmUsername()));
 		
-		String sql = "update library.lastfmuser set lastfm_user_capitalization = ?, session_key = ?	"
+		String sql = "update music.lastfmuser set lastfm_user_capitalization = ?, session_key = ?	"
 				+ " where id = ?";
 		
 		jdbcTemplate.update(sql, user.getLastFmUsername(), user.getSessionKey(), user.getId());
