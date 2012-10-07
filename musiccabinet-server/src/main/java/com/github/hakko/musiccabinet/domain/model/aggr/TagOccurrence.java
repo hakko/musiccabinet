@@ -2,6 +2,7 @@ package com.github.hakko.musiccabinet.domain.model.aggr;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /*
  * TagOccurrence doesn't map to a single database table but is rather aggregated
@@ -72,6 +73,11 @@ public class TagOccurrence {
 		return new EqualsBuilder()
 		.append(tag, to.tag)
 		.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return "[tag=" + tag + ", corrected=" + correctedTag + ", occurrence=" + occurrence + ", use=" + use + "]";
 	}
 
 }
