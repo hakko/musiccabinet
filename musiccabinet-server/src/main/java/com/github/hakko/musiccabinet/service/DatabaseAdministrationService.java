@@ -166,7 +166,7 @@ public class DatabaseAdministrationService implements InitializingBean {
     	DatabaseAdministrationService service = 
     		context.getBean(DatabaseAdministrationService.class);
     	if (service.isRDBMSRunning()) {
-    		service.loadNewDatabasUpdates();
+    		service.loadNewDatabaseUpdates();
     	} else {
     		System.out.println("\n[WARN] It doesn't seem like Postgresql is running.\n");
     		System.exit(1);
