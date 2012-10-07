@@ -1,9 +1,12 @@
 package com.github.hakko.musiccabinet.service;
 
+import java.util.List;
+
 import com.github.hakko.musiccabinet.dao.NameSearchDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.NameSearchResult;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.SearchCriteria;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 
 public class NameSearchService {
@@ -20,6 +23,10 @@ public class NameSearchService {
 	
 	public NameSearchResult<Track> getTracks(String userQuery, int offset, int limit) {
 		return nameSearchDao.getTracks(userQuery, offset, limit);
+	}
+	
+	public List<Track> getTracks(SearchCriteria searchCriteria, int offset, int limit) {
+		return nameSearchDao.getTracks(searchCriteria, offset, limit);
 	}
 
 	// Spring setter

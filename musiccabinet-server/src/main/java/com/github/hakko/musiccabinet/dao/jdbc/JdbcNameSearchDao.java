@@ -18,6 +18,7 @@ import com.github.hakko.musiccabinet.domain.model.aggr.NameSearchResult;
 import com.github.hakko.musiccabinet.domain.model.library.MetaData;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.SearchCriteria;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 
 public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
@@ -110,6 +111,18 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 		String likeQuery = '%' + StringUtils.join(words, '%') + '%';
 
 		return likeQuery;
+	}
+
+	@Override
+	public List<Track> getTracks(SearchCriteria searchCriteria, int offset, int limit) {
+		String sql = "select mart.id, mart.artist_name_capitalization,"
+				+ " malb.id, malb.album_name_capitalization,"
+				+ " lt.id, mt.track_name_capitalization from library.track lt"
+				+ " inner join music.track mt on lt.track_id = mt.id"
+				+ " inner join music.album malb on lt.album_id = malb.id"
+				+ " inner join music.artist mart on mt.artist_id = mart.id" ;
+		
+		return null;
 	}
 	
 	@Override
