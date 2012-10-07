@@ -53,7 +53,7 @@ public class JdbcDatabaseAdministrationDaoEnvironmentDependentTest {
 
 		DatabaseAdministrationService service = new DatabaseAdministrationService();
 		service.setDatabaseAdministrationDao(dbAdmDao);
-		service.loadNewDatabasUpdates();
+		service.loadNewDatabaseUpdates();
 	}
 
 	@Test
