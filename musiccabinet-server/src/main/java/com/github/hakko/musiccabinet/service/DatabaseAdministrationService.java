@@ -93,7 +93,7 @@ public class DatabaseAdministrationService implements InitializingBean {
     /*
      * Create database if necessary, load database updates and functions.
      */
-    public void loadNewDatabasUpdates() throws ApplicationException {
+    public void loadNewDatabaseUpdates() throws ApplicationException {
 		if (!dbAdmDao.isDatabaseCreated()) {
 			dbAdmDao.createEmptyDatabase();
 		}
@@ -146,7 +146,7 @@ public class DatabaseAdministrationService implements InitializingBean {
 		LOG.debug("databaseCreated = " + databaseCreated);
 		if (!databaseUpdated && databaseCreated) {
 			LOG.debug("Attempt database update.");
-			loadNewDatabasUpdates();
+			loadNewDatabaseUpdates();
 		}
 	}
     
