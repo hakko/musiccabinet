@@ -62,7 +62,7 @@ public class JdbcUserRecommendedArtistsDao implements UserRecommendedArtistsDao,
 	}
 
 	private void updateUserTopArtists() {
-		jdbcTemplate.execute("select library.update_userrecartists()");
+		jdbcTemplate.execute("select music.update_userrecartists()");
 	}
 		
 	@Override

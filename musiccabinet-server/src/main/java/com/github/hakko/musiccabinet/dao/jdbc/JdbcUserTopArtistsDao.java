@@ -53,7 +53,7 @@ public class JdbcUserTopArtistsDao implements UserTopArtistsDao, JdbcTemplateDao
 	}
 
 	private void updateUserTopArtists() {
-		jdbcTemplate.execute("select library.update_usertopartists()");
+		jdbcTemplate.execute("select music.update_usertopartists()");
 	}
 	
 	@Override
