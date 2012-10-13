@@ -31,7 +31,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " from library.artist la"
 				+ " inner join music.artist ma on la.artist_id = ma.id" 
 				+ " where la.artist_name_search like ?"
-				+ " order by la.artist_name_search"
+				+ " order by la.hasalbums desc, ma.artist_name"
 				+ " offset ? limit ?";
 		List<Artist> artists = jdbcTemplate.query(sql, 
 				new Object[]{getNameQuery(userQuery), offset, limit}, new ArtistRowMapper());
@@ -51,7 +51,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " left outer join library.file f2 on f2.id = la.coverartfile_id"
 				+ " left outer join library.directory d2 on f2.directory_id = d2.id"
 				+ " where la.album_name_search like ?"
-				+ " order by la.album_name_search"
+				+ " order by malb.album_name"
 				+ " offset ? limit ?";
 		List<Album> albums = jdbcTemplate.query(sql, 
 				new Object[]{getNameQuery(userQuery), offset, limit}, new AlbumRowMapper());
@@ -68,7 +68,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " inner join music.album malb on lt.album_id = malb.id"
 				+ " inner join music.artist mart on mt.artist_id = mart.id" 
 				+ " where lt.track_name_search like ?"
-				+ " order by lt.track_name_search"
+				+ " order by mt.track_name"
 				+ " offset ? limit ?";
 		List<Track> albums = jdbcTemplate.query(sql, 
 				new Object[]{getNameQuery(userQuery), offset, limit}, new RowMapper<Track>() {
