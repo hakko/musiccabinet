@@ -70,7 +70,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 				+ " left outer join music.artistinfo ai on ai.artist_id = a.id"
 				+ " where a.id = " + artistId;
 		
-		return jdbcTemplate.queryForObject(sql, new RowMapper<ArtistInfo>() {
+		List<ArtistInfo> artistInfos = jdbcTemplate.query(sql, new RowMapper<ArtistInfo>() {
 			@Override
 			public ArtistInfo mapRow(ResultSet rs, int rowNum)
 					throws SQLException {
@@ -82,6 +82,8 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 				return ai;
 			}
 		});
+		
+		return artistInfos.isEmpty() ? null : artistInfos.get(0);
 	}
 	
 	@Override
@@ -90,6 +92,7 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 				"select ai.smallimageurl, ai.mediumimageurl, ai.largeimageurl, ai.extralargeimageurl, ai.listeners, ai.playcount, ai.biosummary, ai.biocontent from music.artistinfo ai" + 
 				" inner join music.artist a on ai.artist_id = a.id" +
 				" where a.artist_name = upper(?)";
+
 		ArtistInfo artistInfo = jdbcTemplate.queryForObject(sql, new Object[]{artist.getName()}, 
 				new RowMapper<ArtistInfo>() {
 			@Override
