@@ -83,6 +83,15 @@ public class JdbcDirectoryBrowserDao implements DirectoryBrowserDao, JdbcTemplat
 	}
 	
 	@Override
+	public List<String> getNonAudioFiles(int directoryId) {
+		String sql = "select filename from library.file f where directory_id = " + directoryId 
+				+ " and not exists (select 1 from library.filetag ft where file_id = f.id)"
+				+ " order by lower(filename)";
+		
+		return jdbcTemplate.queryForList(sql, String.class);
+	}
+	
+	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}

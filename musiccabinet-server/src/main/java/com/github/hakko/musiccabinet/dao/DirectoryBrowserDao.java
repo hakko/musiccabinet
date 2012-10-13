@@ -14,5 +14,6 @@ public interface DirectoryBrowserDao {
 	int getParentId(int directoryId);
 	void addDirectory(String path, int parentId);
 	List<Album> getAlbums(int directoryId, boolean sortAscending);
+	List<String> getNonAudioFiles(int directoryId);
 	
 }

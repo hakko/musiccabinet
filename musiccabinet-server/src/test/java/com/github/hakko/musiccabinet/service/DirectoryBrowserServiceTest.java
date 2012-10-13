@@ -41,7 +41,7 @@ public class DirectoryBrowserServiceTest {
 	private JdbcDirectoryBrowserDao dao;
 	
 	// paths to resources folders containing actual, tagged, mp3 files
-	private String library, media1, media2, cd1;
+	private String library, media1, media2, cd1, artwork;
 	
 	@Before
 	public void clearDirectories() throws Exception {
@@ -53,6 +53,8 @@ public class DirectoryBrowserServiceTest {
 		media2 = library + separatorChar + "media2";
 		cd1 = media1 + separatorChar + "The Beatles" + separatorChar 
 				+ "1962-1966" + separatorChar + "cd1";
+		artwork = library + separatorChar + "media3" + separatorChar + "Artist"
+				+ separatorChar + "Folder artwork";
 	}
 	
 	@Test
@@ -189,6 +191,19 @@ public class DirectoryBrowserServiceTest {
 		Assert.assertEquals("The Beatles", album.getArtist().getName());
 		Assert.assertEquals("1962-1966", album.getName());
 		Assert.assertEquals(4, album.getTrackIds().size());
+	}
+	
+	@Test
+	public void findsNonAudioFiles() throws ApplicationException {
+		scannerService.add(set(artwork));
+		
+		int directoryId = browserService.getRootDirectories().iterator().next().getId();
+		
+		List<String> files = browserService.getNonAudioFiles(directoryId);
+
+		Assert.assertEquals(2, files.size());
+		Assert.assertEquals(files.get(0), "cover.jpg");
+		Assert.assertEquals(files.get(1), "folder.png");
 	}
 
 	private List<Directory> list(int id) {

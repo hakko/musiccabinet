@@ -66,6 +66,10 @@ public class DirectoryBrowserService {
 		return dao.getAlbums(directoryId, sortAscending);
 	}
 	
+	public List<String> getNonAudioFiles(int directoryId) {
+		return dao.getNonAudioFiles(directoryId);
+	}
+	
 	private DirectoryContent getContent(Directory dir) {
 		Set<File> foundFiles = new HashSet<>();
 		Set<String> foundSubDirs = new HashSet<>();
