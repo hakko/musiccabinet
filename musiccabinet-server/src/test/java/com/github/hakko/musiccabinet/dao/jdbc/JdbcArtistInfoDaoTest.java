@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTINFO;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,7 +103,15 @@ public class JdbcArtistInfoDaoTest {
 		Assert.assertEquals(newBio, dbAbba.getBioSummary());
 		Assert.assertEquals(newContent, dbAbba.getBioContent());
 	}
-	
+
+	@Test
+	public void unknownArtistInfoReturnsNull() throws ApplicationException {
+		int unknownId = -1;
+		ArtistInfo artistInfo = dao.getArtistInfo(unknownId);
+
+		assertNull(artistInfo);
+	}
+
 	@Test
 	public void biographyAndImageUrlAreReturnedAsInfo() throws ApplicationException {
 		deleteArtistInfos();
