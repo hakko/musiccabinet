@@ -31,7 +31,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	private JdbcTemplate jdbcTemplate;
 	
 	public void createTags(List<String> tags) {
-		String sql = "insert into music.tag (tag_name) select (?)"
+		String sql = "insert into music.tag (tag_name) select distinct (?)"
 				+ " where not exists (select 1 from music.tag where tag_name = ?)";
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batchUpdate.setBatchSize(1000);
@@ -61,6 +61,8 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		if (tagCorrections.size() == 0) return;
 		
 		sql = getCreateMissingTagsSql(tagCorrections.size());
+		jdbcTemplate.update(sql, (Object[]) tagCorrections.keySet().
+				toArray(new String[tagCorrections.size()]));
 		jdbcTemplate.update(sql, (Object[]) tagCorrections.values().
 				toArray(new String[tagCorrections.size()]));
 
@@ -69,8 +71,8 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batchUpdate.setBatchSize(1000);
-		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("t.tag_name", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("tc.tag_name", Types.VARCHAR));
 
 		for (String tag : tagCorrections.keySet()) {
 			batchUpdate.update(new Object[]{tag, tagCorrections.get(tag)});
@@ -80,7 +82,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 
 	protected String getCreateMissingTagsSql(int tags) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("insert into music.tag (tag_name) select tag_name from (values (?)");
+		sb.append("insert into music.tag (tag_name) select distinct tag_name from (values (?)");
 		for (int i = 1; i < tags; i++) {
 			sb.append(",(?)");
 		}
