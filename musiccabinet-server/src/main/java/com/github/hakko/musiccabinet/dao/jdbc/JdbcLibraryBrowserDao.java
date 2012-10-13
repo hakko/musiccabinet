@@ -6,6 +6,7 @@ import static java.io.File.separatorChar;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -344,20 +345,26 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 
 	@Override
 	public List<Track> getTracks(List<Integer> trackIds) {
+		if (trackIds == null || trackIds.size() == 0) {
+			return new ArrayList<>();
+		}
+		
 		String sql = "select mt.track_name_capitalization, "
-				+ " mal.album_name_capitalization,"
-				+ " ma.artist_name_capitalization,"
+				+ " alb.album_name_capitalization,"
+				+ " art.artist_name_capitalization,"
+				+ " comp.artist_name_capitalization,"
 				+ " ft.track_nr, ft.track_nrs, ft.disc_nr, ft.disc_nrs, ft.year,"
 				+ " fh.bitrate, fh.vbr, fh.duration, fh.type_id, "
-				+ " d.path, f.filename, f.size, f.modified, lt.id, mal.id, ma.id"
+				+ " d.path, f.filename, f.size, f.modified, lt.id, alb.id, art.id"
 				+ " from music.track mt"
 				+ " inner join library.track lt on lt.track_id = mt.id"
 				+ " inner join library.file f on f.id = lt.file_id"
 				+ " inner join library.directory d on f.directory_id = d.id"
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join library.fileheader fh on fh.file_id = lt.file_id"
-				+ " inner join music.artist ma on ft.artist_id = ma.id"
-				+ " inner join music.album mal on lt.album_id = mal.id"
+				+ " inner join music.artist art on ft.artist_id = art.id"
+				+ " left outer join music.artist comp on ft.composer_id = comp.id"
+				+ " inner join music.album alb on lt.album_id = alb.id"
 				+ " where lt.id in (" + getIdParameters(trackIds) + ")";
 		
 		return jdbcTemplate.query(sql, new RowMapper<Track>() {
@@ -367,21 +374,22 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				MetaData md = new MetaData();
 				md.setAlbum(rs.getString(2));
 				md.setArtist(rs.getString(3));
-				md.setTrackNr(rs.getShort(4));
-				md.setTrackNrs(rs.getShort(5));
-				md.setDiscNr(rs.getShort(6));
-				md.setDiscNrs(rs.getShort(7));
-				md.setYear(rs.getShort(8));
-				md.setBitrate(rs.getShort(9));
-				md.setVbr(rs.getBoolean(10));
-				md.setDuration(rs.getShort(11));
-				md.setMediaType(Mediatype.values()[rs.getShort(12)]);
-				md.setPath(rs.getString(13) + separatorChar + rs.getString(14));
-				md.setSize(rs.getInt(15));
-				md.setModified(rs.getTimestamp(16).getTime());
-				int trackId = rs.getInt(17);
-				md.setAlbumId(rs.getInt(18));
-				md.setArtistId(rs.getInt(19));
+				md.setComposer(rs.getString(4));
+				md.setTrackNr(rs.getShort(5));
+				md.setTrackNrs(rs.getShort(6));
+				md.setDiscNr(rs.getShort(7));
+				md.setDiscNrs(rs.getShort(8));
+				md.setYear(rs.getShort(9));
+				md.setBitrate(rs.getShort(10));
+				md.setVbr(rs.getBoolean(11));
+				md.setDuration(rs.getShort(12));
+				md.setMediaType(Mediatype.values()[rs.getShort(13)]);
+				md.setPath(rs.getString(14) + separatorChar + rs.getString(15));
+				md.setSize(rs.getInt(16));
+				md.setModified(rs.getTimestamp(17).getTime());
+				int trackId = rs.getInt(18);
+				md.setAlbumId(rs.getInt(19));
+				md.setArtistId(rs.getInt(20));
 				return new Track(trackId, trackName, md);
 			}
 		});

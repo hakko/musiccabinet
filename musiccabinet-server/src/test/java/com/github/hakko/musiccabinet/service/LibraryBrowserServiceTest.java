@@ -47,7 +47,7 @@ public class LibraryBrowserServiceTest {
 	private JdbcMusicDao musicDao;
 	
 	// paths to resources folders containing actual, tagged, mp3 files
-	private String library, media1, media2, media3, media4, media5, aretha;
+	private String library, media1, media2, media3, media4, media5, media6, aretha;
 	
 	@Before
 	public void clearDirectories() throws Exception {
@@ -62,6 +62,7 @@ public class LibraryBrowserServiceTest {
 		media3 = library + separatorChar + "media3";
 		media4 = library + separatorChar + "media4";
 		media5 = library + separatorChar + "media5";
+		media6 = library + separatorChar + "media6";
 		aretha = media2 + separatorChar + "Aretha Franklin";
 	}
 	
@@ -201,6 +202,18 @@ public class LibraryBrowserServiceTest {
 				new Track("Jim White", "Still Waters"),
 				new Track("The Handsome Family", "My Sister's Tiny Hands"));
 		assertTracks(tracks, expectedTracks);
+	}
+
+	@Test
+	public void findsComposerTag() throws Exception {
+		scannerService.add(set(media6));
+		
+		List<Track> tracks = browserService.getTracks(Arrays.asList(
+				browserService.getTrackId(media6 + separatorChar + "composer.mp3")));
+		
+		Assert.assertNotNull(tracks);
+		Assert.assertEquals(1, tracks.size());
+		Assert.assertEquals("Composer", tracks.get(0).getMetaData().getComposer());
 	}
 	
 	@Test
