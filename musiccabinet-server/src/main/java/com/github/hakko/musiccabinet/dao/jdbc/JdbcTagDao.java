@@ -110,27 +110,18 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	 * Returns a list of fairly popular and relevant tags that are used for artists
 	 * found in library.
 	 * 
-	 * How it works:
-	 * at least (n) artists in library must be tagged with it
-	 * the average weight of the tag must be at least (m)
-	 * (or)
-	 * it must already be used as a top tag.
-	 * 
-	 * This filters popular tags for the current library, but cuts out tags like
-	 * "awesome", "seen live" etc. The latter ones occur frequently, but they normally
-	 * have a low rank compared to more descriptive tags such as "pop", "jazz" etc.
+	 * The tags chosen are the top 250 ordered by having most unique artists with a
+	 * tag count of > 25, and a minimum of 5 artists being tagged with it.
 	 */
 	@Override
 	public List<TagOccurrence> getAvailableTags() {
-		String sql =
-			"select t.tag_name, tc.tag_name, occ.count, case when tt.tag_id is null then false else true end from music.tag t"
-			+ " left outer join music.tag tc on t.corrected_id = tc.id"
-			+ " inner join (select tag_id, count(tag_id) from music.artisttoptag where tag_count > 25 group by tag_id) occ on t.id = occ.tag_id"
-			+ " inner join (select tag_id, sum(tag_count) from music.artisttoptag group by tag_id) pop on t.id = pop.tag_id"
-			+ " left outer join (select tag_id from library.toptag) tt on t.id = tt.tag_id"
-			+ " where (occ.count > 5 and pop.sum/occ.count > 50)"
-			+ "  or t.id in (select tag_id from library.toptag)"
-			+ " order by t.tag_name";
+		String sql = "select * from"
+				+ " (select t.tag_name, tc.tag_name, occ.count, case when tt.tag_id is null then false else true end from music.tag t"
+				+ " inner join (select tag_id, count(tag_id) from music.artisttoptag att where tag_count > 25 group by tag_id) occ on occ.tag_id = t.id"
+				+ " left outer join music.tag tc on t.corrected_id = tc.id"
+				+ " left outer join (select tag_id from library.toptag) tt on t.id = tt.tag_id"
+				+ " where occ.count >= 5"
+				+ " order by occ.count desc limit 250) top order by 1";
 		
 		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}

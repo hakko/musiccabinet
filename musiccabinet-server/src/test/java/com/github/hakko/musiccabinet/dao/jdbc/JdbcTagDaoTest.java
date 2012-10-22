@@ -3,6 +3,7 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import static java.util.Arrays.asList;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
+import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagTopArtists;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
@@ -31,6 +33,9 @@ public class JdbcTagDaoTest {
 	@Autowired
 	private JdbcTagDao dao;
 
+	@Autowired
+	private JdbcArtistTopTagsDao artistTopTagsDao;
+	
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(dao, PostgreSQLFunction.UPDATE_TAG_TOP_ARTISTS);
@@ -57,7 +62,7 @@ public class JdbcTagDaoTest {
 	}
 
 	@Test
-	public void canStoreAndRetrieveMultipleTopTag() {
+	public void canStoreAndRetrieveMultipleTopTags() {
 		deleteTags();
 		
 		String tag1 = "disco", tag2 = "pop", tag3 = "americana";
@@ -180,7 +185,7 @@ public class JdbcTagDaoTest {
 		
 		Map<String, String> correctedTags = dao.getCorrectedTags();
 		
-		Assert.assertEquals(correctionsMap.size(), correctedTags.size());
+		Assert.assertEquals(correctionsMap, correctedTags);
 	}
 	
 	@Test
@@ -194,8 +199,39 @@ public class JdbcTagDaoTest {
 		dao.setTopTags(topTags);
 		
 		List<String> dbTopTags = dao.getTopTags();
+
+		Collections.sort(topTags);
+		Assert.assertEquals(topTags, dbTopTags);
+	}
+	
+	@Test
+	public void retrievesCorrectedAvailableTags() {
+		deleteTags();
+
+		for (int i = 0; i < 5; i++) {
+			artistTopTagsDao.createTopTags(new Artist("artist" + i), Arrays.asList(
+					new Tag("sludge", (short) 100), 
+					new Tag("drone", (short) 90),
+					new Tag("e-l-e-c-t-r-o", (short) 50),
+					new Tag("disco", (short) 10)));
+		}
+
+		Map<String, String> tagCorrections = new HashMap<>();
+		tagCorrections.put("e-l-e-c-t-r-o", "electro");
+		dao.createTagCorrections(tagCorrections);
+
+		dao.setTopTags(Arrays.asList("sludge"));
 		
-		Assert.assertEquals(topTags.size(), dbTopTags.size());
+		List<TagOccurrence> tags = dao.getAvailableTags();
+		Assert.assertEquals(3, tags.size());
+		Assert.assertEquals("drone", tags.get(0).getTag());
+		Assert.assertEquals("e-l-e-c-t-r-o", tags.get(1).getTag());
+		Assert.assertEquals("electro", tags.get(1).getCorrectedTag());
+		Assert.assertEquals("sludge", tags.get(2).getTag());
+		
+		Assert.assertFalse(tags.get(0).isUse());
+		Assert.assertFalse(tags.get(1).isUse());
+		Assert.assertTrue(tags.get(2).isUse());
 	}
 	
 	private void deleteTags() {
