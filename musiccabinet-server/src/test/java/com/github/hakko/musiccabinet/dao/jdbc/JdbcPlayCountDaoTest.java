@@ -161,7 +161,7 @@ public class JdbcPlayCountDaoTest {
 	}
 
 	@Test
-	public void resultsArePagable() {
+	public void resultsArePageable() {
 		dao.addPlayCount(user1, track1b);
 		dao.addPlayCount(user1, track2);
 		
