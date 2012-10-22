@@ -1,8 +1,6 @@
 package com.github.hakko.musiccabinet.ws.lastfm;
 
-import static com.github.hakko.musiccabinet.configuration.CharSet.UTF8;
 import static com.github.hakko.musiccabinet.ws.lastfm.StatusCode.isHttpRecoverable;
-import static org.apache.http.client.utils.URLEncodedUtils.format;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
 
 import com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation;
@@ -168,7 +166,14 @@ public abstract class AbstractWSGetClient extends AbstractWSClient {
 	protected URI getURI(List<NameValuePair> params) throws ApplicationException {
 		URI uri = null;
 		try {
-			uri = URIUtils.createURI(HTTP, HOST, -1, PATH, format(params, UTF8), null);
+			URIBuilder uriBuilder = new URIBuilder();
+			uriBuilder.setScheme(HTTP);
+			uriBuilder.setHost(HOST);
+			uriBuilder.setPath(PATH);
+			for (NameValuePair param : params) {
+				uriBuilder.addParameter(param.getName(), param.getValue());
+			}
+			uri = uriBuilder.build();
 		} catch (URISyntaxException e) {
 			throw new ApplicationException("Could not create Last.fm URI!", e);
 		}

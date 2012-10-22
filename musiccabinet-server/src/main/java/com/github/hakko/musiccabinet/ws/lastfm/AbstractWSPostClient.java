@@ -14,7 +14,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 
 import com.github.hakko.musiccabinet.configuration.CharSet;
@@ -75,7 +75,11 @@ public abstract class AbstractWSPostClient extends AbstractWSClient {
 	protected URI getURI(List<NameValuePair> params) throws ApplicationException {
 		URI uri = null;
 		try {
-			uri = URIUtils.createURI(HTTP, HOST, -1, PATH, null, null);
+			URIBuilder uriBuilder = new URIBuilder();
+			uriBuilder.setScheme(HTTP);
+			uriBuilder.setHost(HOST);
+			uriBuilder.setPath(PATH);
+			uri = uriBuilder.build();
 		} catch (URISyntaxException e) {
 			throw new ApplicationException("Could not create Last.fm URI!", e);
 		}
