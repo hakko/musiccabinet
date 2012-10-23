@@ -66,7 +66,7 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 	protected void removeTagsWithLowTagCount(List<Tag> tags) {
 		for (Iterator<Tag> it = tags.iterator(); it.hasNext();) {
 			Tag tag = it.next();
-			if (tag.getCount() < 5) {
+			if (tag.getCount() < 10) {
 				it.remove();
 			}
 		}
