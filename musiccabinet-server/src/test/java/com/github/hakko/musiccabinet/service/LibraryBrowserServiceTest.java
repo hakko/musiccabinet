@@ -5,6 +5,7 @@ import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
 import static java.io.File.separatorChar;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang.StringUtils.countMatches;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class LibraryBrowserServiceTest {
 	private JdbcMusicDao musicDao;
 	
 	// paths to resources folders containing actual, tagged, mp3 files
-	private String library, media1, media2, media3, media4, media5, media6, aretha;
+	private String library, media1, media2, media3, media4, media5, media6, media7, media8, aretha;
 	
 	@Before
 	public void clearDirectories() throws Exception {
@@ -63,6 +64,8 @@ public class LibraryBrowserServiceTest {
 		media4 = library + separatorChar + "media4";
 		media5 = library + separatorChar + "media5";
 		media6 = library + separatorChar + "media6";
+		media7 = library + separatorChar + "media7";
+		media8 = library + separatorChar + "media8";
 		aretha = media2 + separatorChar + "Aretha Franklin";
 	}
 	
@@ -125,6 +128,30 @@ public class LibraryBrowserServiceTest {
 		Album album = browserService.getAlbum(albumId);
 
 		assertAlbums(Arrays.asList(album), theBeatles, "1967-1970");
+	}
+
+	@Test
+	public void sortsAlbumsByEitherYearOrName() throws Exception {
+		int artistId = musicDao.getArtistId("Artist");
+
+		scannerService.add(set(media8));
+
+		Assert.assertEquals("ACB", getAlbumNames(artistId, true, true));
+		Assert.assertEquals("BCA", getAlbumNames(artistId, true, false));
+
+		Assert.assertEquals("ABC", getAlbumNames(artistId, false, true));
+		Assert.assertEquals("CBA", getAlbumNames(artistId, false, false));
+	}
+	
+	private String getAlbumNames(int artistId, boolean sortByYear, boolean sortAscending) {
+		List<Album> albums = browserService.getAlbums(artistId, sortByYear, sortAscending);
+		
+		StringBuilder sb = new StringBuilder();
+		for (Album album : albums) {
+			sb.append(album.getName());
+		}
+		
+		return sb.toString();
 	}
 
 	@Test
@@ -215,7 +242,20 @@ public class LibraryBrowserServiceTest {
 		Assert.assertEquals(1, tracks.size());
 		Assert.assertEquals("Composer", tracks.get(0).getMetaData().getComposer());
 	}
-	
+
+	@Test
+	public void findsUnsynchronizedLyricsTag() throws Exception {
+		scannerService.add(set(media7));
+		
+		String lyrics = browserService.getLyricsForTrack(
+				browserService.getTrackId(media7 + separatorChar + "lyrics.mp3"));
+		
+		Assert.assertNotNull(lyrics);
+		Assert.assertTrue(lyrics.startsWith("In the town where I was born"));
+		
+		Assert.assertEquals(25, countMatches(lyrics.toLowerCase(), "yellow submarine"));
+	}
+
 	@Test
 	public void handlesEmptyMediaFolder() throws Exception {
 		scannerService.add(set(media4));

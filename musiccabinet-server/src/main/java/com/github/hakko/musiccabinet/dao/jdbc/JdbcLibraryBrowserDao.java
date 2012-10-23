@@ -165,8 +165,12 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		return jdbcTemplate.queryForObject(sql, new AlbumRowMapper());
 	}
 
-	@Override
 	public List<Album> getAlbums(int artistId, boolean sortAscending) {
+		return getAlbums(artistId, true, sortAscending);
+	}
+
+	@Override
+	public List<Album> getAlbums(int artistId, boolean sortByYear, boolean sortAscending) {
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids"
@@ -184,7 +188,8 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join library.directory d2 on f2.directory_id = d2.id"
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by (ma.artist_id = " + artistId + ") desc," 
-				+ " la.year " + (sortAscending ? "asc" : "desc");
+				+ (sortByYear ? " la.year " : " ma.album_name ")  
+				+ (sortAscending ? "asc" : "desc");
 
 		return jdbcTemplate.query(sql, new AlbumRowMapper());
 	}
@@ -473,6 +478,15 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				return coverArtFile;
 			}
 		});
+	}
+
+	@Override
+	public String getLyricsForTrack(int trackId) {
+		String sql = "select ft.lyrics from library.track lt"
+				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
+				+ " where lt.id = " + trackId;
+
+		return jdbcTemplate.queryForObject(sql, String.class);
 	}
 
 	@Override

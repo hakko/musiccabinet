@@ -50,9 +50,13 @@ public class LibraryBrowserService {
 	public Album getAlbum(int albumId) {
 		return libraryBrowserDao.getAlbum(albumId);
 	}
-	
+
 	public List<Album> getAlbums(int artistId, boolean sortAscending) {
-		return libraryBrowserDao.getAlbums(artistId, sortAscending);
+		return getAlbums(artistId, true, sortAscending);
+	}
+
+	public List<Album> getAlbums(int artistId, boolean sortByYear, boolean sortAscending) {
+		return libraryBrowserDao.getAlbums(artistId, sortByYear, sortAscending);
 	}
 
 	public List<Album> getRecentlyAddedAlbums(int offset, int limit, String query) {
@@ -97,6 +101,10 @@ public class LibraryBrowserService {
 	
 	public String getCoverArtFileForTrack(int trackId) {
 		return libraryBrowserDao.getCoverArtFileForTrack(trackId);
+	}
+	
+	public String getLyricsForTrack(int trackId) {
+		return libraryBrowserDao.getLyricsForTrack(trackId);
 	}
 
 	public List<Integer> getArtistIndexes() {
