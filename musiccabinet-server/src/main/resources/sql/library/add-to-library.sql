@@ -183,8 +183,8 @@ begin
 		from library.file_headertag_import;
 
 	-- update file tag
-	insert into library.filetag (file_id, artist_id, album_artist_id, composer_id, album_id, track_id, track_nr, track_nrs, disc_nr, disc_nrs, year, tag_id, coverart)
-	select file_id, artist_id, album_artist_id, composer_id, album_id, track_id, track_nr, track_nrs, disc_nr, disc_nrs, year, tag_id, coverart
+	insert into library.filetag (file_id, artist_id, album_artist_id, composer_id, album_id, track_id, track_nr, track_nrs, disc_nr, disc_nrs, year, tag_id, coverart, lyrics)
+	select file_id, artist_id, album_artist_id, composer_id, album_id, track_id, track_nr, track_nrs, disc_nr, disc_nrs, year, tag_id, coverart, lyrics
 		from library.file_headertag_import;
 
 	insert into library.artist (artist_id)

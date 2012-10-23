@@ -11,6 +11,7 @@ import static org.jaudiotagger.tag.FieldKey.COMPOSER;
 import static org.jaudiotagger.tag.FieldKey.DISC_NO;
 import static org.jaudiotagger.tag.FieldKey.DISC_TOTAL;
 import static org.jaudiotagger.tag.FieldKey.GENRE;
+import static org.jaudiotagger.tag.FieldKey.LYRICS;
 import static org.jaudiotagger.tag.FieldKey.TITLE;
 import static org.jaudiotagger.tag.FieldKey.TRACK;
 import static org.jaudiotagger.tag.FieldKey.TRACK_TOTAL;
@@ -88,6 +89,7 @@ public class AudioTagService {
 				metaData.setTitle(getTagField(tag, TITLE));
 				metaData.setYear(getTagField(tag, YEAR));
 				metaData.setGenre(toGenre(getTagField(tag, GENRE)));
+				metaData.setLyrics(getTagField(tag, LYRICS));
 				metaData.setComposer(getTagField(tag, COMPOSER));
 				metaData.setDiscNr(toFirstNumber(getTagField(tag, DISC_NO)));
 				metaData.setDiscNrs(toShort(getTagField(tag, DISC_TOTAL)));

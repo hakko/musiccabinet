@@ -69,8 +69,8 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 		String sql = "insert into library.file_headertag_import (path, filename, extension,"
 				+ "bitrate, vbr, duration, artist_name, album_artist_name, composer_name,"
 				+ "album_name, track_name, track_nr, track_nrs, disc_nr, disc_nrs, year,"
-				+ "tag_name, coverart, artistsort_name, albumartistsort_name) values"
-				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "tag_name, lyrics, coverart, artistsort_name, albumartistsort_name) values"
+				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		BatchSqlUpdate batch = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batch.declareParameter(new SqlParameter("path", Types.VARCHAR));
 		batch.declareParameter(new SqlParameter("filename", Types.VARCHAR));
@@ -89,6 +89,7 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 		batch.declareParameter(new SqlParameter("disc_nrs", Types.SMALLINT));
 		batch.declareParameter(new SqlParameter("year", Types.SMALLINT));
 		batch.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
+		batch.declareParameter(new SqlParameter("lyrics", Types.VARCHAR));
 		batch.declareParameter(new SqlParameter("coverart", Types.BOOLEAN));
 		batch.declareParameter(new SqlParameter("artistsort_name", Types.VARCHAR));
 		batch.declareParameter(new SqlParameter("albumartistsort_name", Types.VARCHAR));
@@ -100,8 +101,8 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 						md.getDuration(), md.getArtist(), md.getAlbumArtist(), 
 						md.getComposer(), md.getAlbum(), md.getTitle(), md.getTrackNr(), 
 						md.getTrackNrs(), md.getDiscNr(), md.getDiscNrs(), md.getYear(),
-						md.getGenre(), md.isCoverArtEmbedded(), md.getArtistSort(),
-						md.getAlbumArtistSort()});
+						md.getGenre(), md.getLyrics(), md.isCoverArtEmbedded(), 
+						md.getArtistSort(), md.getAlbumArtistSort()});
 			} else if (md != null) {
 				LOG.warn("Insufficient tags, ignoring file " + file.getFilename() + 
 						" in " + file.getDirectory());

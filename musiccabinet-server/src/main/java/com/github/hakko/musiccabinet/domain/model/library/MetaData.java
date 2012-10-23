@@ -23,6 +23,7 @@ public class MetaData {
 	private Short discNrs;
 	private Short year;
 	private String genre;
+	private String lyrics;
 	private boolean isCoverArtEmbedded;
 	private String path;
 	private int size;
@@ -173,6 +174,14 @@ public class MetaData {
 
 	public void setGenre(String genre) {
 		this.genre = genre;
+	}
+
+	public String getLyrics() {
+		return lyrics;
+	}
+
+	public void setLyrics(String lyrics) {
+		this.lyrics = lyrics;
 	}
 
 	public boolean isCoverArtEmbedded() {
