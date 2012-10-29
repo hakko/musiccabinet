@@ -553,6 +553,11 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	}
 
 	@Override
+	public void markAllFilesForFullRescan() {
+		jdbcTemplate.update("update library.file set modified = 'infinity', size = -1");
+	}
+
+	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}

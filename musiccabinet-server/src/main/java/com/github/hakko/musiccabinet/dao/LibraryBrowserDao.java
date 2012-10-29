@@ -41,4 +41,7 @@ public interface LibraryBrowserDao {
 	LibraryStatistics getStatistics();
 	
 	int getTrackId(String filename);
+	
+	void markAllFilesForFullRescan();
+	
 }

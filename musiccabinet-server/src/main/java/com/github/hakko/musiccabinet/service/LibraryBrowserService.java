@@ -118,7 +118,11 @@ public class LibraryBrowserService {
 	public int getTrackId(String filename) {
 		return libraryBrowserDao.getTrackId(filename);
 	}
-	
+
+	public void markAllFilesForFullRescan() {
+		libraryBrowserDao.markAllFilesForFullRescan();
+	}
+
 	// Spring setters
 
 	public void setLibraryBrowserDao(LibraryBrowserDao libraryBrowserDao) {

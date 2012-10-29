@@ -269,6 +269,15 @@ public class LibraryBrowserServiceTest {
 
 		assertArtists(browserService.getArtists(), "The Beatles", "Aretha Franklin");
 	}
+
+	@Test
+	public void marksFilesForFullRescan() throws Exception {
+		scannerService.add(set(aretha));
+
+		browserService.markAllFilesForFullRescan(); // test for syntax errors, not behavior
+
+		scannerService.add(set(aretha));
+	}
 	
 	private void assertArtists(List<Artist> artists, String... artistNames) {
 		Assert.assertNotNull(artists);
