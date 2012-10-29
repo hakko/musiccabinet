@@ -13,7 +13,7 @@ public interface DirectoryBrowserDao {
 	Set<Directory> getSubDirectories(int directoryId);
 	int getParentId(int directoryId);
 	void addDirectory(String path, int parentId);
-	List<Album> getAlbums(int directoryId, boolean sortAscending);
+	List<Album> getAlbums(int directoryId, boolean sortByYear, boolean sortAscending);
 	List<String> getNonAudioFiles(int directoryId);
 	
 }

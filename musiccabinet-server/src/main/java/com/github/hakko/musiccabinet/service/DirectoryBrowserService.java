@@ -62,8 +62,8 @@ public class DirectoryBrowserService {
 		dao.addDirectory(path, parentId);
 	}
 	
-	public List<Album> getAlbums(int directoryId, boolean sortAscending) {
-		return dao.getAlbums(directoryId, sortAscending);
+	public List<Album> getAlbums(int directoryId, boolean sortByYear, boolean sortAscending) {
+		return dao.getAlbums(directoryId, sortByYear, sortAscending);
 	}
 	
 	public List<String> getNonAudioFiles(int directoryId) {

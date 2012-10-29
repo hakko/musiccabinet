@@ -20,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcDirectoryBrowserDao;
+import com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.DirectoryContent;
 import com.github.hakko.musiccabinet.domain.model.library.Directory;
@@ -41,7 +42,7 @@ public class DirectoryBrowserServiceTest {
 	private JdbcDirectoryBrowserDao dao;
 	
 	// paths to resources folders containing actual, tagged, mp3 files
-	private String library, media1, media2, cd1, artwork;
+	private String library, media1, media2, cd1, artwork, media8;
 	
 	@Before
 	public void clearDirectories() throws Exception {
@@ -55,6 +56,7 @@ public class DirectoryBrowserServiceTest {
 				+ "1962-1966" + separatorChar + "cd1";
 		artwork = library + separatorChar + "media3" + separatorChar + "Artist"
 				+ separatorChar + "Folder artwork";
+		media8 = library + separatorChar + "media8";
 	}
 	
 	@Test
@@ -183,7 +185,7 @@ public class DirectoryBrowserServiceTest {
 		scannerService.add(set(cd1));
 		int cd1Id = browserService.getRootDirectories().iterator().next().getId();
 		
-		List<Album> albums = browserService.getAlbums(cd1Id, true);
+		List<Album> albums = browserService.getAlbums(cd1Id, true, true);
 		
 		Assert.assertEquals(1, albums.size());
 		Album album = albums.get(0);
@@ -192,7 +194,30 @@ public class DirectoryBrowserServiceTest {
 		Assert.assertEquals("1962-1966", album.getName());
 		Assert.assertEquals(4, album.getTrackIds().size());
 	}
-	
+
+	@Test
+	public void sortsAlbumsByEitherYearOrName() throws Exception {
+		scannerService.add(set(media8));
+		int directoryId = getFirstRootDirectory().getId();
+
+		Assert.assertEquals("ACB", getAlbumNames(directoryId, true, true));
+		Assert.assertEquals("BCA", getAlbumNames(directoryId, true, false));
+
+		Assert.assertEquals("ABC", getAlbumNames(directoryId, false, true));
+		Assert.assertEquals("CBA", getAlbumNames(directoryId, false, false));
+	}
+
+	private String getAlbumNames(int directoryId, boolean sortByYear, boolean sortAscending) {
+		List<Album> albums = browserService.getAlbums(directoryId, sortByYear, sortAscending);
+
+		StringBuilder sb = new StringBuilder();
+		for (Album album : albums) {
+			sb.append(album.getName());
+		}
+
+		return sb.toString();
+	}
+
 	@Test
 	public void findsNonAudioFiles() throws ApplicationException {
 		scannerService.add(set(artwork));
