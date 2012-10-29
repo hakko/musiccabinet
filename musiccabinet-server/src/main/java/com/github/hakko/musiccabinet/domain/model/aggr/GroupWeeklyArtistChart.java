@@ -54,4 +54,9 @@ public class GroupWeeklyArtistChart {
           .isEquals();
 	}
 
+	@Override
+	public String toString() {
+		return groupName + ": " + artistPlayCounts;
+	}
+
 }

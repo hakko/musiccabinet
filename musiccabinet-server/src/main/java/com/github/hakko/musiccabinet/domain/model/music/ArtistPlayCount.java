@@ -53,5 +53,10 @@ public class ArtistPlayCount {
           .append(playCount, apc.playCount)
           .isEquals();
 	}
-	
+
+	@Override
+	public String toString() {
+		return artist + " (" + playCount + ")";
+	}
+
 }
