@@ -24,6 +24,7 @@ public class MetaData {
 	private Short year;
 	private String genre;
 	private String lyrics;
+	private boolean hasLyrics;
 	private boolean isCoverArtEmbedded;
 	private String path;
 	private int size;
@@ -182,6 +183,14 @@ public class MetaData {
 
 	public void setLyrics(String lyrics) {
 		this.lyrics = lyrics;
+	}
+
+	public boolean hasLyrics() {
+		return hasLyrics;
+	}
+
+	public void setHasLyrics(boolean hasLyrics) {
+		this.hasLyrics = hasLyrics;
 	}
 
 	public boolean isCoverArtEmbedded() {
