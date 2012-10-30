@@ -33,6 +33,7 @@ public interface LibraryBrowserDao {
 	List<Integer> getMostPlayedTrackIds(String lastFmUsername, int offset, int limit, String query);
 	List<Integer> getStarredTrackIds(String lastFmUsername, int offset, int limit, String query);
 	List<Integer> getRandomTrackIds(int limit);
+	List<Integer> getRandomTrackIds(int limit, Integer fromYear, Integer toYear, String genre);
 	
 	String getCoverArtFileForTrack(int trackId);
 	String getLyricsForTrack(int trackId);

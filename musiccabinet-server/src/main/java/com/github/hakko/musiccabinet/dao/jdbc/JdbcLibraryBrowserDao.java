@@ -359,6 +359,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " art.artist_name_capitalization,"
 				+ " comp.artist_name_capitalization,"
 				+ " ft.track_nr, ft.track_nrs, ft.disc_nr, ft.disc_nrs, ft.year,"
+				+ " case when ft.lyrics is null then false else true end,"
 				+ " fh.bitrate, fh.vbr, fh.duration, fh.type_id, "
 				+ " d.path, f.filename, f.size, f.modified, lt.id, alb.id, art.id"
 				+ " from music.track mt"
@@ -385,16 +386,17 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				md.setDiscNr(rs.getShort(7));
 				md.setDiscNrs(rs.getShort(8));
 				md.setYear(rs.getShort(9));
-				md.setBitrate(rs.getShort(10));
-				md.setVbr(rs.getBoolean(11));
-				md.setDuration(rs.getShort(12));
-				md.setMediaType(Mediatype.values()[rs.getShort(13)]);
-				md.setPath(rs.getString(14) + separatorChar + rs.getString(15));
-				md.setSize(rs.getInt(16));
-				md.setModified(rs.getTimestamp(17).getTime());
-				int trackId = rs.getInt(18);
-				md.setAlbumId(rs.getInt(19));
-				md.setArtistId(rs.getInt(20));
+				md.setHasLyrics(rs.getBoolean(10));
+				md.setBitrate(rs.getShort(11));
+				md.setVbr(rs.getBoolean(12));
+				md.setDuration(rs.getShort(13));
+				md.setMediaType(Mediatype.values()[rs.getShort(14)]);
+				md.setPath(rs.getString(15) + separatorChar + rs.getString(16));
+				md.setSize(rs.getInt(17));
+				md.setModified(rs.getTimestamp(18).getTime());
+				int trackId = rs.getInt(19);
+				md.setAlbumId(rs.getInt(20));
+				md.setArtistId(rs.getInt(21));
 				return new Track(trackId, trackName, md);
 			}
 		});
@@ -456,6 +458,29 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		String sql = "select id from library.track order by random() limit " + limit;
 		
 		return jdbcTemplate.queryForList(sql, Integer.class);
+	}
+
+	@Override
+	public List<Integer> getRandomTrackIds(int limit, Integer fromYear, Integer toYear, String genre) {
+		StringBuilder sb = new StringBuilder("select lt.id from library.track lt"
+				+ " inner join music.track mt on lt.track_id = mt.id"
+				+ " inner join library.filetag ft on lt.file_id = ft.file_id"
+				+ " where true");
+		if (fromYear != null) {
+			sb.append(" and ft.year >= " + fromYear);
+		}
+		if (toYear != null) {
+			sb.append(" and ft.year <= " + toYear);
+		}
+		if (genre != null) {
+			sb.append(" and exists (select 1 from music.artisttoptag att"
+					+ " inner join music.tag t on att.tag_id = t.id"
+					+ " where artist_id = mt.artist_id and tag_count > 25 and t.tag_name = ?)");
+		}
+		sb.append(" order by random() limit " + limit);
+
+		return genre == null ? jdbcTemplate.queryForList(sb.toString(), Integer.class) :
+			jdbcTemplate.queryForList(sb.toString(), new Object[]{genre}, Integer.class);
 	}
 
 	@Override

@@ -98,7 +98,11 @@ public class LibraryBrowserService {
 	public List<Integer> getRandomTrackIds(int limit) {
 		return libraryBrowserDao.getRandomTrackIds(limit);
 	}
-	
+
+	public List<Integer> getRandomTrackIds(int limit, Integer fromYear, Integer toYear, String genre) {
+		return libraryBrowserDao.getRandomTrackIds(limit, fromYear, toYear, genre);
+	}
+
 	public String getCoverArtFileForTrack(int trackId) {
 		return libraryBrowserDao.getCoverArtFileForTrack(trackId);
 	}

@@ -297,6 +297,18 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 	}
 
 	@Test
+	public void returnsRandomTrackIdsWithCriteria() {
+		browserDao.getRandomTrackIds(1, null, null, null);
+
+		browserDao.getRandomTrackIds(1, 2000, null, null);
+		browserDao.getRandomTrackIds(1, null, 2010, null);
+		browserDao.getRandomTrackIds(1, null, null, "sludge");
+
+		browserDao.getRandomTrackIds(2, 2005, 2005, null);
+		browserDao.getRandomTrackIds(2, 2006, 2004, "disco");
+	}
+
+	@Test
 	public void returnsStarredArtist() {
 		starDao.starArtist(user1, artist1.getId());
 
