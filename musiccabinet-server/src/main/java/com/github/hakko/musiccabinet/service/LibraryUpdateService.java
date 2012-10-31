@@ -57,7 +57,7 @@ public class LibraryUpdateService {
 	}
 	
 	public boolean isIndexBeingCreated() {
-		return libraryScannerService.isIndexBeingCreated() ||
+		return libraryScannerService.isLibraryBeingScanned() ||
 				isIndexBeingCreated;
 	}
 	

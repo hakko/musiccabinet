@@ -44,6 +44,8 @@ public class LibraryScannerService {
 	private LibraryDeletionService libraryDeletionService;
 	
 	protected String fileSeparator = java.io.File.separator;
+
+	private boolean isLibraryBeingScanned = false;
 	
 	private static final Logger LOG = Logger.getLogger(LibraryScannerService.class);
 
@@ -52,6 +54,7 @@ public class LibraryScannerService {
 	}
 
 	public void update(Set<String> paths, boolean isRootPaths) throws ApplicationException {
+		isLibraryBeingScanned = true;
 		try {
 			clearImport();
 			startReceivingServices();
@@ -68,10 +71,13 @@ public class LibraryScannerService {
 		} catch (IOException | InterruptedException e) {
 			throw new ApplicationException("Scanning aborted due to error!", e);
 		}
+		isLibraryBeingScanned = false;
 	}
 	
 	public void delete(Set<String> paths) throws ApplicationException {
+		isLibraryBeingScanned = true;
 		libraryDeletionService.delete(paths);
+		isLibraryBeingScanned = false;
 	}
 
 	/*
@@ -93,8 +99,8 @@ public class LibraryScannerService {
 		return new HashSet<>(list);
 	}
 	
-	public boolean isIndexBeingCreated() {
-		return workerThreads.getCount() > 0;
+	public boolean isLibraryBeingScanned() {
+		return isLibraryBeingScanned;
 	}
 	
 	public List<SearchIndexUpdateProgress> getUpdateProgress() {
