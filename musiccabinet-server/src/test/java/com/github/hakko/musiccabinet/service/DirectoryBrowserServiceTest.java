@@ -20,7 +20,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcDirectoryBrowserDao;
-import com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicDao;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.DirectoryContent;
 import com.github.hakko.musiccabinet.domain.model.library.Directory;
