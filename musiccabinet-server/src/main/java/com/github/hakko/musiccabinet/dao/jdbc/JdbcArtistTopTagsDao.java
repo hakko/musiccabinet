@@ -1,18 +1,16 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTagsDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagNameCountRowMapper;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 
@@ -65,15 +63,7 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 			+ " where att.artist_id = ? order by att.tag_count";
 		
 		List<Tag> topTags = jdbcTemplate.query(sql, 
-				new Object[]{artistId}, new RowMapper<Tag>() {
-			@Override
-			public Tag mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-				String tagName = rs.getString(1);
-				short tagCount = rs.getShort(2);
-				return new Tag(tagName, tagCount);
-			}
-		});
+				new Object[]{artistId}, new TagNameCountRowMapper());
 		
 		return topTags;
 	}
