@@ -20,7 +20,7 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.TagDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagOccurrenceRowMapper;
-import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagIdNameRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagTopArtists;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
@@ -47,7 +47,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	public List<Tag> getTags() {
 		String sql = "select id, tag_name from music.tag";
 		
-		return jdbcTemplate.query(sql, new TagRowMapper());
+		return jdbcTemplate.query(sql, new TagIdNameRowMapper());
 	}
 	
 	/*
@@ -190,7 +190,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 				+ " or t.id in (select tag_id from library.toptag))"
 				+ " and not exists (select 1 from music.tagtopartist where tag_id = t.id)";
 
-		return jdbcTemplate.query(sql, new TagRowMapper());
+		return jdbcTemplate.query(sql, new TagIdNameRowMapper());
 	}
 
 	@Override

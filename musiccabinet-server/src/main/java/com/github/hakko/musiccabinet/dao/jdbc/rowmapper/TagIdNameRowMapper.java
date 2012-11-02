@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 
-public class TagRowMapper implements RowMapper<Tag> {
+public class TagIdNameRowMapper implements RowMapper<Tag> {
 
 	@Override
 	public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
