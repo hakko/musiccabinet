@@ -27,7 +27,6 @@ import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
-import com.github.hakko.musiccabinet.service.lastfm.UpdateNowPlayingService;
 import com.github.hakko.musiccabinet.ws.lastfm.ScrobbleClient;
 import com.github.hakko.musiccabinet.ws.lastfm.UpdateNowPlayingClient;
 import com.github.hakko.musiccabinet.ws.lastfm.WSResponse;
@@ -52,7 +51,7 @@ public class ScrobbleService {
 	// least this long (in sec)
 	private final static int MIN_DURATION = 30;
 
-	private static final Logger LOG = Logger.getLogger(UpdateNowPlayingService.class);
+	private static final Logger LOG = Logger.getLogger(ScrobbleService.class);
 
 	/* Async method that registers scrobbles and delegates submissions, in case last.fm is down. */
 	public void scrobble(String lastFmUsername, Track track, boolean submission) {
@@ -70,20 +69,17 @@ public class ScrobbleService {
 	protected void receive() throws ApplicationException {
 		Message<Scrobble> message;
 		while ((message = (Message<Scrobble>) scrobbleChannel.receive()) != null) {
-			LOG.debug("Try updating now playing.");
 			Scrobble scrobble = message.getPayload();
 			Scrobble previous = getPrevious(scrobble);
-			LOG.debug("previous: " + previous + ", scrobble = " + scrobble);
 			if (previous != null && tooClose(scrobble, previous) &&
 					scrobble.getTrack().getId() == previous.getTrack().getId()) {
 				LOG.debug("Same track was scrobbled just recently, ignore.");
 			} else {
 				addScrobble(scrobble);
 				WSResponse wsResponse = nowPlayingClient.updateNowPlaying(scrobble);
-				LOG.debug("Nowplaying successful: " + wsResponse.wasCallSuccessful());
-				LOG.debug("Nowplaying response: " + wsResponse);
 				if (!wsResponse.wasCallSuccessful()) {
 					LOG.debug("Could not update now playing status at last.fm.");
+					LOG.debug("Nowplaying response: " + wsResponse);
 				}
 			}
 		}
@@ -117,7 +113,6 @@ public class ScrobbleService {
 	private boolean tooClose(Scrobble prev, DateTime next) {
 		int allowedDiff = max((prev.getTrack().getMetaData().getDuration() * 4) / 5, MIN_DURATION);
 		allowedDiff = min(allowedDiff, MIN_TIME);
-		LOG.debug("is " + prev.getStartTime() + " too close to " + next	+ "? diff = " + secondsBetween(prev.getStartTime(), next).getSeconds() + ", allowedDiff = " + allowedDiff);
 		return secondsBetween(prev.getStartTime(), next).getSeconds() < allowedDiff;
 	}
 
@@ -129,10 +124,9 @@ public class ScrobbleService {
 			while ((head = deque.peekFirst()) != null && !tooClose(head, new DateTime())) {
 				playCountDao.addPlayCount(head.getLastFmUser(), head.getTrack());
 				WSResponse wsResponse = scrobbleClient.scrobble(head);
-				LOG.debug("Scrobble successful: " + wsResponse.wasCallSuccessful());
-				LOG.debug("Scrobble response: " + wsResponse);
 				if (!wsResponse.wasCallSuccessful()) {
 					LOG.warn("scrobbling " + head + " failed! Add for re-sending.");
+					LOG.debug("Scrobble response: " + wsResponse);
 					failedScrobbles.add(head);
 				}
 				deque.pollFirst();
@@ -145,13 +139,12 @@ public class ScrobbleService {
 			LOG.debug("Queue of failed scrobbles consists of " + failedScrobbles.size() + " elements.");
 			Scrobble firstFailed = failedScrobbles.get(0);
 			WSResponse wsResponse = scrobbleClient.scrobble(firstFailed);
-			LOG.debug("Failed scrobble re-send successful: " + wsResponse.wasCallSuccessful());
-			LOG.debug("Failed scrobble re-send response: " + wsResponse);
 			if (wsResponse.wasCallSuccessful()) {
 				LOG.debug("Failed scrobble was re-sent.");
 				failedScrobbles.remove(0);
 			} else {
 				LOG.debug("Failed scrobble could not be re-sent. Wait a minute before trying again.");
+				LOG.debug("Response: " + wsResponse);
 				return;
 			}
 		}
