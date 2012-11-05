@@ -50,6 +50,10 @@
 	<si:channel id="scrobbleChannel">
 		<si:queue capacity="100"/>
 	</si:channel>
+	
+	<si:channel id="tagUpdateChannel">
+		<si:queue capacity="100"/>
+	</si:channel>
 
 
 	<!--  SERVICES -->
