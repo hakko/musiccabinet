@@ -109,7 +109,7 @@ public class TagUpdateService {
 		resendFailedUpdates();
 		ArtistUserTag aut;
 		while ((aut = artistUserTags.poll()) != null) {
-			artistTopTagsDao.updateTopTag(aut.getArtist(), aut.getTagOccurrence());
+			artistTopTagsDao.updateTopTag(aut.getArtist().getId(), aut.getTagOccurrence());
 			WSResponse wsResponse = tagUpdateClient.updateTag(aut);
 			if (!wsResponse.wasCallSuccessful()) {
 				LOG.warn("updating " + aut + " failed! Add for re-sending.");

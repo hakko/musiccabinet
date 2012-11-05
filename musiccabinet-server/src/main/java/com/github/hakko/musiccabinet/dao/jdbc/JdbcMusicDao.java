@@ -13,6 +13,10 @@ public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 	
+	public void setArtistId(Artist artist) {
+		artist.setId(getArtistId(artist.getName()));
+	}
+	
 	public int getArtistId(String artistName) {
 		return jdbcTemplate.queryForInt(
 			"select * from music.get_artist_id(?)", artistName);

@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
+import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -61,13 +62,16 @@ public class JdbcArtistTopTagsDaoTest {
 		rihannaTopTags = rihannaParser.getTopTags();
 
 		PostgreSQLUtil.truncateTables(dao);
+
+		musicDao.setArtistId(cherArtist);
+		musicDao.setArtistId(rihannaArtist);
 	}
 
 	@Test
 	public void topTagsAreEmptyAfterClearing() throws ApplicationException {
 		deleteArtistTopTags();
 	
-		List<Tag> cherStoredTracks = dao.getTopTags(cherArtist);
+		List<Tag> cherStoredTracks = dao.getTopTags(cherArtist.getId());
 		assertNotNull(cherStoredTracks);
 		assertEquals(0, cherStoredTracks.size());
 	}
@@ -77,13 +81,13 @@ public class JdbcArtistTopTagsDaoTest {
 		deleteArtistTopTags();
 		
 		dao.createTopTags(cherArtist, cherTopTags);
-		List<Tag> cherStoredTags = dao.getTopTags(cherArtist);
+		List<Tag> cherStoredTags = dao.getTopTags(cherArtist.getId());
 		assertEquals(cherTopTags.size(), cherStoredTags.size());
 		for (int i = 0; i < cherTopTags.size(); i++) {
 			assertTrue(cherStoredTags.contains(cherTopTags.get(i)));
 		}
 		
-		List<Tag> rihannaStoredTags = dao.getTopTags(rihannaArtist);
+		List<Tag> rihannaStoredTags = dao.getTopTags(rihannaArtist.getId());
 		assertEquals(0, rihannaStoredTags.size());
 	}
 
@@ -99,8 +103,8 @@ public class JdbcArtistTopTagsDaoTest {
 		rihannaTopTags.add(new Tag("r&b", (short) 8));
 		dao.createTopTags(rihannaArtist, rihannaTopTags);
 		
-		List<Tag> cherStoredTopTags = dao.getTopTags(cherArtist);
-		List<Tag> rihannaStoredTopTags = dao.getTopTags(rihannaArtist);
+		List<Tag> cherStoredTopTags = dao.getTopTags(cherArtist.getId());
+		List<Tag> rihannaStoredTopTags = dao.getTopTags(rihannaArtist.getId());
 		
 		assertEquals(100, cherStoredTopTags.size());
 		assertEquals(2, rihannaStoredTopTags.size());
@@ -125,6 +129,30 @@ public class JdbcArtistTopTagsDaoTest {
 		
 		assertEquals(asList(tagPop), dao.getTopTags(cherId, 1));
 		assertEquals(asList(tagPop, tag80s), dao.getTopTags(cherId, 3));
+	}
+	
+	@Test
+	public void addsNewTagOnUpdate() {
+		deleteArtistTopTags();
+		
+		dao.updateTopTag(rihannaArtist.getId(), new TagOccurrence("disco", null, 99, true));
+		
+		List<Tag> topTags = dao.getTopTags(rihannaArtist.getId());
+		
+		assertEquals(1, topTags.size());
+		assertEquals(99, topTags.get(0).getCount());
+		assertEquals("disco", topTags.get(0).getName());
+	}
+	
+	@Test
+	public void removesUnusedTagOnUpdate() {
+		deleteArtistTopTags();
+		
+		dao.createTopTags(rihannaArtist, rihannaTopTags);
+		assertEquals("pop", dao.getTopTags(rihannaArtist.getId()).get(0).getName());
+		
+		dao.updateTopTag(rihannaArtist.getId(), new TagOccurrence("pop", null, 0, false));
+		assertEquals("rnb", dao.getTopTags(rihannaArtist.getId()).get(0).getName());
 	}
 	
 	private void deleteArtistTopTags() {

@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static java.lang.String.format;
+
 import java.sql.Types;
 import java.util.List;
 
@@ -54,19 +56,13 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 	}
 	
 	@Override
-	public List<Tag> getTopTags(Artist artist) {
-		final int artistId = jdbcTemplate.queryForInt(
-				"select * from music.get_artist_id(?)", artist.getName());
-		
+	public List<Tag> getTopTags(int artistId) {
 		String sql = "select tag_name, tag_count"
 			+ " from music.artisttoptag att" 
 			+ " inner join music.tag tag on att.tag_id = tag.id"
-			+ " where att.artist_id = ? order by att.tag_count";
+			+ " where att.artist_id = " + artistId + " order by att.tag_count desc";
 		
-		List<Tag> topTags = jdbcTemplate.query(sql, 
-				new Object[]{artistId}, new TagNameCountRowMapper());
-		
-		return topTags;
+		return jdbcTemplate.query(sql, new TagNameCountRowMapper());
 	}
 
 	@Override
@@ -79,6 +75,22 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 				+ " order by att.tag_count desc limit " + limit;
 			
 		return jdbcTemplate.query(sql, new TagNameCountRowMapper());
+	}
+
+	@Override
+	public void updateTopTag(int artistId, TagOccurrence to) {
+		int tagId = jdbcTemplate.queryForInt(
+				"select id from music.tag where tag_name = ?", to.getTag());
+		
+		jdbcTemplate.update(format("update music.artisttoptag att set tag_count = %d"
+				+ " from music.tag t where att.tag_id = t.id"
+				+ " and att.artist_id = %d and t.id = %d", 
+				to.getOccurrence(), artistId, tagId));
+
+		jdbcTemplate.update(format("insert into music.artisttoptag (artist_id, tag_id, tag_count)"
+				+ " select %d, %d, %d where not exists (select 1 from music.artisttoptag "
+				+ " where artist_id = %d and tag_id = %d)", 
+				artistId, tagId, to.getOccurrence(), artistId, tagId));
 	}
 
 	@Override

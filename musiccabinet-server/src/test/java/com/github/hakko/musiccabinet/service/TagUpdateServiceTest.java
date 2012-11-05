@@ -70,7 +70,7 @@ public class TagUpdateServiceTest {
 
 		// dupes removed, one item updated and put on fail queue
 		verify(artistTopTagsDao, times(1)).updateTopTag(
-				any(Artist.class), any(TagOccurrence.class));
+				any(Integer.class), any(TagOccurrence.class));
 		assertEquals(1, tagUpdateService.failedUpdates.size()); 
 	}
 	
