@@ -11,6 +11,7 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTagsDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagNameCountRowMapper;
+import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 
@@ -66,6 +67,18 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 				new Object[]{artistId}, new TagNameCountRowMapper());
 		
 		return topTags;
+	}
+
+	@Override
+	public List<Tag> getTopTags(int artistId, int limit) {
+		String sql = "select t.tag_name, att.tag_count"
+				+ " from music.artisttoptag att" 
+				+ " inner join music.tag t on att.tag_id = t.id"
+				+ " inner join library.toptag tt on tt.tag_id = t.id"
+				+ " where att.artist_id = " + artistId
+				+ " order by att.tag_count desc limit " + limit;
+			
+		return jdbcTemplate.query(sql, new TagNameCountRowMapper());
 	}
 
 	@Override

@@ -1,11 +1,13 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_ARTISTTOPTAG;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -30,6 +32,12 @@ public class JdbcArtistTopTagsDaoTest {
 	@Autowired
 	private JdbcArtistTopTagsDao dao;
 
+	@Autowired
+	private JdbcMusicDao musicDao;
+
+	@Autowired
+	private JdbcTagDao tagDao;
+	
 	// testdata
 	private Artist cherArtist;
 	private Artist rihannaArtist;
@@ -103,6 +111,20 @@ public class JdbcArtistTopTagsDaoTest {
 		for (int i = 0; i < rihannaTopTags.size(); i++) {
 			assertTrue(rihannaStoredTopTags.contains(rihannaTopTags.get(i)));
 		}
+	}
+	
+	@Test
+	public void returnsMostPopularCloudTagsForArtist() throws ApplicationException {
+		deleteArtistTopTags();
+		
+		dao.createTopTags(cherArtist, cherTopTags);
+		int cherId = musicDao.getArtistId(cherArtist);
+
+		Tag tagPop = new Tag("pop", (short) 100), tag80s = new Tag("80s", (short) 52);
+		tagDao.setTopTags(Arrays.asList(tagPop.getName(), tag80s.getName()));
+		
+		assertEquals(asList(tagPop), dao.getTopTags(cherId, 1));
+		assertEquals(asList(tagPop, tag80s), dao.getTopTags(cherId, 3));
 	}
 	
 	private void deleteArtistTopTags() {

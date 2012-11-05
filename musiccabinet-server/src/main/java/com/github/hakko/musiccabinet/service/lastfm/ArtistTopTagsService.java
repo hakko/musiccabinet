@@ -28,6 +28,10 @@ public class ArtistTopTagsService extends SearchIndexUpdateService {
 
 	private static final Logger LOG = Logger.getLogger(ArtistTopTagsService.class);
 	
+	public List<Tag> getTopTags(int artistId, int limit) throws ApplicationException {
+		return artistTopTagsDao.getTopTags(artistId, limit);
+	}
+
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
 		Set<String> artistNames = webserviceHistoryService.
