@@ -51,10 +51,6 @@
 		<si:queue capacity="100"/>
 	</si:channel>
 	
-	<si:channel id="tagUpdateChannel">
-		<si:queue capacity="100"/>
-	</si:channel>
-
 
 	<!--  SERVICES -->
 
@@ -205,6 +201,12 @@
 		<property name="tagDao" ref="tagDao"/>
 	</bean>
 
+	<bean id="tagUpdateService" class="com.github.hakko.musiccabinet.service.TagUpdateService">
+		<property name="lastFmDao" ref="lastFmDao"/>
+		<property name="artistTopTagsDao" ref="artistTopTagsDao"/>
+		<property name="tagUpdateClient" ref="tagUpdateClient"/>
+	</bean>
+
 	<bean id="nameSearchService" class="com.github.hakko.musiccabinet.service.NameSearchService">
 		<property name="nameSearchDao" ref="nameSearchDao"/>
 	</bean>
@@ -245,6 +247,8 @@
 	<bean id="updateNowPlayingClient" class="com.github.hakko.musiccabinet.ws.lastfm.UpdateNowPlayingClient"/>
 
 	<bean id="scrobbleClient" class="com.github.hakko.musiccabinet.ws.lastfm.ScrobbleClient"/>
+
+	<bean id="tagUpdateClient" class="com.github.hakko.musiccabinet.ws.lastfm.TagUpdateClient"/>
 	
 	<bean id="authSessionClient" class="com.github.hakko.musiccabinet.ws.lastfm.AuthSessionClient"/>
 
