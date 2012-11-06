@@ -18,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
-import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -135,7 +134,7 @@ public class JdbcArtistTopTagsDaoTest {
 	public void addsNewTagOnUpdate() {
 		deleteArtistTopTags();
 		
-		dao.updateTopTag(rihannaArtist.getId(), new TagOccurrence("disco", null, 99, true));
+		dao.updateTopTag(rihannaArtist.getId(), "disco", 99);
 		
 		List<Tag> topTags = dao.getTopTags(rihannaArtist.getId());
 		
@@ -151,7 +150,7 @@ public class JdbcArtistTopTagsDaoTest {
 		dao.createTopTags(rihannaArtist, rihannaTopTags);
 		assertEquals("pop", dao.getTopTags(rihannaArtist.getId()).get(0).getName());
 		
-		dao.updateTopTag(rihannaArtist.getId(), new TagOccurrence("pop", null, 0, false));
+		dao.updateTopTag(rihannaArtist.getId(), "pop", 0);
 		assertEquals("rnb", dao.getTopTags(rihannaArtist.getId()).get(0).getName());
 	}
 	

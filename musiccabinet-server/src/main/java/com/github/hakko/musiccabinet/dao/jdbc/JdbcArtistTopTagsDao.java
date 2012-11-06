@@ -13,7 +13,6 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTagsDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagNameCountRowMapper;
-import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 
@@ -78,19 +77,19 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 	}
 
 	@Override
-	public void updateTopTag(int artistId, TagOccurrence to) {
+	public void updateTopTag(int artistId, String tagName, int tagCount) {
 		int tagId = jdbcTemplate.queryForInt(
-				"select id from music.tag where tag_name = ?", to.getTag());
+				"select id from music.tag where tag_name = ?", tagName);
 		
 		jdbcTemplate.update(format("update music.artisttoptag att set tag_count = %d"
 				+ " from music.tag t where att.tag_id = t.id"
 				+ " and att.artist_id = %d and t.id = %d", 
-				to.getOccurrence(), artistId, tagId));
+				tagCount, artistId, tagId));
 
 		jdbcTemplate.update(format("insert into music.artisttoptag (artist_id, tag_id, tag_count)"
 				+ " select %d, %d, %d where not exists (select 1 from music.artisttoptag "
 				+ " where artist_id = %d and tag_id = %d)", 
-				artistId, tagId, to.getOccurrence(), artistId, tagId));
+				artistId, tagId, tagCount, artistId, tagId));
 	}
 
 	@Override

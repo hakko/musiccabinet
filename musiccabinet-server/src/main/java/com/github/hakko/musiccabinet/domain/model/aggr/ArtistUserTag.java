@@ -7,13 +7,17 @@ public class ArtistUserTag {
 
 	private Artist artist;
 	private LastFmUser lastFmUser;
-	private TagOccurrence tagOccurrence;
+	private String tagName;
+	private int tagCount;
+	private boolean increase;
 
 	public ArtistUserTag(Artist artist, LastFmUser lastFmUser,
-			TagOccurrence tagOccurrence) {
+			String tagName, int tagCount, boolean increase) {
 		this.artist = artist;
 		this.lastFmUser = lastFmUser;
-		this.tagOccurrence = tagOccurrence;
+		this.tagName = tagName;
+		this.tagCount = tagCount;
+		this.increase = increase;
 	}
 
 	public Artist getArtist() {
@@ -32,19 +36,34 @@ public class ArtistUserTag {
 		this.lastFmUser = lastFmUser;
 	}
 
-	public TagOccurrence getTagOccurrence() {
-		return tagOccurrence;
+	public String getTagName() {
+		return tagName;
 	}
 
-	public void setTagOccurrence(TagOccurrence tagOccurrence) {
-		this.tagOccurrence = tagOccurrence;
+	public void setTagName(String tagName) {
+		this.tagName = tagName;
+	}
+
+	public int getTagCount() {
+		return tagCount;
+	}
+
+	public void setTagCount(int tagCount) {
+		this.tagCount = tagCount;
+	}
+
+	public boolean isIncrease() {
+		return increase;
+	}
+
+	public void setIncrease(boolean increase) {
+		this.increase = increase;
 	}
 
 	@Override
 	public String toString() {
 		return String.format("%s=%s (%d), for %s", artist.getName(),
-				tagOccurrence.getTag(), tagOccurrence.getOccurrence(),
-				lastFmUser.getLastFmUsername());
+				tagName, tagCount, lastFmUser.getLastFmUsername());
 	}
 
 }

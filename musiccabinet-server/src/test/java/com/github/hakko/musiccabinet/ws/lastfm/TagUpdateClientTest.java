@@ -6,7 +6,6 @@ import org.apache.http.NameValuePair;
 import org.junit.Test;
 
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistUserTag;
-import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -20,7 +19,7 @@ public class TagUpdateClientTest extends AbstractWSImplementationTest {
 	@Test
 	public void validateParametersForAddingTag() throws ApplicationException {
 		final ArtistUserTag artistUserTagAdd = new ArtistUserTag(artist,
-				lastFmUser, new TagOccurrence(tag, null, 100, true));
+				lastFmUser, tag, 100, true);
 
 		new TagUpdateClient() {
 			@Override
@@ -39,7 +38,7 @@ public class TagUpdateClientTest extends AbstractWSImplementationTest {
 	@Test
 	public void validateParametersForRemovingTag() throws ApplicationException {
 		final ArtistUserTag artistUserTagRemove = new ArtistUserTag(artist,
-				lastFmUser, new TagOccurrence(tag, null, 10, false));
+				lastFmUser, tag, 10, false);
 
 		new TagUpdateClient() {
 			@Override

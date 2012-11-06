@@ -17,12 +17,12 @@ public class TagUpdateClient extends AbstractWSPostClient {
 		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_ARTIST, artistUserTag.getArtist().getName()));
 		params.add(new BasicNameValuePair(PARAM_SK, artistUserTag.getLastFmUser().getSessionKey()));
-		if (artistUserTag.getTagOccurrence().isUse()) {
+		if (artistUserTag.isIncrease()) {
 			params.add(new BasicNameValuePair(PARAM_METHOD, ADD_METHOD));
-			params.add(new BasicNameValuePair(PARAM_TAGS, artistUserTag.getTagOccurrence().getTag()));
+			params.add(new BasicNameValuePair(PARAM_TAGS, artistUserTag.getTagName()));
 		} else {
 			params.add(new BasicNameValuePair(PARAM_METHOD, REMOVE_METHOD));
-			params.add(new BasicNameValuePair(PARAM_TAG, artistUserTag.getTagOccurrence().getTag()));
+			params.add(new BasicNameValuePair(PARAM_TAG, artistUserTag.getTagName()));
 		}
 		
 		return executeWSRequest(params);

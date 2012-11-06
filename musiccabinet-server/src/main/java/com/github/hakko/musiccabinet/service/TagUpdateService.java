@@ -4,20 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.springframework.integration.Message;
-import org.springframework.integration.core.PollableChannel;
-import org.springframework.integration.message.GenericMessage;
-
 import com.github.hakko.musiccabinet.dao.ArtistTopTagsDao;
 import com.github.hakko.musiccabinet.dao.LastFmDao;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistUserTag;
-import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
@@ -30,17 +24,19 @@ import com.github.hakko.musiccabinet.ws.lastfm.WSResponse;
  */
 public class TagUpdateService {
 
-	private LastFmDao lastFmDao;
-	private ArtistTopTagsDao artistTopTagsDao;
+	protected LastFmDao lastFmDao;
+	protected ArtistTopTagsDao artistTopTagsDao;
 
-	private TagUpdateClient tagUpdateClient;
+	protected TagUpdateClient tagUpdateClient;
 	
-	protected PollableChannel tagUpdateChannel;
 	private AtomicBoolean started = new AtomicBoolean(false);
 
 	private ConcurrentLinkedQueue<ArtistUserTag> artistUserTags = new ConcurrentLinkedQueue<>();
 	protected List<ArtistUserTag> failedUpdates = new ArrayList<>();
 
+	public static final int MIN_THRESHOLD = 10;
+	public static final int MAX_THRESHOLD = 90;
+	
 	private static final Logger LOG = Logger.getLogger(TagUpdateService.class);
 
 	/*
@@ -48,11 +44,9 @@ public class TagUpdateService {
 	 * last.fm is down.
 	 */
 	public void updateTag(Artist artist, String lastFmUsername,
-			TagOccurrence tagOccurrence) {
+			String tagName, int tagCount, boolean submit) {
 		LastFmUser lastFmUser = lastFmDao.getLastFmUser(lastFmUsername);
-		ArtistUserTag aut = new ArtistUserTag(artist, lastFmUser, tagOccurrence);
-
-		tagUpdateChannel.send(new GenericMessage<ArtistUserTag>(aut));
+		register(new ArtistUserTag(artist, lastFmUser, tagName, tagCount, submit));
 
 		if (!started.getAndSet(true)) {
 			startTagUpdateService();
@@ -60,18 +54,6 @@ public class TagUpdateService {
 	}
 
 	private void startTagUpdateService() {
-
-		ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
-		threadExecutor.execute(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					receive();
-				} catch (Throwable t) {
-					LOG.error("Unexpected error caught while receiving tag updates!", t);
-				}
-			}
-		});
 
 		ScheduledExecutorService scheduler = Executors
 				.newSingleThreadScheduledExecutor();
@@ -88,33 +70,32 @@ public class TagUpdateService {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void receive() {
-		Message<ArtistUserTag> message;
-		while ((message = (Message<ArtistUserTag>) tagUpdateChannel.receive()) != null) {
-			ArtistUserTag latest = message.getPayload();
-			for (Iterator<ArtistUserTag> it = artistUserTags.iterator(); it.hasNext();) {
-				ArtistUserTag aut = it.next();
-				if (aut.getArtist().getId() == latest.getArtist().getId()
-						&& aut.getLastFmUser().getId() == latest.getLastFmUser().getId()) {
-					it.remove();
-					LOG.debug("remove " + aut + ", in favor of " + latest);
-				}
+	protected void register(ArtistUserTag submission) {
+		artistTopTagsDao.updateTopTag(submission.getArtist().getId(), 
+				submission.getTagName(), submission.getTagCount());
+		for (Iterator<ArtistUserTag> it = artistUserTags.iterator(); it.hasNext();) {
+			ArtistUserTag aut = it.next();
+			if (aut.getArtist().getId() == submission.getArtist().getId()
+					&& aut.getLastFmUser().getId() == submission.getLastFmUser().getId()) {
+				it.remove();
+				LOG.debug("remove " + aut + ", in favor of " + submission);
 			}
-			artistUserTags.add(latest);
 		}
+		artistUserTags.add(submission);
 	}
 
 	protected void updateTags() throws ApplicationException {
 		resendFailedUpdates();
 		ArtistUserTag aut;
 		while ((aut = artistUserTags.poll()) != null) {
-			artistTopTagsDao.updateTopTag(aut.getArtist().getId(), aut.getTagOccurrence());
-			WSResponse wsResponse = tagUpdateClient.updateTag(aut);
-			if (!wsResponse.wasCallSuccessful()) {
-				LOG.warn("updating " + aut + " failed! Add for re-sending.");
-				LOG.debug("Response: " + wsResponse);
-				failedUpdates.add(aut);
+			if ((aut.isIncrease() && aut.getTagCount() >= MAX_THRESHOLD) ||
+				(!aut.isIncrease() && aut.getTagCount() <= MIN_THRESHOLD)) {
+				WSResponse wsResponse = tagUpdateClient.updateTag(aut);
+				if (!wsResponse.wasCallSuccessful()) {
+					LOG.warn("updating " + aut + " failed! Add for re-sending.");
+					LOG.debug("Response: " + wsResponse);
+					failedUpdates.add(aut);
+				}
 			}
 		}
 	}
@@ -144,10 +125,6 @@ public class TagUpdateService {
 
 	public void setArtistTopTagsDao(ArtistTopTagsDao artistTopTagsDao) {
 		this.artistTopTagsDao = artistTopTagsDao;
-	}
-
-	public void setTagUpdateChannel(PollableChannel tagUpdateChannel) {
-		this.tagUpdateChannel = tagUpdateChannel;
 	}
 
 	public void setTagUpdateClient(TagUpdateClient tagUpdateClient) {
