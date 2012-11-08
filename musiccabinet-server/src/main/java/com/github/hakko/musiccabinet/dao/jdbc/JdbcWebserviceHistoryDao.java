@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static java.lang.String.format;
+
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -41,13 +43,8 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	
 	@Override
 	public void blockWebserviceInvocation(int artistId, WebserviceInvocation.Calltype callType) {
-		String deleteSql = "delete from library.webservice_history"
-			+ " where artist_id = ? and calltype_id = ?";
-		String insertSql = "insert into library.webservice_history"
-			+ " (artist_id, calltype_id, invocation_time) values (?, ?, 'infinity')";
-		
-		jdbcTemplate.update(deleteSql, artistId, callType.getDatabaseId());
-		jdbcTemplate.update(insertSql, artistId, callType.getDatabaseId());
+		jdbcTemplate.execute(format("select library.block_webservice(%d, %d)", 
+				artistId, callType.getDatabaseId()));
 	}
 
 	private void logWebserviceInvocation(WebserviceInvocation wi, Date invocationTime) {

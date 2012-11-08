@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.BLOCK_WEBSERVICE;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_ARTIST_ID;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_TRACK_ID;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_LASTFMUSER_ID;
@@ -60,6 +61,7 @@ public class JdbcWebserviceHistoryDaoTest {
 		PostgreSQLUtil.loadFunction(dao, GET_TRACK_ID);
 		PostgreSQLUtil.loadFunction(dao, GET_LASTFMUSER_ID);
 		PostgreSQLUtil.loadFunction(dao, GET_LASTFMGROUP_ID);
+		PostgreSQLUtil.loadFunction(dao, BLOCK_WEBSERVICE);
 	}
 	
 	@Test
