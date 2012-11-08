@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.service;
 
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TAGS;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +18,7 @@ import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
+import com.github.hakko.musiccabinet.service.lastfm.WebserviceHistoryService;
 import com.github.hakko.musiccabinet.ws.lastfm.TagUpdateClient;
 import com.github.hakko.musiccabinet.ws.lastfm.WSResponse;
 
@@ -26,6 +29,7 @@ public class TagUpdateService {
 
 	protected LastFmDao lastFmDao;
 	protected ArtistTopTagsDao artistTopTagsDao;
+	protected WebserviceHistoryService webserviceHistoryService;
 
 	protected TagUpdateClient tagUpdateClient;
 	
@@ -42,6 +46,8 @@ public class TagUpdateService {
 	/*
 	 * Async method that registers tag updates for later submission, in case
 	 * last.fm is down.
+	 * 
+	 * TODO : block nightly getArtistTopTags for artist
 	 */
 	public void updateTag(Artist artist, String lastFmUsername,
 			String tagName, int tagCount, boolean submit) {
@@ -71,8 +77,6 @@ public class TagUpdateService {
 	}
 
 	protected void register(ArtistUserTag submission) {
-		artistTopTagsDao.updateTopTag(submission.getArtist().getId(), 
-				submission.getTagName(), submission.getTagCount());
 		for (Iterator<ArtistUserTag> it = artistUserTags.iterator(); it.hasNext();) {
 			ArtistUserTag aut = it.next();
 			if (aut.getArtist().getId() == submission.getArtist().getId()
@@ -82,6 +86,10 @@ public class TagUpdateService {
 			}
 		}
 		artistUserTags.add(submission);
+		webserviceHistoryService.blockWebserviceInvocation(
+				submission.getArtist().getId(), ARTIST_GET_TOP_TAGS);
+		artistTopTagsDao.updateTopTag(submission.getArtist().getId(), 
+				submission.getTagName(), submission.getTagCount());
 	}
 
 	protected void updateTags() throws ApplicationException {
@@ -129,6 +137,10 @@ public class TagUpdateService {
 
 	public void setTagUpdateClient(TagUpdateClient tagUpdateClient) {
 		this.tagUpdateClient = tagUpdateClient;
+	}
+
+	public void setWebserviceHistoryService(WebserviceHistoryService webserviceHistoryService) {
+		this.webserviceHistoryService = webserviceHistoryService;
 	}
 
 }

@@ -133,7 +133,7 @@
 		<property name="albumInfoClient" ref="albumInfoClient"/>
 		<property name="albumInfoDao" ref="albumInfoDao"/>
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
-	</bean>	
+	</bean>
 
 	<bean id="artistRelationService" class="com.github.hakko.musiccabinet.service.lastfm.ArtistRelationService">
 		<property name="artistSimilarityClient" ref="artistSimilarityClient"/>
@@ -205,6 +205,7 @@
 		<property name="lastFmDao" ref="lastFmDao"/>
 		<property name="artistTopTagsDao" ref="artistTopTagsDao"/>
 		<property name="tagUpdateClient" ref="tagUpdateClient"/>
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 	</bean>
 
 	<bean id="nameSearchService" class="com.github.hakko.musiccabinet.service.NameSearchService">

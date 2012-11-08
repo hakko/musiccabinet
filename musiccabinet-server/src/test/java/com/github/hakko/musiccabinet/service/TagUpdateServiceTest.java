@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.service;
 
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TAGS;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -20,6 +21,7 @@ import com.github.hakko.musiccabinet.domain.model.aggr.ArtistUserTag;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.lastfm.WebserviceHistoryService;
 import com.github.hakko.musiccabinet.ws.lastfm.TagUpdateClient;
 import com.github.hakko.musiccabinet.ws.lastfm.WSResponse;
 
@@ -54,6 +56,7 @@ public class TagUpdateServiceTest {
 		assertNotNull(injectedService.lastFmDao);
 		assertNotNull(injectedService.artistTopTagsDao);
 		assertNotNull(injectedService.tagUpdateClient);
+		assertNotNull(injectedService.webserviceHistoryService);
 	}
 	
 	@Test
@@ -76,12 +79,21 @@ public class TagUpdateServiceTest {
 
 		ArtistTopTagsDao artistTopTagsDao = mock(ArtistTopTagsDao.class);
 		tagUpdateService.setArtistTopTagsDao(artistTopTagsDao);
+
+		WebserviceHistoryService historyService = mock(WebserviceHistoryService.class);
+		tagUpdateService.setWebserviceHistoryService(historyService);
 		
 		tagUpdateService.register(artist1Addition);
 		tagUpdateService.register(artist1Addition);
 		tagUpdateService.register(artist1Addition);
 		tagUpdateService.updateTags();
 
+		// tag updates and web service blocking are instantaneous
+		verify(historyService, times(3)).blockWebserviceInvocation(
+				artist1.getId(), ARTIST_GET_TOP_TAGS);
+		verify(artistTopTagsDao, times(3)).updateTopTag(artist1.getId(), 
+				artist1Addition.getTagName(), artist1Addition.getTagCount());
+		
 		// dupes removed, one item updated and put on fail queue
 		assertEquals(1, tagUpdateService.failedUpdates.size()); 
 	}
@@ -93,7 +105,10 @@ public class TagUpdateServiceTest {
 
 		setClientResponse(responseOK);
 		TagUpdateClient tagUpdateClient = tagUpdateService.tagUpdateClient;
-		
+
+		WebserviceHistoryService historyService = mock(WebserviceHistoryService.class);
+		tagUpdateService.setWebserviceHistoryService(historyService);
+
 		tagUpdateService.register(artist1Addition);
 		tagUpdateService.register(artist2Removal);
 		tagUpdateService.register(artist3Addition);
