@@ -50,7 +50,9 @@ public enum PostgreSQLFunction {
 	DELETE_FROM_LIBRARY("library", "delete_from_library",
 		"sql/library/delete-from-library.sql"),
 	UPDATE_STATISTICS("library", "update_statistics",
-		"sql/library/update-statistics.sql");
+		"sql/library/update-statistics.sql"),
+	BLOCK_WEBSERVICE("library", "block_webservice",
+		"sql/library/block-webservice.sql");
 
 	
 	private final String schema;
