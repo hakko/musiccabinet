@@ -6,6 +6,7 @@ import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +64,7 @@ public class JdbcGroupWeeklyArtistChartDaoTest {
 		artistChart = new GroupWeeklyArtistChart(brainwashed.getName(), 
 				new GroupWeeklyArtistChartParserImpl(new ResourceUtil(
 						BRAINWASHED_FILE).getInputStream()).getArtistPlayCount());
+		Collections.sort(artistChart.getArtistPlayCounts());
 
 		createArtistMetaData();
 	}
