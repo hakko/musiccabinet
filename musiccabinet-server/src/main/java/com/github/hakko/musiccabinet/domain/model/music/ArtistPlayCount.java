@@ -1,9 +1,10 @@
 package com.github.hakko.musiccabinet.domain.model.music;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class ArtistPlayCount {
+public class ArtistPlayCount implements Comparable<ArtistPlayCount> {
 
 	private Artist artist;
 	private int playCount;
@@ -52,6 +53,15 @@ public class ArtistPlayCount {
           .append(artist, apc.artist)
           .append(playCount, apc.playCount)
           .isEquals();
+	}
+	
+	@Override
+	public int compareTo(ArtistPlayCount apc) {
+		CompareToBuilder ctb = new CompareToBuilder();
+		ctb.append(-playCount, -apc.playCount);
+		ctb.append(artist.getName(), apc.artist.getName());
+		
+		return ctb.toComparison();
 	}
 
 	@Override
