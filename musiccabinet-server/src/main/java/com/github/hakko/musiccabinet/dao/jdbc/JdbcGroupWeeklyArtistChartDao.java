@@ -60,7 +60,7 @@ public class JdbcGroupWeeklyArtistChartDao implements GroupWeeklyArtistChartDao,
 				+ " inner join music.groupweeklyartistchart gwac on gwac.artist_id = a.id"
 				+ " inner join music.lastfmgroup g on gwac.lastfmgroup_id = g.id"
 				+ " where g.group_name = upper(?)"
-				+ " order by playcount desc";
+				+ " order by playcount desc, a.artist_name";
 		
 		return new GroupWeeklyArtistChart(group.getName(), jdbcTemplate.query(
 				sql, new Object[]{group.getName()}, new ArtistPlayCountRowMapper()));
