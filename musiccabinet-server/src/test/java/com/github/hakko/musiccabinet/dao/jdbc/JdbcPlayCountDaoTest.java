@@ -139,8 +139,9 @@ public class JdbcPlayCountDaoTest {
 	}
 	
 	@Test
-	public void playCountsAreOrderedByTime() {
+	public void playCountsAreOrderedByTime() throws InterruptedException {
 		dao.addPlayCount(user1, track1b);
+		Thread.sleep(1);
 		dao.addPlayCount(user1, track1a);
 		
 		List<Integer> tracks = dao.getRecentTracks(username1, 0, 10);
@@ -161,8 +162,9 @@ public class JdbcPlayCountDaoTest {
 	}
 
 	@Test
-	public void resultsArePageable() {
+	public void resultsArePageable() throws InterruptedException {
 		dao.addPlayCount(user1, track1b);
+		Thread.sleep(1);
 		dao.addPlayCount(user1, track2);
 		
 		assertEquals(2, dao.getRecentArtists(username1, 0, 2).size());
