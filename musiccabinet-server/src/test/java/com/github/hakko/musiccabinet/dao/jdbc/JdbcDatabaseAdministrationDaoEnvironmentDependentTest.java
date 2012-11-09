@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import com.github.hakko.musiccabinet.util.ResourceUtil;
  * and detection/creating of a missing database.
  * 
  * Therefore, it is not meant to be run as part of the build process, and
- * the @Test annotations are commented.
+ * the quite a few tests are marked as Ignored.
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,7 +31,8 @@ public class JdbcDatabaseAdministrationDaoEnvironmentDependentTest {
 	private JdbcDatabaseAdministrationDao dbAdmDao;
 	
 //	stop postgresql service before running this test, or it will fail.
-//	@Test
+	@Test
+	@Ignore
 	public void postgresqlServiceDownIsDetected() {
 		Assert.assertFalse(dbAdmDao.isRDBMSRunning());
 	}
@@ -42,7 +44,8 @@ public class JdbcDatabaseAdministrationDaoEnvironmentDependentTest {
 
 	
 //	delete database "musiccabinet-test" before running this test, or it will fail.
-//	@Test
+	@Test
+	@Ignore
 	public void missingDatabaseIsDetectedAndCreated() throws ApplicationException {
 		Assert.assertFalse(dbAdmDao.isDatabaseCreated());
 
@@ -66,13 +69,15 @@ public class JdbcDatabaseAdministrationDaoEnvironmentDependentTest {
 		Assert.assertFalse(dbAdmDao.isPasswordCorrect("wrong password"));
 	}
 
-//	@Test (expected = ApplicationException.class)
+	@Test (expected = ApplicationException.class)
+	@Ignore
 	public void forcePasswordChangeDoesntWorkForWrongPassword() throws ApplicationException {
 		dbAdmDao.forcePasswordUpdate("wrong password");
 		Assert.fail("Wrong password is supposed to throw an exception.");
 	}
 
-//	@Test
+	@Test
+	@Ignore
 	public void forcePasswordChangeWorksForCorrectPassword() {
 		try {
 			dbAdmDao.forcePasswordUpdate(getPostgresPassword());
