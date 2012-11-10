@@ -46,13 +46,11 @@ public class TagUpdateService {
 	/*
 	 * Async method that registers tag updates for later submission, in case
 	 * last.fm is down.
-	 * 
-	 * TODO : block nightly getArtistTopTags for artist
 	 */
 	public void updateTag(Artist artist, String lastFmUsername,
-			String tagName, int tagCount, boolean submit) {
+			String tagName, int tagCount, boolean increase) {
 		LastFmUser lastFmUser = lastFmDao.getLastFmUser(lastFmUsername);
-		register(new ArtistUserTag(artist, lastFmUser, tagName, tagCount, submit));
+		register(new ArtistUserTag(artist, lastFmUser, tagName, tagCount, increase));
 
 		if (!started.getAndSet(true)) {
 			startTagUpdateService();
