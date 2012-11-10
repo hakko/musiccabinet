@@ -180,7 +180,8 @@ begin
 	-- update file header (info that never changes)
 	insert into library.fileheader (file_id, type_id, bitrate, vbr, duration)
 	select file_id, type_id, bitrate, vbr, duration
-		from library.file_headertag_import;
+		from library.file_headertag_import fhti
+		where not exists (select 1 from library.fileheader where file_id = fhti.file_id);
 
 	-- update file tag
 	insert into library.filetag (file_id, artist_id, album_artist_id, composer_id, album_id, track_id, track_nr, track_nrs, disc_nr, disc_nrs, year, tag_id, coverart, lyrics)
