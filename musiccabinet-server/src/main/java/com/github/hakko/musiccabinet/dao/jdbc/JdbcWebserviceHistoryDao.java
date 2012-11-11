@@ -211,12 +211,10 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 		String sql = "select a.artist_name_capitalization from ("
 			+ "  select artist_id, ntile(30) over (order by invocation_time) "
 			+ "   from library.webservice_history where calltype_id = " + callType.getDatabaseId()
+			+ "   and artist_id in (select artist_id from library.artist)"
 			+ " ) ntile" 
 			+ " inner join music.artist a on ntile.artist_id = a.id"
 			+ " and ntile.ntile = 1"
-			+ " where a.id in "
-			+ " (select mt.artist_id from library.track lt "
-			+ "  inner join music.track mt on lt.track_id = mt.id)"
 			+ " order by artist_id limit 1000";
 		
 		return jdbcTemplate.queryForList(sql, String.class);
