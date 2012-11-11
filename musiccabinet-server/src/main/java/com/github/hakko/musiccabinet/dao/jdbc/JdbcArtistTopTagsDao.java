@@ -70,7 +70,7 @@ public class JdbcArtistTopTagsDao implements ArtistTopTagsDao, JdbcTemplateDao {
 				+ " from music.artisttoptag att" 
 				+ " inner join music.tag t on att.tag_id = t.id"
 				+ " inner join library.toptag tt on tt.tag_id = t.id"
-				+ " where att.artist_id = " + artistId
+				+ " where att.artist_id = " + artistId + " and tag_count > 0"
 				+ " order by att.tag_count desc limit " + limit;
 			
 		return jdbcTemplate.query(sql, new TagNameCountRowMapper());
