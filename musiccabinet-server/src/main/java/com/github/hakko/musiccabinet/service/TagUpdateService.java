@@ -32,7 +32,7 @@ public class TagUpdateService {
 	protected WebserviceHistoryService webserviceHistoryService;
 
 	protected TagUpdateClient tagUpdateClient;
-	
+
 	private AtomicBoolean started = new AtomicBoolean(false);
 
 	private ConcurrentLinkedQueue<ArtistUserTag> artistUserTags = new ConcurrentLinkedQueue<>();
@@ -40,15 +40,15 @@ public class TagUpdateService {
 
 	public static final int MIN_THRESHOLD = 10;
 	public static final int MAX_THRESHOLD = 90;
-	
+
 	private static final Logger LOG = Logger.getLogger(TagUpdateService.class);
 
 	/*
 	 * Async method that registers tag updates for later submission, in case
 	 * last.fm is down.
 	 */
-	public void updateTag(Artist artist, String lastFmUsername,
-			String tagName, int tagCount, boolean increase) {
+	public void updateTag(Artist artist, String lastFmUsername, String tagName, 
+			int tagCount, boolean increase) {
 		LastFmUser lastFmUser = lastFmDao.getLastFmUser(lastFmUsername);
 		register(new ArtistUserTag(artist, lastFmUser, tagName, tagCount, increase));
 
@@ -78,24 +78,26 @@ public class TagUpdateService {
 		for (Iterator<ArtistUserTag> it = artistUserTags.iterator(); it.hasNext();) {
 			ArtistUserTag aut = it.next();
 			if (aut.getArtist().getId() == submission.getArtist().getId()
-					&& aut.getLastFmUser().getId() == submission.getLastFmUser().getId()) {
+					&& aut.getTagName().equals(submission.getTagName())
+					&& aut.getLastFmUser().getId() == submission
+							.getLastFmUser().getId()) {
 				it.remove();
 				LOG.debug("remove " + aut + ", in favor of " + submission);
 			}
 		}
 		artistUserTags.add(submission);
-		webserviceHistoryService.blockWebserviceInvocation(
-				submission.getArtist().getId(), ARTIST_GET_TOP_TAGS);
-		artistTopTagsDao.updateTopTag(submission.getArtist().getId(), 
+		webserviceHistoryService.blockWebserviceInvocation(submission
+				.getArtist().getId(), ARTIST_GET_TOP_TAGS);
+		artistTopTagsDao.updateTopTag(submission.getArtist().getId(),
 				submission.getTagName(), submission.getTagCount());
 	}
 
 	protected void updateTags() throws ApplicationException {
 		resendFailedUpdates();
 		ArtistUserTag aut;
-		while ((aut = artistUserTags.poll()) != null) {
-			if ((aut.isIncrease() && aut.getTagCount() >= MAX_THRESHOLD) ||
-				(!aut.isIncrease() && aut.getTagCount() <= MIN_THRESHOLD)) {
+		while (failedUpdates.isEmpty() && (aut = artistUserTags.poll()) != null) {
+			if ((aut.isIncrease() && aut.getTagCount() >= MAX_THRESHOLD)
+					|| (!aut.isIncrease() && aut.getTagCount() <= MIN_THRESHOLD)) {
 				WSResponse wsResponse = tagUpdateClient.updateTag(aut);
 				if (!wsResponse.wasCallSuccessful()) {
 					LOG.warn("updating " + aut + " failed! Add for re-sending.");
@@ -137,7 +139,8 @@ public class TagUpdateService {
 		this.tagUpdateClient = tagUpdateClient;
 	}
 
-	public void setWebserviceHistoryService(WebserviceHistoryService webserviceHistoryService) {
+	public void setWebserviceHistoryService(
+			WebserviceHistoryService webserviceHistoryService) {
 		this.webserviceHistoryService = webserviceHistoryService;
 	}
 
