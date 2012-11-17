@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<release-group-list count="8">
+		<release-group type="Album" id="236316f7-c919-3986-918b-25e135ba8000">
+			<title>The Beyond</title>
+			<first-release-date>2003-02-10</first-release-date>
+			<primary-type>Album</primary-type>
+		</release-group>
+		<release-group type="EP" id="5484925b-884c-31d8-9c3e-2ef3824e6a5f">
+			<title>Bodies / Recluse</title>
+			<first-release-date>2006-04</first-release-date>
+			<primary-type>EP</primary-type>
+		</release-group>
+		<release-group type="Album" id="8859f36d-cb3b-3cbe-b6f1-1ecee2adf17f">
+			<title>Eternal Kingdom</title>
+			<first-release-date>2008-06-16</first-release-date>
+			<primary-type>Album</primary-type>
+		</release-group>
+		<release-group type="EP" id="a2052238-1fd6-4ac3-9b79-406868852a38">
+			<title>Switchblade / Cult of Luna</title>
+			<first-release-date>2000</first-release-date>
+			<primary-type>EP</primary-type>
+		</release-group>
+		<release-group type="Album" id="aebc4e2f-f900-3ccd-886f-626c2b02eca8">
+			<title>Somewhere Along the Highway</title>
+			<first-release-date>2006-04-24</first-release-date>
+			<primary-type>Album</primary-type>
+		</release-group>
+		<release-group type="Album" id="d4182616-a773-383f-a74a-ebf2f4b81a62">
+			<title>Cult of Luna</title>
+			<first-release-date>2001-09-14</first-release-date>
+			<primary-type>Album</primary-type>
+		</release-group>
+		<release-group type="Single" id="eb1f6b39-68ce-36c6-9d60-f1cd10c82da5">
+			<title>Cult of Luna</title>
+			<first-release-date>2002</first-release-date>
+			<primary-type>Single</primary-type>
+		</release-group>
+		<release-group type="Album" id="f76d8b42-d8b0-389f-9bb4-2a5d7473c231">
+			<title>Salvation</title>
+			<first-release-date>2004-10-04</first-release-date>
+			<primary-type>Album</primary-type>
+		</release-group>
+	</release-group-list>
+</metadata>

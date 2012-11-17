@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata created="2012-11-15T16:11:08.377Z">
+	<artist-list count="8429" offset="0">
+		<artist id="d347406f-839d-4423-9a28-188939282afa" type="Group" ext:score="100">
+			<name>Cult of Luna</name>
+			<sort-name>Cult of Luna</sort-name>
+			<country>SE</country>
+			<life-span>
+				<begin>1998</begin>
+				<ended>false</ended>
+			</life-span>
+			<tag-list>
+				<tag count="2">
+					<name>sludge metal</name>
+				</tag>
+				<tag count="1">
+					<name>atmospheric sludge metal</name>
+				</tag>
+				<tag count="1">
+					<name>post-core</name>
+				</tag>
+			</tag-list>
+		</artist>
+	</artist-list>
+</metadata>
