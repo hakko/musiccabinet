@@ -46,7 +46,8 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	@Override
 	public List<Artist> getArtists() {
 		String sql = "select ma.id, ma.artist_name_capitalization from music.artist ma"
-				+ " inner join library.artist la on la.artist_id = ma.id where la.hasalbums";
+				+ " inner join library.artist la on la.artist_id = ma.id where la.hasalbums"
+				+ " order by ma.artist_name";
 		
 		return jdbcTemplate.query(sql, new ArtistRowMapper());
 	}

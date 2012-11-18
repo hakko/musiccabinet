@@ -3,8 +3,6 @@ package com.github.hakko.musiccabinet.dao.jdbc;
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.ADD_TO_LIBRARY;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -49,13 +47,6 @@ public class JdbcStarDaoTest {
 	private Album album1, album2;
 	private Track track1, track2;
 
-	private Comparator<Artist> artistComparator = new Comparator<Artist>() {
-		@Override
-		public int compare(Artist a1, Artist a2) {
-			return a1.getName().compareTo(a2.getName());
-		}
-	};
-
 	@Before
 	public void prepareTestData() throws ApplicationException {
 		PostgreSQLUtil.loadFunction(starDao, ADD_TO_LIBRARY);
@@ -68,7 +59,6 @@ public class JdbcStarDaoTest {
 
 		List<Artist> artists = browserDao.getArtists();
 		Assert.assertEquals(2, artists.size());
-		Collections.sort(artists, artistComparator);
 		album1 = browserDao.getAlbums((artist1 = artists.get(0)).getId(), true).get(0);
 		album2 = browserDao.getAlbums((artist2 = artists.get(1)).getId(), true).get(0);
 		

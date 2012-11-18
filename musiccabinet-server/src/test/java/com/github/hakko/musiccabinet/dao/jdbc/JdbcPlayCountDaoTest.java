@@ -51,13 +51,6 @@ public class JdbcPlayCountDaoTest {
 	private Album album1, album2;
 	private Track track1a, track1b, track2;
 
-	private Comparator<Artist> artistComparator = new Comparator<Artist>() {
-		@Override
-		public int compare(Artist a1, Artist a2) {
-			return a1.getName().compareTo(a2.getName());
-		}
-	};
-
 	private Comparator<Track> trackComparator = new Comparator<Track>() {
 		@Override
 		public int compare(Track t1, Track t2) {
@@ -82,7 +75,6 @@ public class JdbcPlayCountDaoTest {
 		submitFile(additionDao, Arrays.asList(file1, file2, file3));
 		
 		List<Artist> artists = browserDao.getArtists();
-		Collections.sort(artists, artistComparator);
 		assertEquals(2, artists.size());
 		artist1 = artists.get(0);
 		artist2 = artists.get(1);
