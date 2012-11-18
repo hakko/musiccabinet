@@ -3,7 +3,7 @@ package com.github.hakko.musiccabinet.domain.model.music;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class Artist {
+public class Artist implements Comparable<Artist> {
 
 	private int id;
 	private String name;
@@ -71,6 +71,11 @@ public class Artist {
 	@Override
 	public String toString() {
 		return "artist " + name;
+	}
+
+	@Override
+	public int compareTo(Artist a) {
+		return name.compareTo(a.name);
 	}
 
 }
