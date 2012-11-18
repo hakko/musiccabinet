@@ -13,6 +13,19 @@ public class MBArtist {
 	private short startYear;
 	private boolean active;
 
+	public MBArtist() {
+		
+	}
+	
+	public MBArtist(String name, String mbid, String countryCode,
+			short startYear, boolean active) {
+		this.name = name;
+		this.mbid = mbid;
+		this.countryCode = countryCode;
+		this.startYear = startYear;
+		this.active = active;
+	}
+
 	public String getName() {
 		return name;
 	}
