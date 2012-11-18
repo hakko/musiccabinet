@@ -13,6 +13,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 public class MBAlbum {
 
+	private Artist artist;
 	private String title;
 	private String mbid;
 	private short releaseYear;
@@ -33,6 +34,21 @@ public class MBAlbum {
 		setMbid(mbid);
 		setReleaseYear(releaseYear);
 		setPrimaryAlbumType(primaryAlbumType);
+	}
+	
+	public MBAlbum(String artistName, String title, short releaseYear, int albumTypeId) {
+		setArtist(new Artist(artistName));
+		setTitle(title);
+		setReleaseYear(releaseYear);
+		primaryAlbumType = AlbumType.values()[albumTypeId];
+	}
+
+	public Artist getArtist() {
+		return artist;
+	}
+
+	public void setArtist(Artist artist) {
+		this.artist = artist;
 	}
 
 	public String getTitle() {
@@ -59,16 +75,20 @@ public class MBAlbum {
 		this.releaseYear = releaseYear;
 	}
 
-	public AlbumType getPrimaryAlbumType() {
-		return primaryAlbumType;
+	public int getPrimaryAlbumTypeId() {
+		return primaryAlbumType.ordinal();
+	}
+
+	public String getPrimaryAlbumTypeName() {
+		return primaryAlbumType.name();
 	}
 
 	public void setPrimaryAlbumType(String primaryAlbumType) {
 		this.primaryAlbumType = AlbumType.valueOf(upperCase(primaryAlbumType));
 	}
 
-	public AlbumType getSecondaryAlbumType() {
-		return secondaryAlbumType;
+	public int getSecondaryAlbumTypeId() {
+		return secondaryAlbumType.ordinal();
 	}
 
 	public void setSecondaryAlbumType(String secondaryAlbumType) {
