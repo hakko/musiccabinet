@@ -1,6 +1,10 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.getNameQuery;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -63,7 +67,39 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 				+ " where art.id = " + artistId + " order by mba.release_year", 
 				new MBAlbumRowMapper());
 	}
-	
+
+	@Override
+	public List<MBAlbum> getMissingAlbums(String artistName, String lastFmUsername, 
+			int playedWithinLastDays, int offset) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select art.artist_name_capitalization, alb.album_name_capitalization,"
+				+ " mba.release_year, mba.type_id from music.mb_album mba"
+				+ " inner join music.album alb on mba.album_id = alb.id"
+				+ " inner join music.artist art on alb.artist_id = art.id"
+				+ " where not exists (select 1 from library.album where album_id = mba.album_id)");
+		
+		if (isNotEmpty(artistName)) {
+			sb.append(" and art.id in (select artist_id from library.artist"
+					+ " where artist_name_search like ?)");
+			params.add(getNameQuery(artistName));
+		}
+		
+		if (playedWithinLastDays > 0) {
+			sb.append(String.format(
+					" and art.id in (select artist_id from library.playcount pc"
+					+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
+					+ " where age(invocation_time) < '%d days'::interval and u.lastfm_user = upper(?))",
+					playedWithinLastDays));
+			params.add(lastFmUsername);
+		}
+		
+		sb.append(" order by art.artist_name, mba.release_year offset " + offset + " limit 101");
+		
+		return jdbcTemplate.query(sb.toString(), params.toArray(), new MBAlbumRowMapper());
+	}
+
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;

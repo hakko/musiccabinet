@@ -8,5 +8,6 @@ public interface MusicBrainzAlbumDao {
 
 	void createAlbums(List<MBAlbum> albums);
 	List<MBAlbum> getAlbums(int artistId);
-	
+	List<MBAlbum> getMissingAlbums(String artistName, String lastFmUsername, int playedWithinLastDays, int offset);
+
 }
