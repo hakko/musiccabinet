@@ -40,7 +40,9 @@ public enum PostgreSQLFunction {
 		"sql/music/update-tagtopartists.sql"),
 	UPDATE_GROUP_WEEKLY_ARTIST_CHART("music", "update_groupartistchart", 
 		"sql/music/update-groupweeklyartistchart.sql"),
-	
+	UPDATE_MB_ARTIST("music", "update_mbartist",
+		"sql/music/update-mbartist.sql"),
+
 	/* Library schema */
 	UPDATE_TRACKPLAYCOUNT("library", "update_trackplaycount", 
 		"sql/library/update-trackplaycount.sql"),
