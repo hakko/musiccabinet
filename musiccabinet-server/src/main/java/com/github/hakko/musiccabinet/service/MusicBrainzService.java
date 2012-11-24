@@ -67,11 +67,15 @@ public class MusicBrainzService {
 	}
 
 	public void updateDiscography() {
-		isIndexBeingCreated = true;
-		mbid = discography = discographies = 0;
-		updateArtistIds();
-		updateArtistDiscographies();
-		isIndexBeingCreated = false;
+		try {
+			isIndexBeingCreated = true;
+			mbid = discography = discographies = 0;
+			updateArtistIds();
+			updateArtistDiscographies();
+			isIndexBeingCreated = false;
+		} catch (Throwable t) {
+			LOG.warn("MusicBrainz import failed unexpectedly!", t);
+		}
 	}
 	
 	protected void updateArtistIds() {
