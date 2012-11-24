@@ -1,6 +1,9 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.getNameQuery;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.getIdParameters;
+import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_ALBUM;
+import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_EP;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.sql.Types;
@@ -75,8 +78,8 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 	}
 
 	@Override
-	public List<MBAlbum> getMissingAlbums(String artistName, String lastFmUsername, 
-			int playedWithinLastDays, int offset) {
+	public List<MBAlbum> getMissingAlbums(String artistName, int typeMask,
+			String lastFmUsername, int playedWithinLastDays, int offset) {
 		List<Object> params = new ArrayList<>();
 		
 		StringBuilder sb = new StringBuilder();
@@ -101,9 +104,23 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 			params.add(lastFmUsername);
 		}
 		
+		sb.append(" and mba.type_id in (" + getIdParameters(getTypeIds(typeMask)) + ")");
 		sb.append(" order by art.artist_name, mba.release_year offset " + offset + " limit 101");
 		
 		return jdbcTemplate.query(sb.toString(), params.toArray(), new MBAlbumRowMapper());
+	}
+	
+	private List<Integer> getTypeIds(int typeMask) {
+		if (typeMask == 0 || typeMask == -1) {
+			typeMask = TYPE_EP | TYPE_ALBUM;
+		}
+		List<Integer> typeIds = new ArrayList<>();
+		for (int i = 0; i <= 10; i++) {
+			if (((1 << i) & typeMask) > 0) {
+				typeIds.add(i);
+			}
+		}
+		return typeIds;
 	}
 
 	@Override

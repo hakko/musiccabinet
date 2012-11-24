@@ -1,6 +1,8 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MB_ALBUM;
+import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_ALBUM;
+import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_EP;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
 import static junit.framework.Assert.assertEquals;
@@ -23,6 +25,7 @@ import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.MusicBrainzService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -82,7 +85,7 @@ public class JdbcMusicBrainzAlbumDaoTest {
 	
 	@Test
 	public void findsAlbumsMissingFromLibrary() {
-		List<MBAlbum> albums = albumDao.getMissingAlbums(null, null, -1, 0);
+		List<MBAlbum> albums = albumDao.getMissingAlbums(null, -1, null, -1, 0);
 		
 		assertEquals(2, albums.size());
 		assertEquals(album1.getTitle(), albums.get(0).getTitle());
@@ -90,7 +93,7 @@ public class JdbcMusicBrainzAlbumDaoTest {
 		
 		submitFile(additionDao, getFile(artist.getName(), album1.getTitle(), album1.getTitle()));
 
-		albums = albumDao.getMissingAlbums(null, null, -1, 0);
+		albums = albumDao.getMissingAlbums(null, -1, null, -1, 0);
 		assertEquals(1, albums.size());
 		assertEquals(album2.getTitle(), albums.get(0).getTitle());
 
@@ -102,16 +105,16 @@ public class JdbcMusicBrainzAlbumDaoTest {
 		submitFile(additionDao, getFile(artist.getName(), UNKNOWN, UNKNOWN));
 
 		String partialName = ARTIST.substring(ARTIST.lastIndexOf(' ') + 1);
-		List<MBAlbum> albums = albumDao.getMissingAlbums(partialName, null, -1, 0);
+		List<MBAlbum> albums = albumDao.getMissingAlbums(partialName, -1, null, -1, 0);
 		assertEquals(2, albums.size());
 		
-		albums = albumDao.getMissingAlbums(reverse(ARTIST), null, -1, 0);
+		albums = albumDao.getMissingAlbums(reverse(ARTIST), -1, null, -1, 0);
 		assertEquals(0, albums.size());
 	}
 
 	@Test
 	public void findsAlbumsMissingFromLibraryWithRecentlyPlayedFilter() {
-		List<MBAlbum> albums = albumDao.getMissingAlbums(null, USER, 10, 0);
+		List<MBAlbum> albums = albumDao.getMissingAlbums(null, -1, USER, 10, 0);
 		assertEquals(0, albums.size());
 		
 		LastFmUser lastFmUser = new LastFmUser(USER);
@@ -121,13 +124,29 @@ public class JdbcMusicBrainzAlbumDaoTest {
 		Track track = browserDao.getTracks(browserDao.getRandomTrackIds(1)).get(0);
 		playCountDao.addPlayCount(lastFmUser, track);
 		
-		albums = albumDao.getMissingAlbums(null, USER, 10, 0);
+		albums = albumDao.getMissingAlbums(null, -1, USER, 10, 0);
 		assertEquals(2, albums.size());
 	}
 	
 	@Test
+	public void findsAlbumsMissingFromLibraryWithTypeFilter() {
+		List<MBAlbum> albums = albumDao.getMissingAlbums(null, TYPE_ALBUM, null, -1, 0);
+		assertEquals(1, albums.size());
+		assertEquals(TITLE1, albums.get(0).getTitle());
+
+		albums = albumDao.getMissingAlbums(null, TYPE_EP, null, -1, 0);
+		assertEquals(1, albums.size());
+		assertEquals(TITLE2, albums.get(0).getTitle());
+		
+		albums = albumDao.getMissingAlbums(null, TYPE_EP | TYPE_ALBUM, null, -1, 0);
+		assertEquals(2, albums.size());
+		assertEquals(TITLE1, albums.get(0).getTitle());
+		assertEquals(TITLE2, albums.get(1).getTitle());
+	}
+	
+	@Test
 	public void findsAlbumsMissingFromLibraryWithPagination() {
-		List<MBAlbum> albums = albumDao.getMissingAlbums(null, null, -1, 1);
+		List<MBAlbum> albums = albumDao.getMissingAlbums(null, -1, null, -1, 1);
 
 		assertEquals(1, albums.size());
 	}
