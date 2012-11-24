@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.domain.model.library;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
@@ -143,6 +145,25 @@ public class WebserviceInvocation {
 
 	public Short getPage() {
 		return page;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (o == this) return true;
+		if (o.getClass() != getClass()) return false;
+
+		WebserviceInvocation wi = (WebserviceInvocation) o;
+		return new EqualsBuilder()
+		.append(callType, wi.callType)
+		.append(artist, wi.artist)
+		.append(album, wi.album)
+		.append(track, wi.track)
+		.append(user, wi.user)
+		.append(group, wi.group)
+		.append(tag, wi.tag)
+		.append(page, wi.page)
+		.isEquals();
 	}
 
 	public String toString() {
