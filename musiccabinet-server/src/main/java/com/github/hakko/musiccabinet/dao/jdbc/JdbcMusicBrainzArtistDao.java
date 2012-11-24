@@ -58,8 +58,8 @@ public class JdbcMusicBrainzArtistDao implements MusicBrainzArtistDao, JdbcTempl
 	@Override
 	public MBArtist getArtist(int artistId) {
 		return jdbcTemplate.queryForObject(
-			"select a.artist_name_capitalization, mba.mbid, mba.country_code, mba.start_year, mba.active"
-			+ " from music.mb_artist mba"
+			"select a.id, a.artist_name_capitalization, mba.mbid, mba.country_code,"
+			+ " mba.start_year, mba.active from music.mb_artist mba"
 			+ " inner join music.artist a on mba.artist_id = a.id"
 			+ " where a.id = " + artistId, new MBArtistRowMapper());
 	}
@@ -95,7 +95,7 @@ public class JdbcMusicBrainzArtistDao implements MusicBrainzArtistDao, JdbcTempl
 	@Override
 	public List<MBArtist> getOutdatedArtists() {
 		return jdbcTemplate.query(String.format(
-				"select ma.artist_name_capitalization, mba.mbid, null, null, null"
+				"select ma.id, ma.artist_name_capitalization, mba.mbid, null, null, null"
 			+ " from music.mb_artist mba inner join music.artist ma on mba.artist_id = ma.id"
 			+ " left outer join library.webservice_history h on h.artist_id = ma.id"
 			+ " and h.calltype_id = %d where "

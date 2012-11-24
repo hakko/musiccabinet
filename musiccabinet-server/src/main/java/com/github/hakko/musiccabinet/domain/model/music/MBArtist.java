@@ -8,6 +8,7 @@ package com.github.hakko.musiccabinet.domain.model.music;
 public class MBArtist {
 
 	private String name;
+	private int id;
 	private String mbid;
 	private String countryCode;
 	private short startYear;
@@ -24,6 +25,16 @@ public class MBArtist {
 		this.countryCode = countryCode;
 		this.startYear = startYear;
 		this.active = active;
+	}
+
+	public MBArtist(int id, String name, String mbid, String countryCode,
+			short startYear, boolean active) {
+		this(name, mbid, countryCode, startYear, active);
+		this.id = id;
+	}
+	
+	public Artist asArtist() {
+		return new Artist(id, name);
 	}
 
 	public String getName() {
