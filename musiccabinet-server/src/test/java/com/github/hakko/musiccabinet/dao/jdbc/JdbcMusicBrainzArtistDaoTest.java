@@ -100,9 +100,9 @@ public class JdbcMusicBrainzArtistDaoTest {
 				+ " values (%d, to_timestamp(0), %d)",
 				artist1.getId(), MB_RELEASE_GROUPS.getDatabaseId()));
 
-		List<Artist> outdatedArtists = artistDao.getOutdatedArtists();
+		List<MBArtist> outdatedArtists = artistDao.getOutdatedArtists();
 		assertEquals(1, outdatedArtists.size());
-		assertEquals(artist1, outdatedArtists.get(0));
+		assertEquals(artist1.getName(), outdatedArtists.get(0).getName());
 	}
 	
 	@Test

@@ -11,6 +11,6 @@ public interface MusicBrainzArtistDao {
 	MBArtist getArtist(int artistId);
 	int getMissingAndOutdatedArtistsCount();
 	List<Artist> getMissingArtists();
-	List<Artist> getOutdatedArtists();
+	List<MBArtist> getOutdatedArtists();
 	
 }
