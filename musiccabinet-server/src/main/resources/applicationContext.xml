@@ -54,6 +54,13 @@
 
 	<!--  SERVICES -->
 
+	<bean id="musicBrainzService" class="com.github.hakko.musiccabinet.service.MusicBrainzService">
+		<property name="musicBrainzArtistDao" ref="musicBrainzArtistDao"/>
+		<property name="musicBrainzAlbumDao" ref="musicBrainzAlbumDao"/>
+		<property name="artistQueryClient" ref="artistQueryClient"/>
+		<property name="releaseGroupsClient" ref="releaseGroupsClient"/>
+	</bean>
+
 	<bean id="directoryBrowserService" class="com.github.hakko.musiccabinet.service.DirectoryBrowserService">
 		<property name="directoryBrowserDao" ref="directoryBrowserDao"/>
 		<property name="libraryPresenceDao" ref="libraryPresenceDao"/>
@@ -313,6 +320,15 @@
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 		<property name="throttleService" ref="throttleService"/>
 	</bean>
+	
+	<!-- MUSICBRAINZ WS CLIENTS -->
+	<bean id="artistQueryClient" class="com.github.hakko.musiccabinet.ws.musicbrainz.ArtistQueryClient">
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+	</bean>	
+
+	<bean id="releaseGroupsClient" class="com.github.hakko.musiccabinet.ws.musicbrainz.ReleaseGroupsClient">
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+	</bean>	
 
 
 	<!--  DAOs  -->
