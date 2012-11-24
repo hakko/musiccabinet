@@ -57,9 +57,6 @@ public class MusicBrainzServiceTest {
 	@Test
 	public void updatesDiscography() {
 		assertFalse(service.isIndexBeingCreated());
-		Assert.assertEquals("0/0 artist ids, 0/0 artist discographies",
-				service.getProgressDescription());
-		
 		service.updateDiscography();
 		
 		assertFalse(service.isIndexBeingCreated());

@@ -69,7 +69,7 @@ public class MusicBrainzService {
 	public void updateDiscography() {
 		try {
 			isIndexBeingCreated = true;
-			mbid = discography = discographies = 0;
+			mbid = mbids = discography = discographies = 0;
 			updateArtistIds();
 			updateArtistDiscographies();
 			isIndexBeingCreated = false;
