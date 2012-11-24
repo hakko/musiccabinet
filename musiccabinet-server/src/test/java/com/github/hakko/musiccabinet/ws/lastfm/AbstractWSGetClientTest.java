@@ -113,11 +113,14 @@ public class AbstractWSGetClientTest {
 		Assert.assertFalse(wsResponse.wasCallAllowed());
 	}
 	
-	@Test (expected = ApplicationException.class)
 	public void validatePackagingOfClientProtocalException() throws ApplicationException, IOException {
-		ClientProtocolException cpe = new ClientProtocolException("Unknown protocol");
+		ClientProtocolException cpe = new ClientProtocolException("Abstract HTTP protocol error");
 		TestWSGetClient testWSClient = getTestWSClient(cpe);
-		testWSClient.testCall();
+		WSResponse response = testWSClient.testCall();
+
+		Assert.assertTrue(response.wasCallAllowed());
+		Assert.assertFalse(response.wasCallSuccessful());
+		Assert.assertTrue(response.isErrorRecoverable());
 	}
 
 	@Test

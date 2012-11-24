@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
@@ -144,15 +143,9 @@ public abstract class AbstractWSGetClient extends AbstractWSClient {
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             String responseBody = httpClient.execute(httpGet, responseHandler);
             wsResponse = new WSResponse(responseBody);
-		} catch (ClientProtocolException e) {
-			if (e instanceof HttpResponseException) {
-				int statusCode = ((HttpResponseException) e).getStatusCode();
-				wsResponse = new WSResponse(isHttpRecoverable(statusCode), 
-						statusCode, e.getMessage());
-			} else {
-				throw new ApplicationException(
-					"The request to fetch data from Last.fm could not be completed!", e);
-			}
+		} catch (HttpResponseException e) {
+			wsResponse = new WSResponse(isHttpRecoverable(e.getStatusCode()), 
+					e.getStatusCode(), e.getMessage());
 		} catch (IOException e) {
 			LOG.warn("Could not fetch data from Last.fm!", e);
 			wsResponse = new WSResponse(true, -1, "Call failed due to " + e.getMessage());
