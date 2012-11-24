@@ -34,6 +34,8 @@ public class ReleaseGroupParserTest {
 		assertEquals(ALBUM_1, albums.get(1));
 		assertEquals(ALBUM_6, albums.get(6));
 		assertEquals(ALBUM_7, albums.get(7));
+		
+		assertEquals(8, parser.getTotalAlbums());
 	}
 
 }
