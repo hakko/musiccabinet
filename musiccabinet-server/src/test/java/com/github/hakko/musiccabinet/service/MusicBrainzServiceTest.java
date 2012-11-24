@@ -1,13 +1,16 @@
 package com.github.hakko.musiccabinet.service;
 
 import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_ALBUM;
+import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_EP;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
+import static org.apache.commons.lang.StringUtils.reverse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
+import org.apache.http.client.HttpResponseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +74,22 @@ public class MusicBrainzServiceTest {
 		assertEquals("Salvation", albums.get(2).getTitle());
 		assertEquals("Somewhere Along the Highway", albums.get(3).getTitle());
 		// Eternal Kingdom exists in library
+	}
+	
+	@Test
+	public void handlesArtistFailureDuringUpdate() throws ApplicationException {
+		final String revName = reverse(artistName);
+		submitFile(additionDao, getFile(revName, albumName, trackName));
+		
+		Mockito.when(service.artistQueryClient.get(revName)).thenThrow(
+			new ApplicationException("Fail", new HttpResponseException(503, "Overloaded")));
+		
+		service.updateDiscography();
+		
+		List<MBAlbum> albums = service.getMissingAlbums(artistName, TYPE_EP, null, -1, 0);
+		Assert.assertEquals(2, albums.size());
+		assertEquals("Switchblade / Cult of Luna", albums.get(0).getTitle());
+		assertEquals("Bodies / Recluse", albums.get(1).getTitle());
 	}
 	
 	private ArtistQueryClient getArtistQueryClient() throws ApplicationException {
