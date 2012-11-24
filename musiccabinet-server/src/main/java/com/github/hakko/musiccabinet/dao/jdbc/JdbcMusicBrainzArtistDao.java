@@ -1,9 +1,8 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
-import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.MB_ARTIST_QUERY;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.MB_RELEASE_GROUPS;
 
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -67,38 +66,46 @@ public class JdbcMusicBrainzArtistDao implements MusicBrainzArtistDao, JdbcTempl
 	}
 	
 	@Override
-	public int getMissingArtistsCount() {
-		int missing = jdbcTemplate.queryForInt(
+	public int getMissingAndOutdatedArtistsCount() {
+		int missingArtists = jdbcTemplate.queryForInt(
 			"select count(*) from library.artist la where hasalbums and not exists ("
 			+ " select 1 from music.mb_artist mba where mba.artist_id = la.artist_id)");
 		
-		int outdated = jdbcTemplate.queryForInt(String.format(
-			"select count(*) from library.webservice_history where calltype_id = %d"
-			+ " and age(invocation_time) > '%d days'::interval",
-			MB_ARTIST_QUERY.getDatabaseId(), MB_ARTIST_QUERY.getDaysToCache()));
+		int missingAlbums = jdbcTemplate.queryForInt(String.format(
+			"select count(*) from music.mb_artist mba where not exists ("
+			+ "select 1 from library.webservice_history h where calltype_id = %d"
+			+ " and artist_id = mba.artist_id)", MB_RELEASE_GROUPS.getDatabaseId()));
 		
-		return missing + outdated;
+		int outdatedAlbums = jdbcTemplate.queryForInt(String.format(
+			"select count(*) from library.webservice_history h where calltype_id = %d"
+			+ " and age(invocation_time) > '%d days'::interval and exists ("
+			+ " select 1 from music.mb_artist where artist_id = h.artist_id)",
+			MB_RELEASE_GROUPS.getDatabaseId(), MB_RELEASE_GROUPS.getDaysToCache()));
+		
+		return missingArtists + missingAlbums + outdatedAlbums;
 	}
 
 	@Override
 	public List<Artist> getMissingArtists() {
-		List<Artist> missing = jdbcTemplate.query(
+		return jdbcTemplate.query(
 				"select ma.id, ma.artist_name_capitalization from library.artist la"
 				+ " inner join music.artist ma on la.artist_id = ma.id"
 				+ " where hasalbums and not exists ("
-				+ " select 1 from music.mb_artist mba where mba.artist_id = la.artist_id)",
+				+ " select 1 from music.mb_artist mba where mba.artist_id = la.artist_id)"
+				+ " order by ma.artist_name",
 				new ArtistRowMapper());
-		
-		List<Artist> outdated = jdbcTemplate.query(String.format(
+	}
+
+	@Override
+	public List<Artist> getOutdatedArtists() {
+		return jdbcTemplate.query(String.format(
 				"select ma.id, ma.artist_name_capitalization from library.webservice_history h"
 				+ " inner join music.artist ma on h.artist_id = ma.id and h.calltype_id = %d"
-				+ " and age(invocation_time) > '%d days'::interval",
-				MB_ARTIST_QUERY.getDatabaseId(), MB_ARTIST_QUERY.getDaysToCache()),
+				+ " and age(invocation_time) > '%d days'::interval and exists ("
+				+ " select 1 from music.mb_artist where artist_id = h.artist_id)"
+				+ " order by ma.artist_name",
+				MB_RELEASE_GROUPS.getDatabaseId(), MB_RELEASE_GROUPS.getDaysToCache()),
 				new ArtistRowMapper());
-
-		missing.addAll(outdated);
-		Collections.sort(missing);
-		return missing;
 	}
 	
 	@Override

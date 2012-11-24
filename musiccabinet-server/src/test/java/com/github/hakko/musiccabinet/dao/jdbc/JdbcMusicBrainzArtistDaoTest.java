@@ -1,7 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_MB_ARTIST;
-import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.MB_ARTIST_QUERY;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.MB_RELEASE_GROUPS;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
 import static junit.framework.Assert.assertEquals;
@@ -79,7 +79,6 @@ public class JdbcMusicBrainzArtistDaoTest {
 		assertEquals(2, missingArtists.size());
 		assertEquals(artist1, missingArtists.get(0));
 		assertEquals(artist2, missingArtists.get(1));
-		assertEquals(2, artistDao.getMissingArtistsCount());
 		
 		artistDao.createArtists(Arrays.asList(new MBArtist(artist1.getName(), 
 				MBID, COUNTRY_CODE, START_YEAR, ACTIVE)));
@@ -87,29 +86,46 @@ public class JdbcMusicBrainzArtistDaoTest {
 		missingArtists = artistDao.getMissingArtists();
 		assertEquals(1, missingArtists.size());
 		assertEquals(artist2, missingArtists.get(0));
-		assertEquals(1, artistDao.getMissingArtistsCount());
 	}
 
 	@Test
 	public void findsOutdatedArtists() {
-		assertEquals(2, artistDao.getMissingArtistsCount());
-		assertEquals(2, artistDao.getMissingArtists().size());
+		assertEquals(0, artistDao.getOutdatedArtists().size());
 
-		artistDao.createArtists(Arrays.asList(new MBArtist(artist1.getName(), 
-				MBID, COUNTRY_CODE, START_YEAR, ACTIVE)));
-		artistDao.createArtists(Arrays.asList(new MBArtist(artist2.getName(), 
-				MBID, COUNTRY_CODE, START_YEAR, ACTIVE)));
-
-		assertEquals(0, artistDao.getMissingArtistsCount());
-		assertEquals(0, artistDao.getMissingArtists().size());
+		artistDao.createArtists(Arrays.asList(
+				new MBArtist(artist1.getName(), MBID, COUNTRY_CODE, START_YEAR, ACTIVE)));
 
 		artistDao.getJdbcTemplate().execute(String.format(
 				"insert into library.webservice_history (artist_id, invocation_time, calltype_id)"
 				+ " values (%d, to_timestamp(0), %d)",
-				artist1.getId(), MB_ARTIST_QUERY.getDatabaseId()));
+				artist1.getId(), MB_RELEASE_GROUPS.getDatabaseId()));
+
+		List<Artist> outdatedArtists = artistDao.getOutdatedArtists();
+		assertEquals(1, outdatedArtists.size());
+		assertEquals(artist1, outdatedArtists.get(0));
+	}
+	
+	@Test
+	public void calculatesMissingAndOutdatedArtists() {
+		assertEquals(2, artistDao.getMissingAndOutdatedArtistsCount()); // 2 missing artists
+
+		artistDao.createArtists(Arrays.asList(
+				new MBArtist(artist1.getName(), MBID, COUNTRY_CODE, START_YEAR, ACTIVE),
+				new MBArtist(artist2.getName(), MBID, COUNTRY_CODE, START_YEAR, ACTIVE)));
 		
-		assertEquals(1, artistDao.getMissingArtistsCount());
-		assertEquals(artist1, artistDao.getMissingArtists().get(0));
+		assertEquals(2, artistDao.getMissingAndOutdatedArtistsCount()); // 2 missing albums
+		
+		artistDao.getJdbcTemplate().execute(String.format(
+				"insert into library.webservice_history (artist_id, invocation_time, calltype_id)"
+				+ " values (%d, to_timestamp(0), %d)",
+				artist2.getId(), MB_RELEASE_GROUPS.getDatabaseId()));
+
+		assertEquals(2, artistDao.getMissingAndOutdatedArtistsCount()); // 1 missing album, 1 outdated
+		
+		artistDao.getJdbcTemplate().execute(
+				"update library.webservice_history set invocation_time = now()");
+		
+		assertEquals(1, artistDao.getMissingAndOutdatedArtistsCount()); // 1 missing album
 	}
 
 }
