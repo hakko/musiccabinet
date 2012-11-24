@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metadata created="2012-11-15T16:11:08.377Z">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<metadata created="2012-11-15T16:11:08.377Z" xmlns="http://musicbrainz.org/ns/mmd-2.0#" xmlns:ext="http://musicbrainz.org/ns/ext#-2.0">
 	<artist-list count="8429" offset="0">
 		<artist id="d347406f-839d-4423-9a28-188939282afa" type="Group" ext:score="100">
 			<name>Cult of Luna</name>
