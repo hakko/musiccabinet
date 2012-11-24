@@ -20,6 +20,12 @@ import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
+
+	@Override
+	public boolean hasDiscography() {
+		String sql = "select exists(select 1 from music.mb_album)";
+		return jdbcTemplate.queryForObject(sql, Boolean.class);
+	}
 	
 	@Override
 	public void createAlbums(List<MBAlbum> albums) {

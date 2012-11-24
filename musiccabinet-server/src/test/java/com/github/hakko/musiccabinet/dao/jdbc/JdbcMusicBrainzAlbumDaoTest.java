@@ -9,6 +9,7 @@ import static org.apache.commons.lang.StringUtils.reverse;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -129,6 +130,15 @@ public class JdbcMusicBrainzAlbumDaoTest {
 		List<MBAlbum> albums = albumDao.getMissingAlbums(null, null, -1, 1);
 
 		assertEquals(1, albums.size());
+	}
+
+	@Test
+	public void detectsPresentDiscography() {
+		Assert.assertTrue(albumDao.hasDiscography());
+
+		additionDao.getJdbcTemplate().execute("truncate music.artist cascade");
+
+		Assert.assertFalse(albumDao.hasDiscography());
 	}
 
 }
