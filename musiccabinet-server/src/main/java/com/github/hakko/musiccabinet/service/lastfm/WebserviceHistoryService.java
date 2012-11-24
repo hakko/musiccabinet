@@ -20,7 +20,6 @@ public class WebserviceHistoryService {
 	public void setOnlyUpdateNewArtists(boolean onlyUpdateNewArtists) {
 		this.onlyUpdateNewArtists = onlyUpdateNewArtists;
 	}
-
 	
 	public void logWebserviceInvocation(WebserviceInvocation invocation) {
 		historyDao.logWebserviceInvocation(invocation);
