@@ -7,5 +7,6 @@ import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 public interface ReleaseGroupParser {
 
 	List<MBAlbum> getAlbums();
+	int getTotalAlbums();
 	
 }

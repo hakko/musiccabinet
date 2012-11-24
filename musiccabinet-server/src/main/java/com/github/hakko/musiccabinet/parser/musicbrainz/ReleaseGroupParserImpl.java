@@ -21,5 +21,10 @@ public class ReleaseGroupParserImpl extends AbstractSAXParserImpl implements
 	public List<MBAlbum> getAlbums() {
 		return handler.getAlbums();
 	}
+	
+	@Override
+	public int getTotalAlbums() {
+		return handler.getTotalAlbums();
+	}
 
 }
