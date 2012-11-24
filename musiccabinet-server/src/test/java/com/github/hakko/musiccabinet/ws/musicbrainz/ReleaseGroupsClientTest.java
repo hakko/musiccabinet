@@ -22,10 +22,10 @@ public class ReleaseGroupsClientTest {
 		ReleaseGroupsClient releaseGroupsClient = getReleaseGroupsClient();
 
 		final String ARTIST_NAME = "Cult of Luna", MBID = "d347406f-839d-4423-9a28-188939282afa",
-				EXPECTED_URI = "http://musicbrainz.org/ws/2/release-group/?artist=d347406f-839d-4423-9a28-188939282afa&type=album";
-			
+				EXPECTED_URI = "http://musicbrainz.org/ws/2/release-group/?artist=d347406f-839d-4423-9a28-188939282afa&type=album&limit=100&offset=0";
+
 		ArgumentCaptor<HttpGet> argument = forClass(HttpGet.class);
-		releaseGroupsClient.get(ARTIST_NAME, MBID);
+		releaseGroupsClient.get(ARTIST_NAME, MBID, 0);
 		verify(releaseGroupsClient.getHttpClient()).execute(
 				argument.capture(), any(ResponseHandler.class));
 
