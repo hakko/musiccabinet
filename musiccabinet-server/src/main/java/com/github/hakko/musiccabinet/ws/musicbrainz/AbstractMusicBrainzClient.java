@@ -38,7 +38,7 @@ public abstract class AbstractMusicBrainzClient {
 	public static final String HOST = "musicbrainz.org";
 	
 	protected static final String USER_AGENT = "User-Agent";
-	protected static final String CLIENT_INFO = "MusicCabinet/0.7 +http://dilerium.se/musiccabinet";
+	protected static final String CLIENT_INFO = "MusicCabinet/0.7 ( http://dilerium.se/musiccabinet )";
 
 	// we're only allowed to one call per second
 	protected static final long INTERVAL_MS = 1001;
