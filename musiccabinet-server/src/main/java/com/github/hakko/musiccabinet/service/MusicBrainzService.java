@@ -86,10 +86,12 @@ public class MusicBrainzService {
 			try {
 				StringUtil response = new StringUtil(artistQueryClient.get(artist.getName()));
 				ArtistQueryParser parser = new ArtistQueryParserImpl(response.getInputStream());
-				mbArtists.add(parser.getArtist());
-				if (mbArtists.size() > 100) {
-					artistDao.createArtists(mbArtists);
-					mbArtists.clear();
+				if (parser.getArtist() != null) {
+					mbArtists.add(parser.getArtist());
+					if (mbArtists.size() > 100) {
+						artistDao.createArtists(mbArtists);
+						mbArtists.clear();
+					}
 				}
 				++mbid;
 			} catch (ApplicationException e) {

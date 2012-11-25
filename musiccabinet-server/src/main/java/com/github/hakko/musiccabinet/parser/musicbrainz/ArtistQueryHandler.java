@@ -11,7 +11,7 @@ import com.github.hakko.musiccabinet.domain.model.music.MBArtist;
 
 public class ArtistQueryHandler extends DefaultHandler {
 	
-	private MBArtist artist = new MBArtist();
+	private MBArtist artist;
 	private boolean tagList; // indicates that we're parsing tag-list
 	
 	private StringBuilder characterData; // used to assemble xml text passed by parser
@@ -29,6 +29,7 @@ public class ArtistQueryHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) 
 	throws SAXException {
 		if (TAG_ARTIST.equals(qName)) {
+			artist = new MBArtist();
 			artist.setMbid(attributes.getValue(ATTR_ID));
 		} else if (TAG_TAGLIST.equals(qName)) {
 			tagList = true;
