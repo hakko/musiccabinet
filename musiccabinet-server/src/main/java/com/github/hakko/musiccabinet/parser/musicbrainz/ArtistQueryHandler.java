@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.parser.musicbrainz;
 
 import static java.lang.Boolean.parseBoolean;
+import static org.apache.commons.lang.StringUtils.substring;
 import static org.apache.commons.lang.math.NumberUtils.toShort;
 
 import org.xml.sax.Attributes;
@@ -46,7 +47,7 @@ public class ArtistQueryHandler extends DefaultHandler {
 		} else if (TAG_COUNTRY.equals(qName)) {
 			artist.setCountryCode(chars);
 		} else if (TAG_BEGIN.equals(qName)) {
-			artist.setStartYear(toShort(chars));
+			artist.setStartYear(toShort(substring(chars, 0, 4)));
 		} else if (TAG_ENDED.equals(qName)) {
 			artist.setActive(!parseBoolean(chars));
 		}

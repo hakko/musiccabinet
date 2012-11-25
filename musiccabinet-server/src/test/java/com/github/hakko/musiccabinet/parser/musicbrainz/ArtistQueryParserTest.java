@@ -11,6 +11,9 @@ import com.github.hakko.musiccabinet.util.ResourceUtil;
 
 public class ArtistQueryParserTest {
 
+	private static final String ARTIST_QUERY_DATE_FILE =
+			"musicbrainz/xml/artistQuery-date.xml";
+
 	private static final String ARTIST_QUERY_EMPTY_FILE =
 		"musicbrainz/xml/artistQuery-empty.xml";
 	
@@ -24,6 +27,9 @@ public class ArtistQueryParserTest {
 	private static final short START_YEAR = 1998;
 	private static final boolean ACTIVE = true;
 
+	// year from date 1966-06-03 in file artistQuery-date.xml
+	private static final short YEAR_PART = 1966;
+	
 	@Test
 	public void emptyResourceFileCorrectlyParsed() throws ApplicationException {
 		ArtistQueryParser parser = new ArtistQueryParserImpl(
@@ -46,6 +52,16 @@ public class ArtistQueryParserTest {
 		assertEquals(COUNTRY_CODE, artist.getCountryCode());
 		assertEquals(START_YEAR, artist.getStartYear());
 		assertEquals(ACTIVE, artist.isActive());
+	}
+
+	@Test
+	public void dateGetsStoredAsYearOnly() throws ApplicationException {
+		ArtistQueryParser parser = new ArtistQueryParserImpl(
+				new ResourceUtil(ARTIST_QUERY_DATE_FILE).getInputStream());
+		
+		MBArtist artist = parser.getArtist();
+		
+		assertEquals(YEAR_PART, artist.getStartYear());
 	}
 
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<metadata created="2012-11-25T11:00:35.090Z" xmlns="http://musicbrainz.org/ns/mmd-2.0#" xmlns:ext="http://musicbrainz.org/ns/ext#-2.0">
+	<artist-list count="1" offset="0">
+		<artist id="c309d914-93af-4b3f-8058-d79c75ea89da" type="Person" ext:score="100">
+			<name>Bill Callahan</name>
+			<sort-name>Callahan, Bill</sort-name>
+			<gender>male</gender>
+			<country>US</country>
+			<life-span>
+				<begin>1966-06-03</begin>
+				<ended>false</ended>
+			</life-span>
+			<alias-list>
+				<alias>B Callahan</alias>
+			</alias-list>
+			<tag-list>
+				<tag count="1">
+					<name>classic pop and rock</name>
+				</tag>
+			</tag-list>
+		</artist>
+	</artist-list>
+</metadata>
