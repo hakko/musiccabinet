@@ -5,6 +5,10 @@ begin
 	update music.mb_artist_import i set artist_id = a.id
 	from music.artist a where upper(i.artist_name) = a.artist_name;
 
+	-- delete import rows for wrong artists
+	delete from music.mb_artist_import i where artist_id is null or
+		not exists (select 1 from library.artist where artist_id = i.artist_id);
+
 	-- update existing (changed) artists
 	update music.mb_artist a set
 		mbid = i.mbid,
