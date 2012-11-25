@@ -56,7 +56,7 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 		
 		for (MBAlbum album : albums) {
 			batchUpdate.update(new Object[]{album.getArtist().getId(), album.getTitle(),
-					album.getMbid(), album.getPrimaryAlbumTypeId(), album.getReleaseYear()});
+					album.getMbid(), album.getTypeId(), album.getReleaseYear()});
 		}
 		batchUpdate.flush();
 

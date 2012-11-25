@@ -2,6 +2,9 @@ package com.github.hakko.musiccabinet.domain.model.music;
 
 import static org.apache.commons.lang.StringUtils.upperCase;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -22,7 +25,20 @@ public class MBAlbum {
 
 	private enum AlbumType {
 		SINGLE, EP, ALBUM, COMPILATION, SOUNDTRACK, SPOKENWORD, 
-		INTERVIEW, AUDIOBOOK, LIVE, REMIX, OTHER
+		INTERVIEW, AUDIOBOOK, LIVE, REMIX, OTHER;
+		
+		private static Set<String> validTypes = new HashSet<>();
+		
+		static {
+			for (AlbumType type : values()) {
+				validTypes.add(type.name());
+			}
+		}
+		
+		protected static AlbumType getAlbumType(String type) {
+			String uType = upperCase(type);
+			return validTypes.contains(uType) ? valueOf(uType) : OTHER;
+		}
 	}
 
 	public MBAlbum() {
@@ -75,6 +91,11 @@ public class MBAlbum {
 		this.releaseYear = releaseYear;
 	}
 
+	public int getTypeId() {
+		return secondaryAlbumType != null ? secondaryAlbumType.ordinal() 
+				: primaryAlbumType.ordinal();
+	}
+	
 	public int getPrimaryAlbumTypeId() {
 		return primaryAlbumType.ordinal();
 	}
@@ -84,7 +105,7 @@ public class MBAlbum {
 	}
 
 	public void setPrimaryAlbumType(String primaryAlbumType) {
-		this.primaryAlbumType = AlbumType.valueOf(upperCase(primaryAlbumType));
+		this.primaryAlbumType = AlbumType.getAlbumType(primaryAlbumType);
 	}
 
 	public int getSecondaryAlbumTypeId() {
@@ -92,7 +113,7 @@ public class MBAlbum {
 	}
 
 	public void setSecondaryAlbumType(String secondaryAlbumType) {
-		this.secondaryAlbumType = AlbumType.valueOf(upperCase(secondaryAlbumType));
+		this.secondaryAlbumType = AlbumType.getAlbumType(secondaryAlbumType);
 	}
 
 	@Override

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://musicbrainz.org/ns/mmd-2.0#">
+	<release-group-list count="1">
+		<release-group type="Compilation" id="367c8244-5eb6-40a5-967f-c709303dd38d">
+			<title>FACT Mix 70: The xx</title>
+			<first-release-date>2009-07-31</first-release-date>
+			<primary-type>Album</primary-type>
+			<secondary-type-list>
+				<secondary-type>Compilation</secondary-type>
+				<secondary-type>DJ-mix</secondary-type>
+			</secondary-type-list>
+		</release-group>
+	</release-group-list>
+</metadata>

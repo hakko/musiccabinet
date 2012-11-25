@@ -12,6 +12,8 @@ import com.github.hakko.musiccabinet.util.ResourceUtil;
 
 public class ReleaseGroupParserTest {
 
+	private static final String RELEASE_GROUP_DJMIX_FILE = "musicbrainz/xml/releaseGroup-djmix.xml";
+
 	private static final String RELEASE_GROUP_FILE = "musicbrainz/xml/releaseGroup.xml";
 
 	// constant values below are copied from file above
@@ -36,6 +38,16 @@ public class ReleaseGroupParserTest {
 		assertEquals(ALBUM_7, albums.get(7));
 		
 		assertEquals(8, parser.getTotalAlbums());
+	}
+	
+	@Test
+	public void groupsUnknownAlbumTypesAsOther() throws ApplicationException {
+		ReleaseGroupParser parser = new ReleaseGroupParserImpl(new ResourceUtil(
+				RELEASE_GROUP_DJMIX_FILE).getInputStream());
+		List<MBAlbum> albums = parser.getAlbums();
+
+		assertEquals(1, albums.size());
+		assertEquals(10, albums.get(0).getTypeId()); // OTHER
 	}
 
 }
