@@ -18,7 +18,7 @@ public class ArtistQueryClientTest {
 	
 	@Test
 	public void invokesHttpRequestToExpectedUri() throws Exception {
-		verifyUrl("Nirvana", "http://musicbrainz.org/ws/2/artist/?query=%22Nirvana%22&limit=1");
+		verifyUrl("Nirvana", "http://musicbrainz.org/ws/2/artist/?query=artist%3A%22Nirvana%22&limit=1");
 	}
 	
 	@Test

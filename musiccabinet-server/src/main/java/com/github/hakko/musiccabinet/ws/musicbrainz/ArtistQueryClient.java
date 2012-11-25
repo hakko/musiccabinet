@@ -22,6 +22,7 @@ public class ArtistQueryClient extends AbstractMusicBrainzClient {
 	protected static final String PATH = "/ws/2/artist/";
 	
 	protected static final String QUERY = "query";
+	protected static final String ARTIST = "artist:";
 	
 	protected static final String LIMIT = "limit";
 	protected static final String ONE = "1";
@@ -30,7 +31,7 @@ public class ArtistQueryClient extends AbstractMusicBrainzClient {
 		WebserviceInvocation invocation = new WebserviceInvocation(
 				MB_ARTIST_QUERY, new Artist(artistName));
 		List<NameValuePair> params = new ArrayList<>();
-		params.add(new BasicNameValuePair(QUERY, escape(artistName)));
+		params.add(new BasicNameValuePair(QUERY, ARTIST + escape(artistName)));
 		params.add(new BasicNameValuePair(LIMIT, ONE));
 		return executeWSRequest(invocation, PATH, params);
 	}
