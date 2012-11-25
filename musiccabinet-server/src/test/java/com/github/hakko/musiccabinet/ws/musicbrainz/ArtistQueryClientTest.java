@@ -1,6 +1,6 @@
 package com.github.hakko.musiccabinet.ws.musicbrainz;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -17,19 +17,36 @@ import com.github.hakko.musiccabinet.service.lastfm.WebserviceHistoryService;
 public class ArtistQueryClientTest {
 	
 	@Test
-	@SuppressWarnings("unchecked")
 	public void invokesHttpRequestToExpectedUri() throws Exception {
+		verifyUrl("Nirvana", "http://musicbrainz.org/ws/2/artist/?query=%22Nirvana%22&limit=1");
+	}
+	
+	@Test
+	public void httpRequestIsUTF8Encoded() throws Exception {
+		verifyUrl("Säkert!", "%22S%C3%A4kert%21%22");
+	}
+
+	@Test
+	public void artistNameContainingQuotesIsEscaped() throws Exception {
+		verifyUrl("Bonnie \"Prince\" Tyler", "%22Bonnie+%5C%22Prince%5C%22+Tyler%22");
+	}
+	
+	@Test
+	public void repeatedCharactersAreUTF8Encoded() throws Exception {
+		verifyUrl("Sunn O)))", "Sunn+O%29%29%29");
+	}
+
+	@SuppressWarnings("unchecked")
+	private void verifyUrl(String artistName, String expectedUrl) throws Exception {
 		ArtistQueryClient artistQueryClient = getArtistQueryClient();
 
-		final String ARTIST_NAME = "Nirvana", EXPECTED_URI =
-				"http://musicbrainz.org/ws/2/artist/?query=Nirvana&limit=1";
-
 		ArgumentCaptor<HttpGet> argument = forClass(HttpGet.class);
-		artistQueryClient.get(ARTIST_NAME);
+		artistQueryClient.get(artistName);
 		verify(artistQueryClient.getHttpClient()).execute(
 				argument.capture(), any(ResponseHandler.class));
-
-		assertEquals(EXPECTED_URI, argument.getValue().getURI().toASCIIString());
+	
+		assertTrue("Expected " + expectedUrl + ", got " + argument.getValue().getURI(),
+				argument.getValue().getURI().toString().contains(expectedUrl));
 	}
 	
 	private ArtistQueryClient getArtistQueryClient() {

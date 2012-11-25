@@ -5,6 +5,7 @@ import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvoc
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -29,9 +30,13 @@ public class ArtistQueryClient extends AbstractMusicBrainzClient {
 		WebserviceInvocation invocation = new WebserviceInvocation(
 				MB_ARTIST_QUERY, new Artist(artistName));
 		List<NameValuePair> params = new ArrayList<>();
-		params.add(new BasicNameValuePair(QUERY, artistName));
+		params.add(new BasicNameValuePair(QUERY, escape(artistName)));
 		params.add(new BasicNameValuePair(LIMIT, ONE));
 		return executeWSRequest(invocation, PATH, params);
+	}
+	
+	private String escape(String artistName) {
+		return '"' + StringUtils.replace(artistName, "\"", "\\\"") + '"';
 	}
 	
 }
