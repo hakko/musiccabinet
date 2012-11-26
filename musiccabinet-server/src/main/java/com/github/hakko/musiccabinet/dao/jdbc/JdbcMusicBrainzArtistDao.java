@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.MB_ARTIST_QUERY;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.MB_RELEASE_GROUPS;
 
 import java.sql.Types;
@@ -67,8 +68,10 @@ public class JdbcMusicBrainzArtistDao implements MusicBrainzArtistDao, JdbcTempl
 	@Override
 	public int getMissingAndOutdatedArtistsCount() {
 		int missingArtists = jdbcTemplate.queryForInt(
-			"select count(*) from library.artist la where hasalbums and not exists ("
-			+ " select 1 from music.mb_artist mba where mba.artist_id = la.artist_id)");
+			"select count(*) from library.artist la"
+			+ " inner join music.artist ma on la.artist_id = ma.id"
+			+ " where la.hasalbums and ma.artist_name != 'VARIOUS ARTISTS'"
+			+ " and not exists (select 1 from music.mb_artist where artist_id = ma.id)");
 
 		int outdatedArtists = jdbcTemplate.queryForInt(String.format(
 			"select count(*) from music.mb_artist mba"
@@ -85,10 +88,11 @@ public class JdbcMusicBrainzArtistDao implements MusicBrainzArtistDao, JdbcTempl
 	public List<Artist> getMissingArtists() {
 		return jdbcTemplate.query(
 				"select ma.id, ma.artist_name_capitalization from library.artist la"
-				+ " inner join music.artist ma on la.artist_id = ma.id"
-				+ " where hasalbums and not exists ("
-				+ " select 1 from music.mb_artist mba where mba.artist_id = la.artist_id)"
-				+ " order by ma.artist_name limit 3000",
+				+ " inner join music.artist ma on la.artist_id = ma.id where hasalbums"
+				+ " and not exists (select 1 from music.mb_artist mba where mba.artist_id = ma.id)"
+				+ " and not exists (select 1 from library.webservice_history h where h.artist_id = ma.id"
+				+ "  and h.calltype_id = " + MB_ARTIST_QUERY.getDatabaseId() + ")"
+				+ " and ma.artist_name != 'VARIOUS ARTISTS' order by ma.artist_name limit 3000",
 				new ArtistRowMapper());
 	}
 
