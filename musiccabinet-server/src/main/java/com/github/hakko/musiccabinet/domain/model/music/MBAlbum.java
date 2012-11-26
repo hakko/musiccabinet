@@ -90,11 +90,6 @@ public class MBAlbum {
 	public void setReleaseYear(short releaseYear) {
 		this.releaseYear = releaseYear;
 	}
-
-	public int getTypeId() {
-		return secondaryAlbumType != null ? secondaryAlbumType.ordinal() 
-				: primaryAlbumType.ordinal();
-	}
 	
 	public int getPrimaryAlbumTypeId() {
 		return primaryAlbumType.ordinal();
