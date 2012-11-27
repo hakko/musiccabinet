@@ -5,6 +5,7 @@ import static org.apache.commons.lang.math.NumberUtils.toInt;
 
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
+import com.github.hakko.musiccabinet.util.XMLUtil;
 
 /*
  * Wraps all possible responses from a Last.fm web service request, including:
@@ -68,15 +69,7 @@ public class WSResponse {
 	public WSResponse(String responseBody) throws ApplicationException {
 		this.callAllowed = true;
 		if (responseBody != null) {
-			char[] chars = responseBody.toCharArray();
-			for (int i = 0; i < chars.length; i++) {
-				char c = chars[i];
-				if (Character.isISOControl(c) && c != 0x09
-						&& c != 0x0A && c != 0x0D) {
-					chars[i] = ' ';
-				}
-			}
-			this.responseBody = new String(chars);
+			this.responseBody = XMLUtil.removeISOControlChars(responseBody);
 		}
 		validateResponse();
 	}
