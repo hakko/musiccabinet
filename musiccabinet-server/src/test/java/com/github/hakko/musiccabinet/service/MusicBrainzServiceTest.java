@@ -102,7 +102,7 @@ public class MusicBrainzServiceTest {
 		ReleaseClient client = Mockito.mock(ReleaseClient.class);
 		
 		Mockito.when(client.get(artistName, mbid, 0)).thenReturn(
-				new ResourceUtil("musicbrainz/xml/release.xml").getContent());
+				new ResourceUtil("musicbrainz/xml/release-col.xml").getContent());
 		
 		return client;
 	}

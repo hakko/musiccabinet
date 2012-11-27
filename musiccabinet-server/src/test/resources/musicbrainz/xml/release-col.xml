@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<metadata created="2012-11-27T18:22:22.182Z" xmlns="http://musicbrainz.org/ns/mmd-2.0#" xmlns:ext="http://musicbrainz.org/ns/ext#-2.0">
+	<release-list count="15" offset="0">
+		<release id="884ab93b-2e50-4a98-b657-d6ba97161ee1" ext:score="100">
+			<title>Switchblade / Cult of Luna</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase=" / ">
+					<artist id="b7beadaa-7f9b-4a76-aaeb-eb03e6ab3226">
+						<name>Switchblade</name>
+						<sort-name>Switchblade</sort-name>
+						<disambiguation>Swedish band</disambiguation>
+					</artist>
+				</name-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="a2052238-1fd6-4ac3-9b79-406868852a38" type="EP">
+				<primary-type>EP</primary-type>
+			</release-group>
+			<date>2000</date>
+			<country>SE</country>
+			<label-info-list>
+				<label-info>
+					<catalog-number>TNO012</catalog-number>
+					<label id="a7bf5565-6e45-4741-9d8e-883d0437db28">
+						<name>Trust No One Recordings</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>4</track-count>
+				<medium>
+					<format>7" Vinyl</format>
+					<disc-list count="0"/>
+					<track-list count="4"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="0f349d41-4169-4321-8ecc-dbb96baa276f" ext:score="100">
+			<title>Bodies / Recluse</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="5484925b-884c-31d8-9c3e-2ef3824e6a5f" type="EP">
+				<primary-type>EP</primary-type>
+			</release-group>
+			<date>2006-04</date>
+			<country>GB</country>
+			<medium-list count="1">
+				<track-count>2</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="2"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="17432213-49df-4389-a05a-e2f91178792f" ext:score="99">
+			<title>Cult of Luna</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="eb1f6b39-68ce-36c6-9d60-f1cd10c82da5" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<date>2002</date>
+			<country>US</country>
+			<medium-list count="1">
+				<track-count>2</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="2"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="cc67b1a1-7e25-3c43-875f-35a72aea21ec" ext:score="97">
+			<title>Somewhere Along the Highway</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="aebc4e2f-f900-3ccd-886f-626c2b02eca8" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2006</date>
+			<country>US</country>
+			<barcode>745316034423</barcode>
+			<asin>B000FBFSVA</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 344CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>7</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="3"/>
+					<track-list count="7"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="154bdebf-9bc8-3c27-9089-c42ed5e7aa2b" ext:score="97">
+			<title>Eternal Kingdom</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="8859f36d-cb3b-3cbe-b6f1-1ecee2adf17f" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2008</date>
+			<country>US</country>
+			<barcode>745316035925</barcode>
+			<asin>B001AI1Q86</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH359</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>10</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="10"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="1af0cdb9-5e40-3e0c-97b8-68d98b828a77" ext:score="97">
+			<title>The Beyond</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="236316f7-c919-3986-918b-25e135ba8000" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2003</date>
+			<country>GB</country>
+			<barcode>5055006526318</barcode>
+			<asin>B00008V5UQ</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 263CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>10</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="10"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="f87ae542-1e3b-3833-aa6a-1634f9d48929" ext:score="97">
+			<title>Cult of Luna</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="d4182616-a773-383f-a74a-ebf2f4b81a62" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2003</date>
+			<country>US</country>
+			<barcode>745316027128</barcode>
+			<asin>B0000AB15R</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 271CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>8</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="8"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="127403b1-3b2e-3c37-a1b7-f743bdff190c" ext:score="97">
+			<title>Cult of Luna</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="d4182616-a773-383f-a74a-ebf2f4b81a62" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2003-08-04</date>
+			<country>GB</country>
+			<barcode>5055006527148</barcode>
+			<asin>B0000A55SN</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 271CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>8</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="8"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="0cdfcab5-4ea8-3f67-a588-6456f9d76ce3" ext:score="97">
+			<title>Salvation</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="f76d8b42-d8b0-389f-9bb4-2a5d7473c231" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2004-10-04</date>
+			<country>GB</country>
+			<asin>B0002XK5PU</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 283 CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>8</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="8"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="1fde8540-59cf-4c8d-8429-eb076d03fb05" ext:score="97">
+			<title>Somewhere Along the Highway</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="aebc4e2f-f900-3ccd-886f-626c2b02eca8" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2006-04-24</date>
+			<country>SE</country>
+			<asin>B000ET5YNK</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 344 CDL</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>7</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="3"/>
+					<track-list count="7"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="89590b7f-a1b6-43d7-b60e-03964fbe3bcf" ext:score="97">
+			<title>Cult of Luna</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="d4182616-a773-383f-a74a-ebf2f4b81a62" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2003-08-12</date>
+			<country>US</country>
+			<medium-list count="1">
+				<track-count>10</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="10"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="649d1c49-3018-4a0b-b0cc-3ed64c39e373" ext:score="97">
+			<title>The Beyond</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="236316f7-c919-3986-918b-25e135ba8000" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2003-02-10</date>
+			<country>US</country>
+			<asin>B00008V5UQ</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 263CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>10</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="10"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="e3bbfe46-b196-49e1-8d1a-6357f0f0aa5c" ext:score="97">
+			<title>Cult of Luna</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="d4182616-a773-383f-a74a-ebf2f4b81a62" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2001-09-14</date>
+			<country>GB</country>
+			<label-info-list>
+				<label-info>
+					<catalog-number>ILIAD 012</catalog-number>
+					<label id="be34013b-0721-496e-908e-1291f57f77d6">
+						<name>Rage of Achilles</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>8</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="8"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="d3ca9ff2-df78-4f53-accf-c679dc63737b" ext:score="97">
+			<title>Salvation</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="f76d8b42-d8b0-389f-9bb4-2a5d7473c231" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2004-10-19</date>
+			<country>US</country>
+			<barcode>745316028323</barcode>
+			<asin>B0002XK5PU</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH 283CD</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>8</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="8"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="7db4428f-f950-496a-a2c8-5773f0b42529" ext:score="97">
+			<title>Eternal Kingdom</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d347406f-839d-4423-9a28-188939282afa">
+						<name>Cult of Luna</name>
+						<sort-name>Cult of Luna</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="8859f36d-cb3b-3cbe-b6f1-1ecee2adf17f" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2008-06-16</date>
+			<country>GB</country>
+			<barcode>5055006535945</barcode>
+			<asin>B0017UW14A</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MOSH359CDL</catalog-number>
+					<label id="1b1e78a5-f05c-465e-b1f6-16a3b8077500">
+						<name>Earache Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>10</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="10"/>
+				</medium>
+			</medium-list>
+		</release>
+	</release-list>
+</metadata>
