@@ -19,6 +19,8 @@ import com.github.hakko.musiccabinet.exception.ApplicationException;
  * http://musicbrainz.org/ws/2/release-group/?query=arid:5b11f4ce-a62d-471e-81fc-a69a8278c7da AND (primarytype:Album OR primarytype:EP OR primarytype:Single) AND NOT secondarytype:compilation AND NOT secondarytype:live AND NOT secondarytype:soundtrack AND status:official&limit=100
  * 
  * Doc: http://musicbrainz.org/doc/Indexed_Search_Syntax 
+ * 
+ * Not used, @see ReleaseClient
  */
 public class ReleaseGroupsClient extends AbstractMusicBrainzClient {
 
