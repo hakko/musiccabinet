@@ -25,7 +25,7 @@ import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
 import com.github.hakko.musiccabinet.ws.musicbrainz.ArtistQueryClient;
-import com.github.hakko.musiccabinet.ws.musicbrainz.ReleaseGroupsClient;
+import com.github.hakko.musiccabinet.ws.musicbrainz.ReleaseClient;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -43,7 +43,7 @@ public class MusicBrainzServiceTest {
 	@Before
 	public void configureService() throws ApplicationException {
 		service.setArtistQueryClient(getArtistQueryClient());
-		service.setReleaseGroupsClient(getReleaseGroupsClient());
+		service.setReleaseClient(getReleaseClient());
 	}
 	
 	@Before
@@ -98,11 +98,11 @@ public class MusicBrainzServiceTest {
 		return client;
 	}
 
-	private ReleaseGroupsClient getReleaseGroupsClient() throws ApplicationException {
-		ReleaseGroupsClient client = Mockito.mock(ReleaseGroupsClient.class);
+	private ReleaseClient getReleaseClient() throws ApplicationException {
+		ReleaseClient client = Mockito.mock(ReleaseClient.class);
 		
 		Mockito.when(client.get(artistName, mbid, 0)).thenReturn(
-				new ResourceUtil("musicbrainz/xml/releaseGroup.xml").getContent());
+				new ResourceUtil("musicbrainz/xml/release.xml").getContent());
 		
 		return client;
 	}

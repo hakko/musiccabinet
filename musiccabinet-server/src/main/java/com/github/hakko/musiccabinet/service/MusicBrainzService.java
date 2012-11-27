@@ -8,15 +8,16 @@ import com.github.hakko.musiccabinet.dao.MusicBrainzArtistDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 import com.github.hakko.musiccabinet.domain.model.music.MBArtist;
+import com.github.hakko.musiccabinet.domain.model.music.MBRelease;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
 import com.github.hakko.musiccabinet.parser.musicbrainz.ArtistQueryParser;
 import com.github.hakko.musiccabinet.parser.musicbrainz.ArtistQueryParserImpl;
-import com.github.hakko.musiccabinet.parser.musicbrainz.ReleaseGroupParser;
-import com.github.hakko.musiccabinet.parser.musicbrainz.ReleaseGroupParserImpl;
+import com.github.hakko.musiccabinet.parser.musicbrainz.ReleaseParser;
+import com.github.hakko.musiccabinet.parser.musicbrainz.ReleaseParserImpl;
 import com.github.hakko.musiccabinet.util.StringUtil;
 import com.github.hakko.musiccabinet.ws.musicbrainz.ArtistQueryClient;
-import com.github.hakko.musiccabinet.ws.musicbrainz.ReleaseGroupsClient;
+import com.github.hakko.musiccabinet.ws.musicbrainz.ReleaseClient;
 
 public class MusicBrainzService {
 
@@ -24,7 +25,7 @@ public class MusicBrainzService {
 	protected MusicBrainzAlbumDao albumDao;
 
 	protected ArtistQueryClient artistQueryClient;
-	protected ReleaseGroupsClient releaseGroupsClient;
+	protected ReleaseClient releaseClient;
 	
 	protected boolean isIndexBeingCreated = false;
 	protected int mbid, mbids, discography, discographies;
@@ -103,32 +104,32 @@ public class MusicBrainzService {
 	
 	protected void updateArtistDiscographies() {
 		List<MBArtist> outdatedArtists = artistDao.getOutdatedArtists();
-		List<MBAlbum> mbAlbums = new ArrayList<>();
-		ReleaseGroupParser parser;
+		List<MBRelease> mbReleases = new ArrayList<>();
+		ReleaseParser parser;
 		discographies = outdatedArtists.size();
 		for (MBArtist artist : outdatedArtists) {
 			try {
 				int offset = 0;
 				do { 
-					StringUtil response = new StringUtil(releaseGroupsClient.get(
+					StringUtil response = new StringUtil(releaseClient.get(
 						artist.getName(), artist.getMbid(), offset));
-					parser = new ReleaseGroupParserImpl(response.getInputStream());
-					for (MBAlbum album : parser.getAlbums()) {
-						album.setArtist(artist.asArtist());
+					parser = new ReleaseParserImpl(response.getInputStream());
+					for (MBRelease album : parser.getReleases()) {
+						album.setArtistId(artist.getId());
 					}
-					mbAlbums.addAll(parser.getAlbums());
+					mbReleases.addAll(parser.getReleases());
 					offset += 100;
-				} while (offset < parser.getTotalAlbums());
+				} while (offset < parser.getTotalReleases());
 				++discography;
-				if (mbAlbums.size() > 1000) {
-					albumDao.createAlbums(mbAlbums);
-					mbAlbums.clear();
+				if (mbReleases.size() > 1000) {
+					albumDao.createAlbums(mbReleases);
+					mbReleases.clear();
 				}
 			} catch (ApplicationException e) {
 				LOG.warn("Couldn't read discography for " + artist.getName(), e);
 			}
 		}
-		albumDao.createAlbums(mbAlbums);
+		albumDao.createAlbums(mbReleases);
 	}
 	
 	// Spring setters
@@ -145,8 +146,8 @@ public class MusicBrainzService {
 		this.artistQueryClient = artistQueryClient;
 	}
 
-	public void setReleaseGroupsClient(ReleaseGroupsClient releaseGroupsClient) {
-		this.releaseGroupsClient = releaseGroupsClient;
+	public void setReleaseClient(ReleaseClient releaseClient) {
+		this.releaseClient = releaseClient;
 	}
 	
 }

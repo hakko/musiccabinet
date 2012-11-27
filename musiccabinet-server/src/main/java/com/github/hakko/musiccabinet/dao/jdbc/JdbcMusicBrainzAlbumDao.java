@@ -19,22 +19,26 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 import com.github.hakko.musiccabinet.dao.MusicBrainzAlbumDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.MBAlbumRowMapper;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
+import com.github.hakko.musiccabinet.domain.model.music.MBRelease;
+import com.github.hakko.musiccabinet.log.Logger;
 
 public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
 
+	private static final Logger LOG = Logger.getLogger(JdbcMusicBrainzAlbumDao.class);
+	
 	@Override
 	public boolean hasDiscography() {
 		String sql = "select exists(select 1 from music.mb_album)";
 		return jdbcTemplate.queryForObject(sql, Boolean.class);
 	}
-	
+
 	@Override
-	public void createAlbums(List<MBAlbum> albums) {
-		if (albums.size() > 0) {
+	public void createAlbums(List<MBRelease> releases) {
+		if (releases.size() > 0) {
 			clearImportTable();
-			batchInsert(albums);
+			batchInsert(releases);
 			updateLibrary();
 		}
 	}
@@ -43,20 +47,29 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 		jdbcTemplate.execute("truncate music.mb_album_import");
 	}
 	
-	private void batchInsert(List<MBAlbum> albums) {
+	private void batchInsert(List<MBRelease> releases) {
 		String sql = "insert into music.mb_album_import"
-				+ " (artist_id, album_name, mbid, type_id, release_year) values (?,?,?,?,?)";
+				+ " (artist_id, title, type_id, release_year, label_name,"
+				+ " label_mbid, format, release_group_mbid) values (?,?,?,?,?,?,?,?)";
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batchUpdate.setBatchSize(1000);
 		batchUpdate.declareParameter(new SqlParameter("artist_id", Types.INTEGER));
-		batchUpdate.declareParameter(new SqlParameter("album_name", Types.VARCHAR));
-		batchUpdate.declareParameter(new SqlParameter("mbid", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("title", Types.VARCHAR));
 		batchUpdate.declareParameter(new SqlParameter("type_id", Types.INTEGER));
 		batchUpdate.declareParameter(new SqlParameter("release_year", Types.SMALLINT));
+		batchUpdate.declareParameter(new SqlParameter("label_name", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("label_mbid", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("format", Types.VARCHAR));
+		batchUpdate.declareParameter(new SqlParameter("release_group_mbid", Types.VARCHAR));
 		
-		for (MBAlbum album : albums) {
-			batchUpdate.update(new Object[]{album.getArtist().getId(), album.getTitle(),
-					album.getMbid(), album.getTypeId(), album.getReleaseYear()});
+		for (MBRelease r : releases) {
+			if (r.isValid()) {
+				batchUpdate.update(new Object[]{r.getArtistId(), r.getTitle(),
+					r.getAlbumType().ordinal(), r.getReleaseYear(), r.getLabelName(), 
+					r.getLabelMbid(), r.getFormat(), r.getReleaseGroupMbid()});
+			} else {
+				LOG.warn("Invalid MusicBrainz release ignored: " + r);
+			}
 		}
 		batchUpdate.flush();
 
@@ -70,10 +83,10 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 	public List<MBAlbum> getAlbums(int artistId) {
 		return jdbcTemplate.query(
 				"select art.artist_name_capitalization, alb.album_name_capitalization,"
-				+ " mba.release_year, mba.type_id from music.mb_album mba"
+				+ " mba.first_release_year, mba.type_id from music.mb_album mba"
 				+ " inner join music.album alb on mba.album_id = alb.id"
 				+ " inner join music.artist art on alb.artist_id = art.id"
-				+ " where art.id = " + artistId + " order by mba.release_year", 
+				+ " where art.id = " + artistId + " order by mba.first_release_year", 
 				new MBAlbumRowMapper());
 	}
 
@@ -84,7 +97,7 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("select art.artist_name_capitalization, alb.album_name_capitalization,"
-				+ " mba.release_year, mba.type_id from music.mb_album mba"
+				+ " mba.first_release_year, mba.type_id from music.mb_album mba"
 				+ " inner join music.album alb on mba.album_id = alb.id"
 				+ " inner join music.artist art on alb.artist_id = art.id"
 				+ " where not exists (select 1 from library.album where album_id = mba.album_id)");
@@ -105,7 +118,7 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 		}
 		
 		sb.append(" and mba.type_id in (" + getIdParameters(getTypeIds(typeMask)) + ")");
-		sb.append(" order by art.artist_name, mba.release_year offset " + offset + " limit 101");
+		sb.append(" order by art.artist_name, mba.first_release_year offset " + offset + " limit 101");
 		
 		return jdbcTemplate.query(sb.toString(), params.toArray(), new MBAlbumRowMapper());
 	}

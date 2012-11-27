@@ -2,16 +2,13 @@ package com.github.hakko.musiccabinet.domain.model.music;
 
 import static org.apache.commons.lang.StringUtils.upperCase;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /*
- * Album representation from MusicBrainz.
+ * Represents an album (or more specifically, a release group) from MusicBrainz.
  * 
- * Contains title, mbid, first release year, and primary/secondary album type
+ * Contains title, mbid, first release year, and primary album type
  * (constant set of values from MusicBrainz).
  */
 public class MBAlbum {
@@ -19,25 +16,20 @@ public class MBAlbum {
 	private Artist artist;
 	private String title;
 	private String mbid;
-	private short releaseYear;
+	private short firstReleaseYear;
 	private AlbumType primaryAlbumType;
-	private AlbumType secondaryAlbumType;
 
-	private enum AlbumType {
-		SINGLE, EP, ALBUM, COMPILATION, SOUNDTRACK, SPOKENWORD, 
-		INTERVIEW, AUDIOBOOK, LIVE, REMIX, OTHER;
+	public enum AlbumType {
+		SINGLE, EP, ALBUM;
 		
-		private static Set<String> validTypes = new HashSet<>();
-		
-		static {
-			for (AlbumType type : values()) {
-				validTypes.add(type.name());
-			}
-		}
-		
-		protected static AlbumType getAlbumType(String type) {
+		public static AlbumType getAlbumType(String type) {
 			String uType = upperCase(type);
-			return validTypes.contains(uType) ? valueOf(uType) : OTHER;
+			for (AlbumType albumType : values()) {
+				if (albumType.name().equals(uType)) {
+					return albumType;
+				}
+			}
+			return null;
 		}
 	}
 
@@ -48,14 +40,14 @@ public class MBAlbum {
 	public MBAlbum(String title, String mbid, short releaseYear, String primaryAlbumType) {
 		setTitle(title);
 		setMbid(mbid);
-		setReleaseYear(releaseYear);
+		setFirstReleaseYear(releaseYear);
 		setPrimaryAlbumType(primaryAlbumType);
 	}
 	
 	public MBAlbum(String artistName, String title, short releaseYear, int albumTypeId) {
 		setArtist(new Artist(artistName));
 		setTitle(title);
-		setReleaseYear(releaseYear);
+		setFirstReleaseYear(releaseYear);
 		primaryAlbumType = AlbumType.values()[albumTypeId];
 	}
 
@@ -83,12 +75,12 @@ public class MBAlbum {
 		this.mbid = mbid;
 	}
 
-	public short getReleaseYear() {
-		return releaseYear;
+	public short getFirstReleaseYear() {
+		return firstReleaseYear;
 	}
 
-	public void setReleaseYear(short releaseYear) {
-		this.releaseYear = releaseYear;
+	public void setFirstReleaseYear(short firstReleaseYear) {
+		this.firstReleaseYear = firstReleaseYear;
 	}
 	
 	public int getPrimaryAlbumTypeId() {
@@ -100,15 +92,7 @@ public class MBAlbum {
 	}
 
 	public void setPrimaryAlbumType(String primaryAlbumType) {
-		this.primaryAlbumType = AlbumType.getAlbumType(primaryAlbumType);
-	}
-
-	public int getSecondaryAlbumTypeId() {
-		return secondaryAlbumType.ordinal();
-	}
-
-	public void setSecondaryAlbumType(String secondaryAlbumType) {
-		this.secondaryAlbumType = AlbumType.getAlbumType(secondaryAlbumType);
+		this.primaryAlbumType = AlbumType.valueOf(primaryAlbumType);
 	}
 
 	@Override
@@ -116,9 +100,8 @@ public class MBAlbum {
 		return new HashCodeBuilder()
 		.append(title)
 		.append(mbid)
-		.append(releaseYear)
+		.append(firstReleaseYear)
 		.append(primaryAlbumType)
-		.append(secondaryAlbumType)
 		.toHashCode();
 	}
 
@@ -132,16 +115,15 @@ public class MBAlbum {
 		return new EqualsBuilder()
 		.append(a.title, title)
 		.append(a.mbid, mbid)
-		.append(a.releaseYear, releaseYear)
+		.append(a.firstReleaseYear, firstReleaseYear)
 		.append(a.primaryAlbumType, primaryAlbumType)
-		.append(a.secondaryAlbumType, secondaryAlbumType)
 		.isEquals();
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Album %s (%s/%s, %d), %s", title, primaryAlbumType, 
-				secondaryAlbumType, releaseYear, mbid);
+		return String.format("Album %s (%s, %d), %s", title, primaryAlbumType, 
+				firstReleaseYear, mbid);
 	}
 
 }

@@ -23,9 +23,9 @@ import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
+import com.github.hakko.musiccabinet.domain.model.music.MBRelease;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
-import com.github.hakko.musiccabinet.service.MusicBrainzService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -57,7 +57,7 @@ public class JdbcMusicBrainzAlbumDaoTest {
 	private static final String USER = "User";
 	
 	private Artist artist;
-	private MBAlbum album1, album2;
+	private MBRelease album1, album2;
 	
 	@Before
 	public void prepareTestData() throws ApplicationException {
@@ -68,10 +68,11 @@ public class JdbcMusicBrainzAlbumDaoTest {
 
 		artist = new Artist(ARTIST);
 		musicDao.setArtistId(artist);
-		album1 = new MBAlbum(TITLE1, MBID1, YEAR1, TYPE1);
-		album2 = new MBAlbum(TITLE2, MBID2, YEAR2, TYPE2);
-		album1.setArtist(artist);
-		album2.setArtist(artist);
+		
+		album1 = new MBRelease(MBID1, null, null, TITLE1, TYPE1, YEAR1, null);
+		album2 = new MBRelease(MBID2, null, null, TITLE2, TYPE2, YEAR2, null);
+		album1.setArtistId(artist.getId());
+		album2.setArtistId(artist.getId());
 		albumDao.createAlbums(Arrays.asList(album1, album2));
 	}
 

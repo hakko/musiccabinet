@@ -26,7 +26,6 @@ public class ReleaseGroupHandler extends DefaultHandler {
 	private static final String TAG_TITLE = "title";
 	private static final String TAG_FIRST_RELEASE_DATE = "first-release-date";
 	private static final String TAG_PRIMARY_TYPE = "primary-type";
-	private static final String TAG_SECONDARY_TYPE = "secondary-type";
 	
 	private static final String ATTR_ID = "id";
 	private static final String ATTR_COUNT = "count";
@@ -50,11 +49,9 @@ public class ReleaseGroupHandler extends DefaultHandler {
 		if (TAG_TITLE.equals(qName)) {
 			currentAlbum.setTitle(chars);
 		} else if (TAG_FIRST_RELEASE_DATE.equals(qName)) {
-			currentAlbum.setReleaseYear(toShort(substring(chars, 0, 4)));
+			currentAlbum.setFirstReleaseYear(toShort(substring(chars, 0, 4)));
 		} else if (TAG_PRIMARY_TYPE.equals(qName)) {
 			currentAlbum.setPrimaryAlbumType(chars);
-		} else if (TAG_SECONDARY_TYPE.equals(qName)) {
-			currentAlbum.setSecondaryAlbumType(chars);
 		}
 	}
 

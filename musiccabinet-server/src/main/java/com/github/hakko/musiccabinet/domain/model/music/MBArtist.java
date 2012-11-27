@@ -33,8 +33,8 @@ public class MBArtist {
 		this.id = id;
 	}
 	
-	public Artist asArtist() {
-		return new Artist(id, name);
+	public int getId() {
+		return id;
 	}
 
 	public String getName() {

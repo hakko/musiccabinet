@@ -1,0 +1,1244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<metadata created="2012-11-26T13:44:48.572Z" xmlns="http://musicbrainz.org/ns/mmd-2.0#" xmlns:ext="http://musicbrainz.org/ns/ext#-2.0">
+	<release-list count="34" offset="0">
+		<release id="00a74687-19e0-4b42-8300-6acbc2ff558b" ext:score="100">
+			<title>I'll Take the Blame EP</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="d7ce4f9f-8916-369c-a5bd-782a9c6d7568" type="EP">
+				<primary-type>EP</primary-type>
+			</release-group>
+			<date>2007-11-13</date>
+			<country>US</country>
+			<asin>B00122HV2A</asin>
+			<label-info-list>
+				<label-info>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>4</track-count>
+				<medium>
+					<format>Digital Media</format>
+					<disc-list count="0"/>
+					<track-list count="4"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="df9f0e35-7ad3-409c-a512-c5930d0e86a6" ext:score="100">
+			<title>In Your Head: An Introduction to Tegan and Sara</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="c3ed0e1b-6a43-4232-b3fe-da90dca49f7c" type="EP">
+				<primary-type>EP</primary-type>
+			</release-group>
+			<date>2012-09-25</date>
+			<country>GB</country>
+			<medium-list count="1">
+				<track-count>6</track-count>
+				<medium>
+					<format>Digital Media</format>
+					<disc-list count="0"/>
+					<track-list count="6"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="361a76f4-bba6-30d6-b195-ffe59ed5cca1" ext:score="100">
+			<title>I'll Take the Blame EP</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="d7ce4f9f-8916-369c-a5bd-782a9c6d7568" type="EP">
+				<primary-type>EP</primary-type>
+			</release-group>
+			<date>2007-11-13</date>
+			<country>US</country>
+			<barcode>093624985501</barcode>
+			<asin>B001N7NN80</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>9362498550</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>4</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="4"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="24a4bba0-8bd7-4362-8bea-e879c999f42f" ext:score="98">
+			<title>Walking With a Ghost</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="41f34684-b805-3603-ae49-1eeb7ddc3eb7" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<date>2005-03-29</date>
+			<country>GB</country>
+			<label-info-list>
+				<label-info>
+					<label id="94469373-73c9-4699-85df-414d577f9a7b">
+						<name>Sanctuary Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>2</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="2"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="dd96a6dd-f68e-4a33-aafc-55186ddcebc2" ext:score="98">
+			<title>Monday Monday Monday</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="3637522e-d816-3a5b-b64f-6e7eb514a5e0" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<date>2003-11-17</date>
+			<country>AU</country>
+			<asin>B00012QKNS</asin>
+			<label-info-list>
+				<label-info>
+					<label id="9be0310f-3d5f-4b89-a0e4-75a997fa6747">
+						<name>Cortex</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>3</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="3"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="93faab8b-7820-48d1-ba5a-58ac80b34cbf" ext:score="98">
+			<title>Body Work Remixes</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase=" &amp; ">
+					<artist id="a4d87536-5e9f-49df-8257-202cef04e003">
+						<name>Morgan Page</name>
+						<sort-name>Page, Morgan</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="1a6e9c77-ab19-458b-99c2-eb9e80d35a13" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<date>2012-02</date>
+			<country>US</country>
+			<label-info-list>
+				<label-info>
+					<catalog-number>067003 724753</catalog-number>
+					<label id="284e302e-a5d5-48ae-8add-e047d3e0abba">
+						<name>Nettwerk America</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>4</track-count>
+				<medium>
+					<format>Digital Media</format>
+					<disc-list count="0"/>
+					<track-list count="4"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="b28ab81e-1f99-42ff-9d7f-d2a68f7af512" ext:score="98">
+			<title>Hell</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="3c1a6466-0e97-4761-b524-bb6d954900e2" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<date>2009-10-06</date>
+			<medium-list count="1">
+				<track-count>1</track-count>
+				<medium>
+					<format>Digital Media</format>
+					<disc-list count="0"/>
+					<track-list count="1"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="be43d70c-f355-4674-adcc-2db46ecf5579" ext:score="98">
+			<title>Speak Slow</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="6dbe6f3c-4dba-3999-9fc8-510bdbb92d54" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<medium-list count="1">
+				<track-count>2</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="2"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="0862ab81-7c7d-4842-8373-404b21de5225" ext:score="98">
+			<title>I Hear Noises</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="55a05ac8-fd2e-3e1d-85ac-31ee99a4ffa7" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<medium-list count="1">
+				<track-count>3</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="3"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="e99dede2-343a-4327-91dd-4421768a4361" ext:score="98">
+			<title>Monday, Monday, Monday</title>
+			<status>Official</status>
+			<text-representation>
+				<language>nld</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="3637522e-d816-3a5b-b64f-6e7eb514a5e0" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<asin>B00012QKNS</asin>
+			<medium-list count="1">
+				<track-count>4</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="4"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="ebc90e03-3dea-4d09-87b1-fd681b1cf881" ext:score="98">
+			<title>Closer</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="2bde5abd-15f8-4db3-8ce3-f3da455183e4" type="Single">
+				<primary-type>Single</primary-type>
+			</release-group>
+			<date>2012-09-21</date>
+			<country>US</country>
+			<medium-list count="1">
+				<track-count>1</track-count>
+				<medium>
+					<format>Digital Media</format>
+					<disc-list count="0"/>
+					<track-list count="1"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="7a4e5ad8-f1d8-49d6-bde7-f68234f1d9db" ext:score="96">
+			<title>So Jealous</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="50998855-0dd0-34ab-b1c7-32f2468bd5df" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2005</date>
+			<country>JP</country>
+			<label-info-list>
+				<label-info>
+					<catalog-number>41051</catalog-number>
+					<label id="29d7c88f-5200-4418-a683-5c94ea032e38">
+						<name>Bertelsmann Music Group</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>15</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="15"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="15eeab10-0a18-3991-98e8-f817163820bb" ext:score="96">
+			<title>So Jealous</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="50998855-0dd0-34ab-b1c7-32f2468bd5df" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007</date>
+			<country>US</country>
+			<barcode>093624992585</barcode>
+			<asin>B0002MSCBK</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>292156-2</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="2"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="9ade2a2a-0760-3bf2-9544-4a1d2332de9a" ext:score="96">
+			<title>The Con</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="64ebb8b3-6d69-3467-b458-27c3fd1df3b1" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007-08-28</date>
+			<country>US</country>
+			<label-info-list>
+				<label-info>
+					<catalog-number>257468-1</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>Vinyl</format>
+					<disc-list count="0"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="14a2aa67-f9d8-3606-8657-c7d0ac15c46a" ext:score="96">
+			<title>If It Was You</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="341ce56d-89f1-3ae0-87f5-0d693bd02523" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007</date>
+			<country>US</country>
+			<barcode>093624992639</barcode>
+			<asin>B000UCEJDM</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>292028-2</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>13</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="2"/>
+					<track-list count="13"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="5306e6c8-b5e7-3bfa-b61e-d74186452505" ext:score="96">
+			<title>The Con</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="64ebb8b3-6d69-3467-b458-27c3fd1df3b1" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007-07-24</date>
+			<country>CA</country>
+			<barcode>823674647223</barcode>
+			<asin>B000RO9PY6</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>MRCD 6472</catalog-number>
+					<label id="5230f206-9fa7-4fc0-9437-680d40b87e0e">
+						<name>MapleMusic Recordings</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="5054616a-df71-4f0d-97c8-05b42bba2d28" ext:score="96">
+			<title>Under Feet Like Ours</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="e8bfa13e-a5ab-3c50-8eb6-4b4b1f838679" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>1999</date>
+			<country>CA</country>
+			<asin>B000V9HU1W</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>STCD-001</catalog-number>
+					<label id="45d3cbc9-e0e3-40ab-b97e-e0d4e3ecd93d">
+						<name>Plunk Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>13</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="13"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="925f0208-300d-393c-bfa9-4773075dc2cd" ext:score="96">
+			<title>The Con</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="64ebb8b3-6d69-3467-b458-27c3fd1df3b1" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007-08-04</date>
+			<country>AU</country>
+			<barcode>9325583044571</barcode>
+			<asin>B000TP4FY8</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>9362499405</catalog-number>
+					<label id="d50eb1c1-20bd-46b2-a216-a26aac9b7130">
+						<name>Warner Music Australia</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="04c81c50-a42a-48bf-adbc-0503769e6e23" ext:score="96">
+			<title>The Con</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="64ebb8b3-6d69-3467-b458-27c3fd1df3b1" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007-07-24</date>
+			<country>US</country>
+			<barcode>093624994084</barcode>
+			<asin>B000RO9PXW</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>257468-2</catalog-number>
+					<label id="dd58c28f-554d-4d76-be30-2d3aab070b3a">
+						<name>Vapor Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="2"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="ae8db6f5-4207-4c7b-afb0-66ee3abb8a77" ext:score="96">
+			<title>Under Feet Like Ours</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="e8bfa13e-a5ab-3c50-8eb6-4b4b1f838679" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2001</date>
+			<country>CA</country>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="7def6309-0092-4bcd-8f7d-f0c164ef4701" ext:score="96">
+			<title>So Jealous</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="50998855-0dd0-34ab-b1c7-32f2468bd5df" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2004-09-14</date>
+			<country>CA</country>
+			<asin>B0002MSCBK</asin>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<disc-list count="2"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="15d3d6bd-54e7-48d9-996e-07b39a035c69" ext:score="96">
+			<title>If It Was You</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="341ce56d-89f1-3ae0-87f5-0d693bd02523" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2002-08-20</date>
+			<country>CA</country>
+			<barcode>776974222822</barcode>
+			<label-info-list>
+				<label-info>
+					<catalog-number>7697422282</catalog-number>
+					<label id="9b0dce3b-0bab-4472-b255-f4f85e7b082f">
+						<name>Superclose Music</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>12</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="2"/>
+					<track-list count="12"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="a4503f21-1fb0-4d00-86a0-13d75ea15e81" ext:score="96">
+			<title>This Business of Art</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="a11a01ba-4d6a-3c8c-b573-b37730c64c7a" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2000-07-18</date>
+			<country>CA</country>
+			<barcode>093624768425</barcode>
+			<asin>B00004U91U</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>9 47684-2</catalog-number>
+					<label id="dd58c28f-554d-4d76-be30-2d3aab070b3a">
+						<name>Vapor Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>11</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="3"/>
+					<track-list count="11"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="a558638a-fb2b-4216-813c-da233f8324b1" ext:score="96">
+			<title>If It Was You</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="341ce56d-89f1-3ae0-87f5-0d693bd02523" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2003-06-03</date>
+			<country>US</country>
+			<asin>B00009L4SL</asin>
+			<medium-list count="1">
+				<track-count>13</track-count>
+				<medium>
+					<disc-list count="2"/>
+					<track-list count="13"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="8d43a55d-13e6-4618-9003-9344cf8e7caf" ext:score="96">
+			<title>So Jealous</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="50998855-0dd0-34ab-b1c7-32f2468bd5df" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2004-09-14</date>
+			<country>US</country>
+			<barcode>060768940321</barcode>
+			<label-info-list>
+				<label-info>
+					<catalog-number>06076-89403-2R</catalog-number>
+					<label id="dd58c28f-554d-4d76-be30-2d3aab070b3a">
+						<name>Vapor Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="7c5ef2ab-3f30-4fa0-8b70-61039f00a945" ext:score="96">
+			<title>The Con</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="64ebb8b3-6d69-3467-b458-27c3fd1df3b1" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2007-07-24</date>
+			<country>US</country>
+			<barcode>093624994053</barcode>
+			<asin>B000RO9PY6</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>257532-2</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+				<label-info>
+					<catalog-number>257468-2</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="2d09ecf6-d8a8-484f-b7ce-c73405718a1b" ext:score="96">
+			<title>Sainthood</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="b08e5e9a-b1dc-43d2-ba0a-0a0430939401" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<medium-list count="1">
+				<track-count>17</track-count>
+				<medium>
+					<disc-list count="0"/>
+					<track-list count="17"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="d9c8c80f-9a42-490d-8955-5722f34981cc" ext:score="96">
+			<title>Sainthood</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="b08e5e9a-b1dc-43d2-ba0a-0a0430939401" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2010-09-21</date>
+			<country>CA</country>
+			<label-info-list>
+				<label-info>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>15</track-count>
+				<medium>
+					<format>Digital Media</format>
+					<disc-list count="0"/>
+					<track-list count="15"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="71cb8e25-0f7f-4fa2-a630-cd59c66e43ad" ext:score="96">
+			<title>Sainthood</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="b08e5e9a-b1dc-43d2-ba0a-0a0430939401" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2009-10-27</date>
+			<country>CA</country>
+			<barcode>093624972884</barcode>
+			<asin>B002OHOECC</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>2-521124</catalog-number>
+					<label id="32d88056-7c80-4b64-92ed-e298f35aceca">
+						<name>WEA International</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>13</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="13"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="57957100-78d0-34ac-86a9-9fdee2955132" ext:score="96">
+			<title>If It Was You</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="341ce56d-89f1-3ae0-87f5-0d693bd02523" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2002-08-20</date>
+			<country>US</country>
+			<barcode>0060768940222</barcode>
+			<asin>B00009L4SL</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>SANCD132</catalog-number>
+					<label id="0b188c03-0909-4d18-b8b6-4eb93ca1471c">
+						<name>Sanctuary Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>12</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="2"/>
+					<track-list count="12"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="5da5751a-4f95-3021-b5db-888b158a72a6" ext:score="96">
+			<title>Sainthood</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="b08e5e9a-b1dc-43d2-ba0a-0a0430939401" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2009-10-27</date>
+			<country>US</country>
+			<barcode>093624972884</barcode>
+			<asin>B002OHOECC</asin>
+			<label-info-list>
+				<label-info>
+					<catalog-number>521124-2</catalog-number>
+					<label id="be0fec81-5c18-4494-8bbf-0d81dec006bf">
+						<name>Sire Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>13</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="1"/>
+					<track-list count="13"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="55e7547c-499e-4cf6-ac5e-b0cf748a7572" ext:score="96">
+			<title>This Business of Art</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="a11a01ba-4d6a-3c8c-b573-b37730c64c7a" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2000</date>
+			<country>CA</country>
+			<barcode>601215939927</barcode>
+			<label-info-list>
+				<label-info>
+					<catalog-number>012 159 399-2</catalog-number>
+					<label id="9b0dce3b-0bab-4472-b255-f4f85e7b082f">
+						<name>Superclose Music</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>11</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="11"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="47dcf130-1353-415d-b662-88c12274ebaa" ext:score="96">
+			<title>So Jealous</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="50998855-0dd0-34ab-b1c7-32f2468bd5df" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>2004</date>
+			<country>CA</country>
+			<barcode>776974228725</barcode>
+			<label-info-list>
+				<label-info>
+					<catalog-number>7697422872</catalog-number>
+					<label id="6cee07d5-4cc3-4555-a629-480590e0bebd">
+						<name>Universal Music Canada</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>14</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="14"/>
+				</medium>
+			</medium-list>
+		</release>
+		<release id="08f64576-412e-434b-90cb-f2400b618f46" ext:score="96">
+			<title>Under Feet Like Ours</title>
+			<status>Official</status>
+			<text-representation>
+				<language>eng</language>
+				<script>Latn</script>
+			</text-representation>
+			<artist-credit>
+				<name-credit joinphrase="">
+					<artist id="d13f0f47-36f9-4661-87fe-2de56f45c649">
+						<name>Tegan and Sara</name>
+						<sort-name>Tegan and Sara</sort-name>
+						<disambiguation/>
+					</artist>
+				</name-credit>
+			</artist-credit>
+			<release-group id="e8bfa13e-a5ab-3c50-8eb6-4b4b1f838679" type="Album">
+				<primary-type>Album</primary-type>
+			</release-group>
+			<date>1999</date>
+			<country>CA</country>
+			<barcode>626570912002</barcode>
+			<label-info-list>
+				<label-info>
+					<catalog-number>STCD-001</catalog-number>
+					<label id="45d3cbc9-e0e3-40ab-b97e-e0d4e3ecd93d">
+						<name>Plunk Records</name>
+					</label>
+				</label-info>
+			</label-info-list>
+			<medium-list count="1">
+				<track-count>13</track-count>
+				<medium>
+					<format>CD</format>
+					<disc-list count="0"/>
+					<track-list count="13"/>
+				</medium>
+			</medium-list>
+		</release>
+	</release-list>
+</metadata>
