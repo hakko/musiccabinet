@@ -69,9 +69,11 @@ public class JdbcMusicBrainzArtistDao implements MusicBrainzArtistDao, JdbcTempl
 	public int getMissingAndOutdatedArtistsCount() {
 		int missingArtists = jdbcTemplate.queryForInt(
 			"select count(*) from library.artist la"
-			+ " inner join music.artist ma on la.artist_id = ma.id"
-			+ " where la.hasalbums and ma.artist_name != 'VARIOUS ARTISTS'"
-			+ " and not exists (select 1 from music.mb_artist where artist_id = ma.id)");
+			+ " inner join music.artist ma on la.artist_id = ma.id where la.hasalbums"
+			+ " and not exists (select 1 from music.mb_artist where artist_id = ma.id)"
+			+ " and not exists (select 1 from library.webservice_history h where h.artist_id = ma.id"
+			+ "  and h.calltype_id = " + MB_ARTIST_QUERY.getDatabaseId() + ")"
+			+ " and ma.artist_name != 'VARIOUS ARTISTS'");
 
 		int outdatedArtists = jdbcTemplate.queryForInt(String.format(
 			"select count(*) from music.mb_artist mba"
