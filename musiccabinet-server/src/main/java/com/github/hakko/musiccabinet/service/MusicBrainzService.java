@@ -32,17 +32,7 @@ public class MusicBrainzService {
 	
 	private static final Logger LOG = Logger.getLogger(MusicBrainzService.class);
 	
-	public static final int TYPE_SINGLE =		1 << 0;
-	public static final int TYPE_EP =			1 << 1;
-	public static final int TYPE_ALBUM =		1 << 2;
-	public static final int TYPE_COMPILATION =	1 << 3;
-	public static final int TYPE_SOUNDTRACK =	1 << 4;
-	public static final int TYPE_SPOKENWORD =	1 << 5;
-	public static final int TYPE_INTERVIEW =	1 << 6;
-	public static final int TYPE_AUDIOBOOK =	1 << 7;
-	public static final int TYPE_LIVE =			1 << 8;
-	public static final int TYPE_REMIX =		1 << 9;
-	public static final int TYPE_OTHER =		1 << 10;
+	public static final int TYPE_SINGLE = 0, TYPE_EP = 1, TYPE_ALBUM = 2;
 	
 	public boolean isIndexBeingCreated() {
 		return isIndexBeingCreated;
@@ -61,9 +51,9 @@ public class MusicBrainzService {
 		return albumDao.hasDiscography();
 	}
 	
-	public List<MBAlbum> getMissingAlbums(String artistName, int typeMask,
+	public List<MBAlbum> getMissingAlbums(String artistName, List<Integer> albumTypes,
 			String lastFmUsername, int playedWithinLastDays, int offset) {
-		return albumDao.getMissingAlbums(artistName, typeMask,
+		return albumDao.getMissingAlbums(artistName, albumTypes,
 				lastFmUsername, playedWithinLastDays, offset);
 	}
 

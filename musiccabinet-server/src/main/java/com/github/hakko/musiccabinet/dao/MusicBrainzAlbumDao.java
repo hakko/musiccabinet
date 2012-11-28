@@ -10,6 +10,6 @@ public interface MusicBrainzAlbumDao {
 	boolean hasDiscography();
 	void createAlbums(List<MBRelease> releases);
 	List<MBAlbum> getAlbums(int artistId);
-	List<MBAlbum> getMissingAlbums(String artistName, int typeMask, String lastFmUsername, int playedWithinLastDays, int offset);
+	List<MBAlbum> getMissingAlbums(String artistName, List<Integer> albumTypes, String lastFmUsername, int playedWithinLastDays, int offset);
 
 }

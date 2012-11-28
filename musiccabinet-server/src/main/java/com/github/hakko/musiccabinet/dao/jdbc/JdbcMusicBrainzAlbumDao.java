@@ -8,6 +8,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -91,9 +92,13 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 	}
 
 	@Override
-	public List<MBAlbum> getMissingAlbums(String artistName, int typeMask,
+	public List<MBAlbum> getMissingAlbums(String artistName, List<Integer> albumTypes,
 			String lastFmUsername, int playedWithinLastDays, int offset) {
 		List<Object> params = new ArrayList<>();
+		
+		if (albumTypes == null || albumTypes.isEmpty()) {
+			albumTypes = Arrays.asList(TYPE_ALBUM, TYPE_EP);
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("select art.artist_name_capitalization, alb.album_name_capitalization,"
@@ -117,25 +122,12 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 			params.add(lastFmUsername);
 		}
 		
-		sb.append(" and mba.type_id in (" + getIdParameters(getTypeIds(typeMask)) + ")");
+		sb.append(" and mba.type_id in (" + getIdParameters(albumTypes) + ")");
 		sb.append(" order by art.artist_name, mba.first_release_year offset " + offset + " limit 101");
 		
 		return jdbcTemplate.query(sb.toString(), params.toArray(), new MBAlbumRowMapper());
 	}
 	
-	private List<Integer> getTypeIds(int typeMask) {
-		if (typeMask == 0 || typeMask == -1) {
-			typeMask = TYPE_EP | TYPE_ALBUM;
-		}
-		List<Integer> typeIds = new ArrayList<>();
-		for (int i = 0; i <= 10; i++) {
-			if (((1 << i) & typeMask) > 0) {
-				typeIds.add(i);
-			}
-		}
-		return typeIds;
-	}
-
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;

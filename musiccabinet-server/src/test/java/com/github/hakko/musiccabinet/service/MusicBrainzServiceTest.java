@@ -4,6 +4,7 @@ import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_ALBU
 import static com.github.hakko.musiccabinet.service.MusicBrainzService.TYPE_EP;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.reverse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -63,7 +64,7 @@ public class MusicBrainzServiceTest {
 		Assert.assertEquals("1/1 artist ids, 1/1 artist discographies",
 				service.getProgressDescription());
 		
-		List<MBAlbum> albums = service.getMissingAlbums(artistName, TYPE_ALBUM, null, -1, 0);
+		List<MBAlbum> albums = service.getMissingAlbums(artistName, asList(TYPE_ALBUM), null, -1, 0);
 		Assert.assertEquals(4, albums.size());
 		
 		assertEquals("Cult of Luna", albums.get(0).getTitle());
@@ -83,7 +84,7 @@ public class MusicBrainzServiceTest {
 		
 		service.updateDiscography();
 		
-		List<MBAlbum> albums = service.getMissingAlbums(artistName, TYPE_EP, null, -1, 0);
+		List<MBAlbum> albums = service.getMissingAlbums(artistName, asList(TYPE_EP), null, -1, 0);
 		Assert.assertEquals(2, albums.size());
 		assertEquals("Switchblade / Cult of Luna", albums.get(0).getTitle());
 		assertEquals("Bodies / Recluse", albums.get(1).getTitle());
