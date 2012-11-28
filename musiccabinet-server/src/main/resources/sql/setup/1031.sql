@@ -6,7 +6,14 @@ insert into music.mb_album_type (id, description) values (2, 'album');
 create table music.mb_format (id serial primary key, description text not null);
 insert into music.mb_format (description) values ('CD');
 insert into music.mb_format (description) values ('Vinyl');
-insert into music.mb_format (description) values ('Digital Release');
+insert into music.mb_format (description) values ('7" Vinyl');
+insert into music.mb_format (description) values ('10" Vinyl');
+insert into music.mb_format (description) values ('12" Vinyl');
+insert into music.mb_format (description) values ('Cassette');
+insert into music.mb_format (description) values ('DVD');
+insert into music.mb_format (description) values ('DVD-Video');
+insert into music.mb_format (description) values ('CD-R');
+insert into music.mb_format (description) values ('Digital Media');
 
 create table music.mb_label (id serial primary key, mbid char(36) not null, name text not null);
 create table music.mb_artist (artist_id integer references music.artist (id) not null, mbid char(36) not null, country_code char(2), start_year smallint, active boolean);
