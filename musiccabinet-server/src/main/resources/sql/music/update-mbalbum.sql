@@ -24,6 +24,11 @@ begin
 	delete from music.mb_album_import d where exists (
 		select 1 from music.mb_album_import i where 
 			d.release_group_mbid = i.release_group_mbid and
+			d.release_year = 0 and
+			i.release_year != 0);
+	delete from music.mb_album_import d where exists (
+		select 1 from music.mb_album_import i where 
+			d.release_group_mbid = i.release_group_mbid and
 			(d.release_year > i.release_year or d.format_id > i.format_id));
 
 	-- add new music.albums
