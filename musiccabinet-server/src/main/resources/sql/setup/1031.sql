@@ -5,13 +5,22 @@ insert into music.mb_album_type (id, description) values (2, 'album');
 
 create table music.mb_format (id serial primary key, description text not null);
 insert into music.mb_format (description) values ('CD');
+insert into music.mb_format (description) values ('SACD');
+insert into music.mb_format (description) values ('HDCD');
+insert into music.mb_format (description) values ('DualDisc');
 insert into music.mb_format (description) values ('Vinyl');
 insert into music.mb_format (description) values ('7" Vinyl');
 insert into music.mb_format (description) values ('10" Vinyl');
 insert into music.mb_format (description) values ('12" Vinyl');
 insert into music.mb_format (description) values ('Cassette');
-insert into music.mb_format (description) values ('DVD');
+insert into music.mb_format (description) values ('DVD-Audio');
 insert into music.mb_format (description) values ('DVD-Video');
+insert into music.mb_format (description) values ('DVD');
+insert into music.mb_format (description) values ('Blu-ray');
+insert into music.mb_format (description) values ('MiniDisc');
+insert into music.mb_format (description) values ('USB Flash Drive');
+insert into music.mb_format (description) values ('8cm CD');
+insert into music.mb_format (description) values ('VCD');
 insert into music.mb_format (description) values ('CD-R');
 insert into music.mb_format (description) values ('Digital Media');
 
