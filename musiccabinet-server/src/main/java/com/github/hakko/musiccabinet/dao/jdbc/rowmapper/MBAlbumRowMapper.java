@@ -11,7 +11,8 @@ public class MBAlbumRowMapper implements RowMapper<MBAlbum> {
 
 	@Override
 	public MBAlbum mapRow(ResultSet rs, int rowNum) throws SQLException {
-		return new MBAlbum(rs.getString(1), rs.getString(2), rs.getShort(3), rs.getInt(4));
+		return new MBAlbum(rs.getString(1), rs.getString(2), rs.getShort(3), 
+				rs.getInt(4), rs.getString(5));
 	}
 
 }

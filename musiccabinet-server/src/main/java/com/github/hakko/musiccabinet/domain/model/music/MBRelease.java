@@ -5,7 +5,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum.AlbumType;
 
 /*
- * Represents a specific release of an album from MusicBrainz.
+ * Represents a release from MusicBrainz (a specific version of an album).
  */
 public class MBRelease {
 

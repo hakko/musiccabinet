@@ -84,7 +84,8 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 	public List<MBAlbum> getAlbums(int artistId) {
 		return jdbcTemplate.query(
 				"select art.artist_name_capitalization, alb.album_name_capitalization,"
-				+ " mba.first_release_year, mba.type_id from music.mb_album mba"
+				+ " mba.first_release_year, mba.type_id, f.description from music.mb_album mba"
+				+ " left outer join music.mb_format f on mba.format_id = f.id"
 				+ " inner join music.album alb on mba.album_id = alb.id"
 				+ " inner join music.artist art on alb.artist_id = art.id"
 				+ " where art.id = " + artistId + " order by mba.first_release_year", 
@@ -102,7 +103,8 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("select art.artist_name_capitalization, alb.album_name_capitalization,"
-				+ " mba.first_release_year, mba.type_id from music.mb_album mba"
+				+ " mba.first_release_year, mba.type_id, f.description from music.mb_album mba"
+				+ " left outer join music.mb_format f on mba.format_id = f.id"
 				+ " inner join music.album alb on mba.album_id = alb.id"
 				+ " inner join music.artist art on alb.artist_id = art.id"
 				+ " where not exists (select 1 from library.album where album_id = mba.album_id)");

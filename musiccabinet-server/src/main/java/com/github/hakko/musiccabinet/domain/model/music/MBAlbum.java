@@ -6,10 +6,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /*
- * Represents an album (or more specifically, a release group) from MusicBrainz.
+ * Represents an album (or more specifically, the earliest encountered release
+ * from a release group) from MusicBrainz.
  * 
- * Contains title, mbid, first release year, and primary album type
- * (constant set of values from MusicBrainz).
  */
 public class MBAlbum {
 
@@ -17,10 +16,18 @@ public class MBAlbum {
 	private String title;
 	private String mbid;
 	private short firstReleaseYear;
-	private AlbumType primaryAlbumType;
-
+	private AlbumType albumType;
+	private String format;
+	
 	public enum AlbumType {
-		SINGLE, EP, ALBUM;
+		
+		SINGLE ("Single"), EP ("EP"), ALBUM ("Album");
+
+		private final String description;
+		
+		private AlbumType(String description) {
+			this.description = description;
+		}
 		
 		public static AlbumType getAlbumType(String type) {
 			String uType = upperCase(type);
@@ -31,6 +38,11 @@ public class MBAlbum {
 			}
 			return null;
 		}
+		
+		public String getDescription() {
+			return description;
+		}
+		
 	}
 
 	public MBAlbum() {
@@ -41,14 +53,16 @@ public class MBAlbum {
 		setTitle(title);
 		setMbid(mbid);
 		setFirstReleaseYear(releaseYear);
-		setPrimaryAlbumType(primaryAlbumType);
+		setAlbumType(primaryAlbumType);
 	}
 	
-	public MBAlbum(String artistName, String title, short releaseYear, int albumTypeId) {
+	public MBAlbum(String artistName, String title, short releaseYear,
+			int albumTypeId, String format) {
 		setArtist(new Artist(artistName));
 		setTitle(title);
 		setFirstReleaseYear(releaseYear);
-		primaryAlbumType = AlbumType.values()[albumTypeId];
+		setAlbumType(albumTypeId);
+		setFormat(format);
 	}
 
 	public Artist getArtist() {
@@ -83,16 +97,28 @@ public class MBAlbum {
 		this.firstReleaseYear = firstReleaseYear;
 	}
 	
-	public int getPrimaryAlbumTypeId() {
-		return primaryAlbumType.ordinal();
+	public int getAlbumTypeId() {
+		return albumType.ordinal();
 	}
 
-	public String getPrimaryAlbumTypeName() {
-		return primaryAlbumType.name();
+	public String getAlbumTypeName() {
+		return albumType.getDescription();
 	}
 
-	public void setPrimaryAlbumType(String primaryAlbumType) {
-		this.primaryAlbumType = AlbumType.valueOf(primaryAlbumType);
+	public void setAlbumType(String albumType) {
+		this.albumType = AlbumType.valueOf(albumType);
+	}
+
+	public void setAlbumType(int albumTypeId) {
+		this.albumType = AlbumType.values()[albumTypeId];
+	}
+	
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	@Override
@@ -101,7 +127,7 @@ public class MBAlbum {
 		.append(title)
 		.append(mbid)
 		.append(firstReleaseYear)
-		.append(primaryAlbumType)
+		.append(albumType)
 		.toHashCode();
 	}
 
@@ -116,13 +142,13 @@ public class MBAlbum {
 		.append(a.title, title)
 		.append(a.mbid, mbid)
 		.append(a.firstReleaseYear, firstReleaseYear)
-		.append(a.primaryAlbumType, primaryAlbumType)
+		.append(a.albumType, albumType)
 		.isEquals();
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Album %s (%s, %d), %s", title, primaryAlbumType, 
+		return String.format("Album %s (%s, %d), %s", title, albumType, 
 				firstReleaseYear, mbid);
 	}
 

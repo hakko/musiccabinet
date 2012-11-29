@@ -51,7 +51,7 @@ public class ReleaseGroupHandler extends DefaultHandler {
 		} else if (TAG_FIRST_RELEASE_DATE.equals(qName)) {
 			currentAlbum.setFirstReleaseYear(toShort(substring(chars, 0, 4)));
 		} else if (TAG_PRIMARY_TYPE.equals(qName)) {
-			currentAlbum.setPrimaryAlbumType(chars);
+			currentAlbum.setAlbumType(chars);
 		}
 	}
 
