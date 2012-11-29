@@ -20,16 +20,15 @@ begin
 	update music.mb_album_import i set label_id = l.id from music.mb_label l
 	where label_mbid = l.mbid;
 
-	-- delete duplicate releases (only save earliest, duplicates may still exists)
+	-- delete duplicate releases (save earliest release (but not year 0),
+	-- with lowest format id (but not null). duplicates may still exist when done
 	delete from music.mb_album_import d where exists (
 		select 1 from music.mb_album_import i where 
-			d.release_group_mbid = i.release_group_mbid and
-			d.release_year = 0 and
-			i.release_year != 0);
-	delete from music.mb_album_import d where exists (
-		select 1 from music.mb_album_import i where 
-			d.release_group_mbid = i.release_group_mbid and
-			(d.release_year > i.release_year or d.format_id > i.format_id));
+			d.release_group_mbid = i.release_group_mbid and (
+			(case when d.release_year != 0 then d.release_year else 2147483647 end) > 
+			(case when i.release_year != 0 then i.release_year else 2147483647 end) or 
+			coalesce(d.format_id, 2147483647) > 
+			coalesce(i.format_id, 2147483647)));
 
 	-- add new music.albums
 	insert into music.album (artist_id, album_name, album_name_capitalization)
@@ -47,7 +46,7 @@ begin
 	album_id, release_group_mbid, type_id, label_id, format_id, release_year
 	from music.mb_album_import i
 		where not exists (select 1 from music.mb_album 
-			where release_group_mbid = i.release_group_mbid);
+			where mbid = i.release_group_mbid);
 
 	return 0;
 
