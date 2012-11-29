@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,11 +75,12 @@ public class JdbcArtistRecommendationDaoTest {
 		PostgreSQLUtil.truncateTables(artistRecommendationDao);
 
 		List<ArtistRelation> artistRelations = new ArrayList<>();
-		for (Artist targetArtist : Arrays.asList(madonna, cyndi, celine, kylie)) {
+		for (Artist targetArtist : asList(madonna, cyndi, celine, kylie)) {
 			artistRelations.add(new ArtistRelation(targetArtist, 0.33f));
 		}
 		artistRelationDao.createArtistRelations(cher, artistRelations);
 
+		tagDao.createTags(asList("disco"));
 		tagDao.createTopArtists(Arrays.asList(new TagTopArtists("disco",
 				Arrays.asList(cher, madonna, cyndi, celine, kylie))));
 		

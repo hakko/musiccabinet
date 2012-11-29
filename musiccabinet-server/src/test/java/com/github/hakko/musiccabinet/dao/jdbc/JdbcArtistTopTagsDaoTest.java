@@ -134,6 +134,8 @@ public class JdbcArtistTopTagsDaoTest {
 	public void addsNewTagOnUpdate() {
 		deleteArtistTopTags();
 		
+		tagDao.createTags(asList("disco"));
+		
 		dao.updateTopTag(rihannaArtist.getId(), "disco", 99);
 		
 		List<Tag> topTags = dao.getTopTags(rihannaArtist.getId());
