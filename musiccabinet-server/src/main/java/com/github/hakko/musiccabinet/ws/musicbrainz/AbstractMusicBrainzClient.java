@@ -40,7 +40,7 @@ public abstract class AbstractMusicBrainzClient {
 	protected static final String USER_AGENT = "User-Agent";
 	protected static final String CLIENT_INFO = "MusicCabinet/0.7 ( http://dilerium.se/musiccabinet )";
 
-	// we're only allowed to one call per second
+	// we're only allowed one call per second
 	protected static final long INTERVAL_MS = 1001;
 	
 	private static final Logger LOG = Logger.getLogger(AbstractMusicBrainzClient.class);
@@ -57,12 +57,12 @@ public abstract class AbstractMusicBrainzClient {
 		String response = null;
 		HttpGet httpGet = new HttpGet(getURI(path, params));
 		httpGet.setHeader(USER_AGENT, CLIENT_INFO);
-        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+		ResponseHandler<String> responseHandler = new BasicResponseHandler();
         try {
         	long elapsedMs = -currentTimeMillis();
 			response = httpClient.execute(httpGet, responseHandler);
 			elapsedMs += currentTimeMillis();
-			sleep(INTERVAL_MS - elapsedMs);
+			sleep(Math.max(INTERVAL_MS - elapsedMs, 0));
 		} catch (HttpResponseException e) {
 			LOG.warn(format("MusicBrainz internal error: %d, %s", 
 					e.getStatusCode(), e.getMessage()));
@@ -75,7 +75,7 @@ public abstract class AbstractMusicBrainzClient {
         webserviceHistoryService.logWebserviceInvocation(invocation);
         return response;
 	}
-
+	
 	protected URI getURI(String path, List<NameValuePair> params) throws ApplicationException {
 		URI uri = null;
 		try {
