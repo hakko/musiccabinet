@@ -18,6 +18,7 @@ public class ScrobbleClient extends AbstractWSPostClient {
 		params.add(new BasicNameValuePair(PARAM_ARTIST, scrobble.getTrack().getMetaData().getArtist()));
 		params.add(new BasicNameValuePair(PARAM_TRACK, scrobble.getTrack().getName()));
 		params.add(new BasicNameValuePair(PARAM_TIMESTAMP, ""+(scrobble.getStartTime().getMillis()/1000)));
+		params.add(new BasicNameValuePair(PARAM_ALBUM, scrobble.getTrack().getMetaData().getAlbum()));
 		params.add(new BasicNameValuePair(PARAM_SK, scrobble.getLastFmUser().getSessionKey()));
 		
 		return executeWSRequest(params);
