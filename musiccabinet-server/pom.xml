@@ -5,13 +5,12 @@
 
 	<groupId>com.github.hakko.musiccabinet</groupId>
 	<artifactId>musiccabinet-server</artifactId>
-	<version>${version.musiccabinet}</version>
+	<version>0.7.15</version>
 	<packaging>jar</packaging>
 
 	<name>musiccabinet-server</name>
 
 	<properties>
-		<version.musiccabinet>0.7.14</version.musiccabinet>
 		<version.commons-lang>2.6</version.commons-lang>
 		<version.commons-io>2.4</version.commons-io>
 		<version.joda-time>2.1</version.joda-time>
