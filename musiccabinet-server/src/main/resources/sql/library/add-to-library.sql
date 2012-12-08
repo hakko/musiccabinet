@@ -201,10 +201,13 @@ begin
 	);
 
 	insert into library.album (album_id)
-	select distinct album_id from library.filetag ft
+	select album_id from
+	(select distinct album_id, max(modified) from library.filetag ft
+	inner join library.file f on ft.file_id = f.id
 	where not exists (
 		select 1 from library.album where album_id = ft.album_id
-	);
+	)
+	group by album_id order by max(modified)) a;
 
 	update library.artist art
 		set hasalbums = true
