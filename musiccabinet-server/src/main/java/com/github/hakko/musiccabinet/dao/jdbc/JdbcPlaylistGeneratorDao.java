@@ -173,18 +173,7 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 
 	@Override
 	public void updateSearchIndex() { // TODO : evaluate time consumed + optimize
-		String deleteSql = 
-				"truncate library.artisttoptrackplaycount";
-		
-		String insertSql =
-				"insert into library.artisttoptrackplaycount (track_id, artist_id, rank, play_count)"
-				+ " select distinct on (lt.track_id) lt.id, att.artist_id, att.rank, coalesce(tpc.play_count, 0)"
-				+ " from music.artisttoptrack att"
-				+ " inner join library.track lt on lt.track_id = att.track_id"
-				+ " left outer join library.trackplaycount tpc on tpc.track_id = lt.track_id";
-		
-		jdbcTemplate.execute(deleteSql);
-		jdbcTemplate.execute(insertSql);
+		jdbcTemplate.execute("select library.update_librarytoptracks()");
 	}
 
 	@Override

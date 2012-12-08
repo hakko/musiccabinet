@@ -55,6 +55,8 @@ public enum PostgreSQLFunction {
 		"sql/library/delete-from-library.sql"),
 	UPDATE_STATISTICS("library", "update_statistics",
 		"sql/library/update-statistics.sql"),
+	UPDATE_AVAILABLE_TOP_TRACKS("library", "update_librarytoptracks",
+		"sql/library/update-librarytoptracks.sql"),
 	BLOCK_WEBSERVICE("library", "block_webservice",
 		"sql/library/block-webservice.sql");
 

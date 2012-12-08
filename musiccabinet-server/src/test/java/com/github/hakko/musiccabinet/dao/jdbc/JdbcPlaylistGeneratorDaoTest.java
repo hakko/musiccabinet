@@ -1,5 +1,8 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_AVAILABLE_TOP_TRACKS;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.loadFunction;
+import static com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil.truncateTables;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 
 import java.util.ArrayList;
@@ -19,7 +22,6 @@ import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
 import com.github.hakko.musiccabinet.dao.LibraryAdditionDao;
 import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.TrackRelationDao;
-import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
 import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
@@ -65,7 +67,9 @@ public class JdbcPlaylistGeneratorDaoTest {
 
 	@Before
 	public void clearTopTracksAndRelations() throws ApplicationException {
-		PostgreSQLUtil.truncateTables(playlistGeneratorDao);
+		loadFunction(playlistGeneratorDao, UPDATE_AVAILABLE_TOP_TRACKS);
+
+		truncateTables(playlistGeneratorDao);
 	}
 
 	@Test
