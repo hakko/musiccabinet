@@ -141,6 +141,25 @@ public class JdbcArtistInfoDaoTest {
 		Assert.assertEquals(biography, dbAbba.getBioSummary());
 	}
 	
+	@Test
+	public void bioContentIsExposedInDetailedArtistInfo() {
+		deleteArtistInfos();
+
+		int tinaId = musicDao.getArtistId(aiTina.getArtist());
+
+		dao.createArtistInfo(Arrays.asList(aiTina));
+		ArtistInfo artistInfo = dao.getDetailedArtistInfo(tinaId);
+		
+		Assert.assertNotNull(artistInfo);
+		Assert.assertNotNull(artistInfo.getArtist());
+		Assert.assertNotNull(artistInfo.getBioContent());
+		
+		Assert.assertEquals("Tina Turner", artistInfo.getArtist().getName());
+		Assert.assertEquals("http://userserve-ak.last.fm/serve/126/74998404.jpg", 
+				artistInfo.getLargeImageUrl());
+		Assert.assertTrue(artistInfo.getBioContent().startsWith("<strong>Tina Turner</strong>"));
+	}
+	
 	private void deleteArtists() {
 		dao.getJdbcTemplate().execute("truncate music.artist cascade");
 	}

@@ -85,11 +85,34 @@ public class JdbcArtistInfoDao implements ArtistInfoDao, JdbcTemplateDao {
 		
 		return artistInfos.isEmpty() ? null : artistInfos.get(0);
 	}
+
+	@Override
+	public ArtistInfo getDetailedArtistInfo(final int artistId) {
+		String sql = "select a.artist_name_capitalization, ai.largeimageurl, ai.biocontent"
+				+ " from music.artist a"
+				+ " left outer join music.artistinfo ai on ai.artist_id = a.id"
+				+ " where a.id = " + artistId;
+		
+		List<ArtistInfo> artistInfos = jdbcTemplate.query(sql, new RowMapper<ArtistInfo>() {
+			@Override
+			public ArtistInfo mapRow(ResultSet rs, int rowNum)
+					throws SQLException {
+				ArtistInfo ai = new ArtistInfo();
+				ai.setArtist(new Artist(artistId, rs.getString(1)));
+				ai.setLargeImageUrl(rs.getString(2));
+				ai.setBioContent(rs.getString(3));
+				return ai;
+			}
+		});
+		
+		return artistInfos.isEmpty() ? null : artistInfos.get(0);
+	}
 	
 	@Override
 	public ArtistInfo getArtistInfo(final Artist artist) {
 		String sql = 
-				"select ai.smallimageurl, ai.mediumimageurl, ai.largeimageurl, ai.extralargeimageurl, ai.listeners, ai.playcount, ai.biosummary, ai.biocontent from music.artistinfo ai" + 
+				"select ai.smallimageurl, ai.mediumimageurl, ai.largeimageurl, ai.extralargeimageurl, " +
+				"ai.listeners, ai.playcount, ai.biosummary, ai.biocontent from music.artistinfo ai" + 
 				" inner join music.artist a on ai.artist_id = a.id" +
 				" where a.artist_name = upper(?)";
 

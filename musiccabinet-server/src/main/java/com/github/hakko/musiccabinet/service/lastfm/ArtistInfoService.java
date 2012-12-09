@@ -31,12 +31,16 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 	
 	private static final Logger LOG = Logger.getLogger(ArtistInfoService.class);
 	
-	public ArtistInfo getArtistInfo(int artistId) throws ApplicationException {
+	public ArtistInfo getArtistInfo(int artistId) {
 		ArtistInfo artistInfo = artistInfoDao.getArtistInfo(artistId);
 		if (artistInfo == null) {
 			LOG.info("No artist info found for id " + artistId);
 		}
 		return artistInfo;
+	}
+	
+	public ArtistInfo getDetailedArtistInfo(int artistId) {
+		return artistInfoDao.getDetailedArtistInfo(artistId);
 	}
 	
 	public void setBioSummary(int artistId, String biosummary) throws ApplicationException {
