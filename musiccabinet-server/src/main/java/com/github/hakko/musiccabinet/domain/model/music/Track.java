@@ -43,6 +43,10 @@ public class Track {
 		return id;
 	}
 	
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public Artist getArtist() {
 		return artist;
 	}

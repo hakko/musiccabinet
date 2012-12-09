@@ -9,5 +9,6 @@ public interface ArtistTopTracksDao {
 
 	void createTopTracks(Artist artist, List<Track> topTracks);
 	List<Track> getTopTracks(Artist artist);
+	List<Track> getTopTracks(int artistId);
 
 }

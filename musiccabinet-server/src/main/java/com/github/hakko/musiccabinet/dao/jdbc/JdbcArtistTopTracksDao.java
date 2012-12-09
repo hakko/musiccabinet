@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackRowMapper;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 
@@ -80,6 +81,17 @@ public class JdbcArtistTopTracksDao implements ArtistTopTracksDao, JdbcTemplateD
 		return topTracks;
 	}
 
+	@Override
+	public List<Track> getTopTracks(int artistId) {
+		String sql = "select coalesce(lt.id, -1), mt.track_name_capitalization"
+				+ " from music.artisttoptrack att"
+				+ " inner join music.track mt on att.track_id = mt.id"
+				+ " left outer join library.track lt on att.track_id = lt.track_id"
+				+ " where att.artist_id = ? order by att.rank limit 20";
+		
+		return jdbcTemplate.query(sql, new Object[]{artistId}, new TrackRowMapper());
+	}
+	
 	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;

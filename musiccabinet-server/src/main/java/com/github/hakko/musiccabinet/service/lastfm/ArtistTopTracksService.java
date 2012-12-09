@@ -2,10 +2,12 @@ package com.github.hakko.musiccabinet.service.lastfm;
 
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
 
+import java.util.List;
 import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.ArtistTopTracksDao;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.log.Logger;
 import com.github.hakko.musiccabinet.parser.lastfm.ArtistTopTracksParser;
@@ -25,6 +27,10 @@ public class ArtistTopTracksService extends SearchIndexUpdateService {
 
 	private static final Logger LOG = Logger.getLogger(ArtistTopTracksService.class);
 
+	public List<Track> getTopTracks(int artistId) {
+		return artistTopTracksDao.getTopTracks(artistId);
+	}
+	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
 		Set<String> artistNames = webserviceHistoryService.

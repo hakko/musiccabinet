@@ -5,7 +5,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +24,7 @@ import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.parser.lastfm.ArtistTopTracksParser;
 import com.github.hakko.musiccabinet.parser.lastfm.ArtistTopTracksParserImpl;
 import com.github.hakko.musiccabinet.util.ResourceUtil;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -29,6 +33,12 @@ public class JdbcArtistTopTracksDaoTest {
 	@Autowired
 	private JdbcArtistTopTracksDao dao;
 
+	@Autowired
+	private JdbcMusicDao musicDao;
+	
+	@Autowired
+	private JdbcLibraryAdditionDao additionDao;
+	
 	// testdata
 	private Artist cherArtist;
 	private Artist rihannaArtist;
@@ -104,6 +114,29 @@ public class JdbcArtistTopTracksDaoTest {
 		}
 		for (int i = 0; i < rihannaTopTracks.size(); i++) {
 			assertEquals(rihannaTopTracks.get(i), rihannaStoredTopTracks.get(i));
+		}
+	}
+	
+	@Test
+	public void returnsTopTracksWithLocalTrackId() {
+		deleteArtistTopTracks();
+		
+		dao.createTopTracks(rihannaArtist, rihannaTopTracks);
+		
+		UnittestLibraryUtil.submitFile(additionDao, Arrays.asList(
+				UnittestLibraryUtil.getFile("Rihanna", "Compilation", "Rude Boy"), // 1
+				UnittestLibraryUtil.getFile("Rihanna", "Compilation", "Man Down"), // 5
+				UnittestLibraryUtil.getFile("Rihanna", "Compilation", "Umbrella"))); // 8
+
+		int rihannaId = musicDao.getArtistId("Rihanna");
+		List<Track> topTracks = dao.getTopTracks(rihannaId);
+
+		Assert.assertNotNull(topTracks);
+		Assert.assertEquals(20, topTracks.size());
+		for (int i = 0; i < topTracks.size(); i++) {
+			Track t = topTracks.get(i);
+			assertEquals(rihannaTopTracks.get(i).getName(), t.getName());
+			assertEquals(t.getId() != -1, i == 1 || i == 5 || i == 8);
 		}
 	}
 	
