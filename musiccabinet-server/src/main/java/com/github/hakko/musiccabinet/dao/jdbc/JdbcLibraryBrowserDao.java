@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.dao.LibraryBrowserDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumNameRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRecommendationRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
@@ -193,6 +194,18 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ (sortAscending ? "asc" : "desc");
 
 		return jdbcTemplate.query(sql, new AlbumRowMapper());
+	}
+	
+	@Override
+	public List<Album> getVariousArtistsAlbums() {
+		String sql = "select a.id, a.artist_name_capitalization,"
+				+ " ma.id, ma.album_name_capitalization from library.album la"
+				+ " inner join music.album ma on la.album_id = ma.id"
+				+ " inner join music.artist a on ma.artist_id = a.id"
+				+ " where a.artist_name in ('VA', 'VARIOUS ARTISTS')"
+				+ " order by ma.album_name";
+		
+		return jdbcTemplate.query(sql, new AlbumNameRowMapper());
 	}
 
 	@Override

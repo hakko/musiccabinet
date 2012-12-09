@@ -22,6 +22,7 @@ public interface LibraryBrowserDao {
 	Album getAlbum(int albumId);
 	List<Album> getAlbums(int artistId, boolean sortAscending);
 	List<Album> getAlbums(int artistId, boolean sortByYear, boolean sortAscending);
+	List<Album> getVariousArtistsAlbums();
 	List<Album> getRecentlyAddedAlbums(int offset, int limit, String query);
 	List<Album> getRecentlyPlayedAlbums(String lastFmUsername, int offset, int limit, String query);
 	List<Album> getMostPlayedAlbums(String lastFmUsername, int offset, int limit, String query);

@@ -59,6 +59,10 @@ public class LibraryBrowserService {
 		return libraryBrowserDao.getAlbums(artistId, sortByYear, sortAscending);
 	}
 
+	public List<Album> getVariousArtistsAlbums() {
+		return libraryBrowserDao.getVariousArtistsAlbums();
+	}
+	
 	public List<Album> getRecentlyAddedAlbums(int offset, int limit, String query) {
 		return libraryBrowserDao.getRecentlyAddedAlbums(offset, limit, query);
 	}
