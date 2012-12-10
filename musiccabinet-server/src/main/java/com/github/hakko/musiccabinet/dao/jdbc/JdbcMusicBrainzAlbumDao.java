@@ -18,7 +18,9 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.MusicBrainzAlbumDao;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.MBAlbumRowMapper;
+import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 import com.github.hakko.musiccabinet.domain.model.music.MBRelease;
 import com.github.hakko.musiccabinet.log.Logger;
@@ -128,6 +130,26 @@ public class JdbcMusicBrainzAlbumDao implements MusicBrainzAlbumDao, JdbcTemplat
 		sb.append(" order by art.artist_name, mba.first_release_year offset " + offset + " limit 101");
 		
 		return jdbcTemplate.query(sb.toString(), params.toArray(), new MBAlbumRowMapper());
+	}
+
+	@Override
+	public List<Album> getDiscography(int artistId, boolean sortByYear, boolean sortAscending) {
+		String sql = "select -1, null, case when la.id is null then -1 else ma.id end,"
+				+ " ma.album_name_capitalization, coalesce(mba.first_release_year, la.year),"
+				+ " d1.path, f1.filename, d2.path, f2.filename, ai.smallimageurl,"
+				+ " array[]::int[] from music.album ma"
+				+ " left outer join music.mb_album mba on mba.album_id = ma.id"
+				+ " left outer join library.album la on la.album_id = ma.id"
+				+ " left outer join library.file f1 on f1.id = la.embeddedcoverartfile_id"
+				+ " left outer join library.directory d1 on f1.directory_id = d1.id"
+				+ " left outer join library.file f2 on f2.id = la.coverartfile_id"
+				+ " left outer join library.directory d2 on f2.directory_id = d2.id"
+				+ " left outer join music.albuminfo ai on ai.album_id = ma.id"
+				+ " where ma.artist_id = " + artistId + " and coalesce(mba.type_id, 1) > 0 order by"
+				+ (sortByYear ? " coalesce(mba.first_release_year, la.year) " : " ma.album_name ")  
+				+ (sortAscending ? "asc" : "desc");
+
+		return jdbcTemplate.query(sql, new AlbumRowMapper());
 	}
 	
 	@Override

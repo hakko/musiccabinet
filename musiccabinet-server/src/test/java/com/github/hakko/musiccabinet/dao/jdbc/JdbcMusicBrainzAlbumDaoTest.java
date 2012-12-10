@@ -22,11 +22,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
+import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 import com.github.hakko.musiccabinet.domain.model.music.MBRelease;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -52,8 +54,9 @@ public class JdbcMusicBrainzAlbumDaoTest {
 
 	private static final String ARTIST = "Cult of Luna",
 	TITLE1 = "The Beyond", MBID1 = "236316f7-c919-3986-918b-25e135ba8000", TYPE1 = "Album",
-	TITLE2 = "Bodies / Recluse", MBID2 = "5484925b-884c-31d8-9c3e-2ef3824e6a5f", TYPE2 = "EP";
-	private static final short YEAR1 = 2003, YEAR2 = 2006;
+	TITLE2 = "Bodies / Recluse", MBID2 = "5484925b-884c-31d8-9c3e-2ef3824e6a5f", TYPE2 = "EP",
+	TITLE3 = "Eternal Kingdom";
+	private static final short YEAR1 = 2003, YEAR2 = 2006, YEAR3 = 2008;
 	private static final String UNKNOWN = "[unknown]";
 	private static final String USER = "User";
 	
@@ -160,6 +163,55 @@ public class JdbcMusicBrainzAlbumDaoTest {
 		additionDao.getJdbcTemplate().execute("truncate music.artist cascade");
 
 		Assert.assertFalse(albumDao.hasDiscography());
+	}
+
+	@Test
+	public void musicBrainzReleasesAreReturnedInDiscography() {
+		List<Album> albums = albumDao.getDiscography(artist.getId(), true, true);
+		
+		Assert.assertNotNull(albums);
+		Assert.assertEquals(2, albums.size());
+		
+		Assert.assertEquals(YEAR1, albums.get(0).getYear());
+		Assert.assertEquals(YEAR2, albums.get(1).getYear());
+		
+		Assert.assertEquals(TITLE1, albums.get(0).getName());
+		Assert.assertEquals(TITLE2, albums.get(1).getName());
+
+		Assert.assertEquals(-1, albums.get(0).getId());
+		Assert.assertEquals(-1, albums.get(1).getId());
+
+		Assert.assertTrue(albums.get(0).getTrackIds().isEmpty());
+		Assert.assertTrue(albums.get(1).getTrackIds().isEmpty());
+	}
+	
+	@Test
+	public void mixesMusicBrainzReleasesAndLocalAlbumsIntoDiscography() {
+
+		UnittestLibraryUtil.submitFile(additionDao, Arrays.asList(
+				UnittestLibraryUtil.getFile(ARTIST, TITLE2, TITLE2, YEAR2),
+				UnittestLibraryUtil.getFile(ARTIST, TITLE3, TITLE3, YEAR3)));
+		
+		List<Album> albums = albumDao.getDiscography(artist.getId(), true, false);
+
+		Assert.assertNotNull(albums);
+		Assert.assertEquals(3, albums.size());
+
+		Assert.assertEquals(YEAR3, albums.get(0).getYear());
+		Assert.assertEquals(YEAR2, albums.get(1).getYear());
+		Assert.assertEquals(YEAR1, albums.get(2).getYear());
+		
+		Assert.assertEquals(TITLE3, albums.get(0).getName());
+		Assert.assertEquals(TITLE2, albums.get(1).getName());
+		Assert.assertEquals(TITLE1, albums.get(2).getName());
+
+		Assert.assertFalse(-1 == albums.get(0).getId());
+		Assert.assertFalse(-1 == albums.get(1).getId());
+		Assert.assertTrue(-1 == albums.get(2).getId());
+
+		Assert.assertTrue(albums.get(0).getTrackIds().isEmpty());
+		Assert.assertTrue(albums.get(1).getTrackIds().isEmpty());
+		Assert.assertTrue(albums.get(2).getTrackIds().isEmpty());
 	}
 
 }

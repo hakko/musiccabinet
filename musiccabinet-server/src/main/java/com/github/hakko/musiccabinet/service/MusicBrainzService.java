@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.github.hakko.musiccabinet.dao.MusicBrainzAlbumDao;
 import com.github.hakko.musiccabinet.dao.MusicBrainzArtistDao;
+import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.MBAlbum;
 import com.github.hakko.musiccabinet.domain.model.music.MBArtist;
@@ -55,6 +56,10 @@ public class MusicBrainzService {
 			String lastFmUsername, int playedWithinLastDays, int offset) {
 		return albumDao.getMissingAlbums(artistName, albumTypes,
 				lastFmUsername, playedWithinLastDays, offset);
+	}
+	
+	public List<Album> getDiscography(int artistId, boolean sortByYear, boolean sortAscending) {
+		return albumDao.getDiscography(artistId, sortByYear, sortAscending);
 	}
 
 	public void updateDiscography() {
