@@ -47,7 +47,13 @@ public class UnittestLibraryUtil {
 		if (title != null) md.setTitle(title);
 		return file;
 	}
-	
+
+	public static File getFile(String artist, String album, String title, short year) {
+		File file = getFile(artist, album, title);
+		file.getMetadata().setYear(year);
+		return file;
+	}
+
 	public static File getFile(Track track) {
 		return getFile(track.getArtist().getName(), null, track.getName());
 	}
