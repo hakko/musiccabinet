@@ -2,7 +2,9 @@ package com.github.hakko.musiccabinet.dao.util;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.DROP_FUNCTION;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -81,6 +83,10 @@ public class PostgreSQLUtil {
 		return new String(chars);
 	}
 	
+	/*
+	 * Returns a comma-separated list of integers, to be used in a
+	 * SQL IN () construct.
+	 */
 	public static String getIdParameters(List<Integer> ids) {
 		StringBuilder sb = new StringBuilder();
 		if (ids.size() > 0) {
@@ -90,6 +96,10 @@ public class PostgreSQLUtil {
 			sb.append(",").append(ids.get(i));
 		}
 		return sb.toString();
+	}
+	
+	public static String getIdParameters(Set<Integer> ids) {
+		return getIdParameters(new ArrayList<>(ids));
 	}
 	
 }
