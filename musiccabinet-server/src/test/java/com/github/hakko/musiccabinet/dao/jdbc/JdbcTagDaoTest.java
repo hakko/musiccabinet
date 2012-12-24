@@ -1,5 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
+import static com.github.hakko.musiccabinet.service.library.LibraryUtil.set;
 import static java.util.Arrays.asList;
 
 import java.util.Arrays;
@@ -22,9 +23,11 @@ import com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagTopArtists;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -35,6 +38,9 @@ public class JdbcTagDaoTest {
 
 	@Autowired
 	private JdbcArtistTopTagsDao artistTopTagsDao;
+	
+	@Autowired
+	private JdbcLibraryAdditionDao additionDao;
 	
 	@Before
 	public void loadFunctionDependency() throws ApplicationException {
@@ -232,6 +238,27 @@ public class JdbcTagDaoTest {
 		Assert.assertFalse(tags.get(0).isUse());
 		Assert.assertFalse(tags.get(1).isUse());
 		Assert.assertTrue(tags.get(2).isUse());
+	}
+	
+	@Test
+	public void returnsUniqueTagsFoundInLibraryFiles() {
+		
+		File file1 = UnittestLibraryUtil.getFile();
+		File file2 = UnittestLibraryUtil.getFile();
+		File file3 = UnittestLibraryUtil.getFile();
+		
+		file1.getMetadata().setGenre("drone");
+		file2.getMetadata().setGenre("disco");
+		file3.getMetadata().setGenre("drone");
+		
+		additionDao.addFiles(file1.getDirectory(), set(file1, file2, file3));
+		additionDao.updateLibrary();
+		
+		List<String> fileTags = dao.getFileTags();
+		
+		Assert.assertNotNull(fileTags);
+		Assert.assertEquals(2, fileTags.size());
+		Assert.assertEquals(asList("disco", "drone"), fileTags);
 	}
 	
 	private void deleteTags() {

@@ -13,6 +13,8 @@ import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
  * - set/get top tags (the ones used for radio / tag cloud)
  * 
  * - get top tags, including their popularity.
+ * 
+ * - get unique set of tags that are found in library files
  */
 public class TagService {
 
@@ -36,6 +38,10 @@ public class TagService {
 	
 	public void createTagCorrections(Map<String, String> tagCorrections) {
 		tagDao.createTagCorrections(tagCorrections);
+	}
+	
+	public List<String> getFileTags() {
+		return tagDao.getFileTags();
 	}
 	
 	// Spring setters

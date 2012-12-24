@@ -17,6 +17,8 @@ public interface TagDao {
 	List<String> getTopTags();
 	void setTopTags(List<String> topTags);
 	List<TagOccurrence> getTopTagsOccurrence();
+	
+	List<String> getFileTags();
 
 	void createTopArtists(List<TagTopArtists> tagTopArtists);
 	List<Tag> getTagsWithoutTopArtists();

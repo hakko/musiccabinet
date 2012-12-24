@@ -227,6 +227,13 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	}
 
 	@Override
+	public List<String> getFileTags() {
+		return jdbcTemplate.queryForList("select t.tag_name from music.tag t"
+				+ " where id in (select tag_id from library.filetag)"
+				+ " order by tag_name", String.class);
+	}
+
+	@Override
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
