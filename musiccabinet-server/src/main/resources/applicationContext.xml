@@ -465,9 +465,9 @@
 		<property name="testConnectionOnCheckout" value="true"/>
 		<property name="acquireRetryAttempts" value="1"/>
 
-		<property name="minPoolSize" value="25"/>
+		<property name="minPoolSize" value="15"/>
 		<property name="maxPoolSize" value="40"/>
-		<property name="initialPoolSize" value="25"/>
+		<property name="initialPoolSize" value="15"/>
 	</bean>
 
 	<bean id="initialDataSource" destroy-method="close"
