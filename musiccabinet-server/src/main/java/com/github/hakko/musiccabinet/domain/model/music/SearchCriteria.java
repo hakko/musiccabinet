@@ -1,14 +1,15 @@
 package com.github.hakko.musiccabinet.domain.model.music;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import com.github.hakko.musiccabinet.domain.model.library.MetaData.Mediatype;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 public class SearchCriteria {
 
+	// filetag criteria
 	private String artist;
 	private String albumArtist;
-	private String artistGenre;
 	private String composer;
 	private String album;
 	private String title;
@@ -19,17 +20,36 @@ public class SearchCriteria {
 	private Short yearFrom;
 	private Short yearTo;
 	private String trackGenre;
-	private Boolean coverArtEmbedded;
-	private Long sizeFrom;
-	private Long sizeTo;
-	private Short durationFrom;
-	private Short durationTo;
-	private Set<Mediatype> mediaTypes;
-	private Boolean vbr;
-	private Short playCountFrom;
-	private Short playCountTo;
+	// TODO:
 	private Short trackRankFrom;
 	private Short trackRankTo;
+	
+	// file header criteria
+	private Short durationFrom;
+	private Short durationTo;
+	private Set<Integer> filetypes = new HashSet<>();
+
+	// file criteria
+	private String directory;
+	private Short modifiedDays;
+	
+	// external
+	private String searchQuery;
+	private String artistGenre;
+	private Short topTrackRank;
+	private String lastFmUsername;
+	private boolean onlyStarredByUser;
+	private Short playedLastDays;
+	private Short playCountFrom;
+	private Short playCountTo;
+
+	public boolean hasFileHeaderCriteria() {
+		return durationFrom != null || durationTo != null || filetypes != null;
+	}
+
+	public boolean hasFileCriteria() {
+		return directory != null || modifiedDays != null;
+	}
 	
 	public String getArtist() {
 		return artist;
@@ -45,14 +65,6 @@ public class SearchCriteria {
 
 	public void setAlbumArtist(String albumArtist) {
 		this.albumArtist = albumArtist;
-	}
-
-	public String getArtistGenre() {
-		return artistGenre;
-	}
-
-	public void setArtistGenre(String artistGenre) {
-		this.artistGenre = artistGenre;
 	}
 
 	public String getComposer() {
@@ -135,28 +147,20 @@ public class SearchCriteria {
 		this.trackGenre = trackGenre;
 	}
 
-	public Boolean getCoverArtEmbedded() {
-		return coverArtEmbedded;
+	public Short getTrackRankFrom() {
+		return trackRankFrom;
 	}
 
-	public void setCoverArtEmbedded(Boolean coverArtEmbedded) {
-		this.coverArtEmbedded = coverArtEmbedded;
+	public void setTrackRankFrom(Short trackRankFrom) {
+		this.trackRankFrom = trackRankFrom;
 	}
 
-	public Long getSizeFrom() {
-		return sizeFrom;
+	public Short getTrackRankTo() {
+		return trackRankTo;
 	}
 
-	public void setSizeFrom(Long sizeFrom) {
-		this.sizeFrom = sizeFrom;
-	}
-
-	public Long getSizeTo() {
-		return sizeTo;
-	}
-
-	public void setSizeTo(Long sizeTo) {
-		this.sizeTo = sizeTo;
+	public void setTrackRankTo(Short trackRankTo) {
+		this.trackRankTo = trackRankTo;
 	}
 
 	public Short getDurationFrom() {
@@ -175,20 +179,76 @@ public class SearchCriteria {
 		this.durationTo = durationTo;
 	}
 
-	public Set<Mediatype> getMediaTypes() {
-		return mediaTypes;
+	public Set<Integer> getFiletypes() {
+		return filetypes;
 	}
 
-	public void setMediaTypes(Set<Mediatype> mediaTypes) {
-		this.mediaTypes = mediaTypes;
+	public void setFiletypes(Set<Integer> filetypes) {
+		this.filetypes = filetypes;
 	}
 
-	public Boolean getVbr() {
-		return vbr;
+	public String getDirectory() {
+		return directory;
 	}
 
-	public void setVbr(Boolean vbr) {
-		this.vbr = vbr;
+	public void setDirectory(String directory) {
+		this.directory = directory;
+	}
+
+	public Short getModifiedDays() {
+		return modifiedDays;
+	}
+
+	public void setModifiedDays(Short modifiedDays) {
+		this.modifiedDays = modifiedDays;
+	}
+
+	public String getArtistGenre() {
+		return artistGenre;
+	}
+
+	public void setArtistGenre(String artistGenre) {
+		this.artistGenre = artistGenre;
+	}
+
+	public String getSearchQuery() {
+		return searchQuery;
+	}
+
+	public void setSearchQuery(String searchQuery) {
+		this.searchQuery = searchQuery;
+	}
+
+	public Short getTopTrackRank() {
+		return topTrackRank;
+	}
+
+	public void setTopTrackRank(Short topTrackRank) {
+		this.topTrackRank = topTrackRank;
+	}
+
+	public String getLastFmUsername() {
+		return lastFmUsername;
+	}
+
+	public void setLastFmUsername(String lastFmUsername) {
+		this.lastFmUsername = lastFmUsername;
+	}
+
+	public boolean isOnlyStarredByUser() {
+		return onlyStarredByUser;
+	}
+
+	public void setOnlyStarredByUser(boolean onlyStarredByUser) {
+		this.onlyStarredByUser = onlyStarredByUser;
+	}
+
+	public Short getPlayedLastDays() {
+		return playedLastDays;
+	}
+
+	public void setPlayedLastDays(Short playedLastDays) {
+		this.playedLastDays = playedLastDays;
 	}
 
 	public Short getPlayCountFrom() {
@@ -207,20 +267,9 @@ public class SearchCriteria {
 		this.playCountTo = playCountTo;
 	}
 
-	public Short getTrackRankFrom() {
-		return trackRankFrom;
-	}
-
-	public void setTrackRankFrom(Short trackRankFrom) {
-		this.trackRankFrom = trackRankFrom;
-	}
-
-	public Short getTrackRankTo() {
-		return trackRankTo;
-	}
-
-	public void setTrackRankTo(Short trackRankTo) {
-		this.trackRankTo = trackRankTo;
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 	
 }

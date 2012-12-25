@@ -13,6 +13,8 @@ public interface NameSearchDao {
 	NameSearchResult<Artist> getArtists(String userQuery, int offset, int limit);
 	NameSearchResult<Album> getAlbums(String userQuery, int offset, int limit);
 	NameSearchResult<Track> getTracks(String userQuery, int offset, int limit);
-	List<Track> getTracks(SearchCriteria searchCriteria, int offset, int limit);
+	List<Integer> getTrackIds(SearchCriteria searchCriteria, int offset, int limit);
+	
+	List<String> getFileTypes();
 	
 }

@@ -24,9 +24,13 @@ public class NameSearchService {
 	public NameSearchResult<Track> getTracks(String userQuery, int offset, int limit) {
 		return nameSearchDao.getTracks(userQuery, offset, limit);
 	}
-	
-	public List<Track> getTracks(SearchCriteria searchCriteria, int offset, int limit) {
-		return nameSearchDao.getTracks(searchCriteria, offset, limit);
+
+	public List<Integer> getTracks(SearchCriteria searchCriteria, int offset, int limit) {
+		return nameSearchDao.getTrackIds(searchCriteria, offset, limit);
+	}
+
+	public List<String> getFileTypes() {
+		return nameSearchDao.getFileTypes();
 	}
 
 	// Spring setter
