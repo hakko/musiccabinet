@@ -31,16 +31,16 @@ public class LibraryBrowserService {
 		return libraryBrowserDao.getArtists(tag, treshold);
 	}
 	
-	public List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, int offset, int limit, String query) {
-		return libraryBrowserDao.getRecentlyPlayedArtists(lastFmUsername, offset, limit, query);
+	public List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, boolean onlyAlbumArtists, int offset, int limit, String query) {
+		return libraryBrowserDao.getRecentlyPlayedArtists(lastFmUsername, onlyAlbumArtists, offset, limit, query);
 	}
 
 	public List<ArtistRecommendation> getMostPlayedArtists(String lastFmUsername, int offset, int limit, String query) {
 		return libraryBrowserDao.getMostPlayedArtists(lastFmUsername, offset, limit, query);
 	}
 
-	public List<ArtistRecommendation> getRandomArtists(int limit) {
-		return libraryBrowserDao.getRandomArtists(limit);
+	public List<ArtistRecommendation> getRandomArtists(boolean onlyAlbumArtists, int limit) {
+		return libraryBrowserDao.getRandomArtists(onlyAlbumArtists, limit);
 	}
 
 	public List<ArtistRecommendation> getStarredArtists(String lastFmUsername, int offset, int limit, String query) {
@@ -109,6 +109,10 @@ public class LibraryBrowserService {
 
 	public String getCoverArtFileForTrack(int trackId) {
 		return libraryBrowserDao.getCoverArtFileForTrack(trackId);
+	}
+
+	public void addArtwork(List<Track> tracks) {
+		libraryBrowserDao.addArtwork(tracks);
 	}
 	
 	public String getLyricsForTrack(int trackId) {

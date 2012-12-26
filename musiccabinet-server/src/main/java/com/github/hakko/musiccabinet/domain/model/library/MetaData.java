@@ -27,6 +27,7 @@ public class MetaData {
 	private boolean hasLyrics;
 	private boolean isCoverArtEmbedded;
 	private String path;
+	private String artworkPath;
 	private int size;
 	private long modified;
 	
@@ -207,6 +208,14 @@ public class MetaData {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public String getArtworkPath() {
+		return artworkPath;
+	}
+
+	public void setArtworkPath(String artworkPath) {
+		this.artworkPath = artworkPath;
 	}
 
 	public int getSize() {

@@ -182,13 +182,13 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 	@Test
 	public void returnsRecentlyPlayedArtists() {
 		List<ArtistRecommendation> recentlyPlayed = 
-				browserDao.getRecentlyPlayedArtists(userName1, 0, 10, null);
+				browserDao.getRecentlyPlayedArtists(userName1, true, 0, 10, null);
 		Assert.assertEquals(0, recentlyPlayed.size());
 		
 		playCountDao.addPlayCount(user1, track1);
-		assertEquals(1, browserDao.getRecentlyPlayedArtists(userName1, 0, 10, null).size());
-		assertEquals(0, browserDao.getRecentlyPlayedArtists(userName1, 0, 10, artistName2).size());
-		assertEquals(1, browserDao.getRecentlyPlayedArtists(userName1, 0, 10, artistName1).size());
+		assertEquals(1, browserDao.getRecentlyPlayedArtists(userName1, true, 0, 10, null).size());
+		assertEquals(0, browserDao.getRecentlyPlayedArtists(userName1, true, 0, 10, artistName2).size());
+		assertEquals(1, browserDao.getRecentlyPlayedArtists(userName1, true, 0, 10, artistName1).size());
 	}
 
 	@Test
@@ -278,8 +278,8 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 
 	@Test
 	public void returnsRandomArtist() {
-		Assert.assertEquals(0, browserDao.getRandomArtists(0).size());
-		Assert.assertEquals(1, browserDao.getRandomArtists(1).size());
+		Assert.assertEquals(0, browserDao.getRandomArtists(true, 0).size());
+		Assert.assertEquals(1, browserDao.getRandomArtists(true, 1).size());
 	}
 
 	@Test

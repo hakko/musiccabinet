@@ -7,13 +7,17 @@ import static java.io.File.separatorChar;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.github.hakko.musiccabinet.dao.LibraryBrowserDao;
@@ -21,6 +25,7 @@ import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumNameRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRecommendationRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
+import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.domain.model.aggr.LibraryStatistics;
 import com.github.hakko.musiccabinet.domain.model.library.MetaData;
@@ -78,7 +83,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		return jdbcTemplate.query(sql, new ArtistRowMapper());
 	}
 
-	public List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, int offset, int limit, String query) {
+	public List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, boolean onlyAlbumArtists, int offset, int limit, String query) {
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
@@ -89,8 +94,9 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
 				+ " where u.lastfm_user = upper(?)"
 				+ " group by artist_id"
-				+ ") pc on pc.artist_id = a.id"
-				+ (query == null ? "" : " where la.artist_name_search like ?") 
+				+ ") pc on pc.artist_id = a.id where true"
+				+ (query == null ? "" : " and la.artist_name_search like ?") 
+				+ (onlyAlbumArtists ? " and la.hasalbums" : "")
 				+ " order by last_invocation_time desc offset ? limit ?";
 		
 		Object[] params = query == null ? 
@@ -120,11 +126,12 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
 	}
 
-	public List<ArtistRecommendation> getRandomArtists(int limit) {
+	public List<ArtistRecommendation> getRandomArtists(boolean onlyAlbumArtists, int limit) {
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on a.id = ai.artist_id"
 				+ " inner join library.artist la on la.artist_id = a.id"
+				+ (onlyAlbumArtists ? " where la.hasalbums" : "")
 				+ " order by random() limit " + limit;
 		
 		return jdbcTemplate.query(sql, new ArtistRecommendationRowMapper());
@@ -150,7 +157,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	@Override
 	public Album getAlbum(int albumId) {
 		String sql = "select ma.artist_id, null, ma.id, ma.album_name_capitalization, la.year,"
-				+ " f1.path, f1.filename, f2.path, f2.filename, ai.largeimageurl, lt.track_ids"
+				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, lt.track_ids"
 				+ " from music.album ma"
 				+ " inner join library.album la on la.album_id = ma.id "
 				+ " inner join (select la2.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids"
@@ -159,8 +166,10 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ "     inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ "     group by la2.album_id) lt"
 				+ "		on lt.album_id = la.album_id"
-				+ " left outer join (select f.id, f.filename, d.path from library.file f inner join library.directory d on f.directory_id = d.id) f1 on f1.id = la.embeddedcoverartfile_id"
-				+ " left outer join (select f.id, f.filename, d.path from library.file f inner join library.directory d on f.directory_id = d.id) f2 on f2.id = la.coverartfile_id"
+				+ " left outer join library.file f1 on f1.id = la.embeddedcoverartfile_id"
+				+ " left outer join library.directory d1 on f1.directory_id = d1.id"
+				+ " left outer join library.file f2 on f2.id = la.coverartfile_id"
+				+ " left outer join library.directory d2 on f2.directory_id = d2.id"
 				+ " left outer join music.albuminfo ai on la.album_id = ai.album_id"
 				+ " where la.album_id = " + albumId;
 		
@@ -415,7 +424,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 			}
 		});
 	}
-	
+
 	@Override
 	public List<Integer> getRecentlyPlayedTrackIds(String lastFmUsername, int offset, int limit, String query) {
 		String sql = "select lt.id from ("
@@ -499,26 +508,53 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 
 	@Override
 	public String getCoverArtFileForTrack(int trackId) {
-		String sql = "select f1.path, f1.filename, f2.path, f2.filename"
-				+ " from library.track lt"
-				+ " inner join music.album ma on lt.album_id = ma.id"
-				+ " inner join library.album la on la.album_id = ma.id"
-				+ " left outer join (select f.id, f.filename, d.path from library.file f inner join library.directory d on f.directory_id = d.id) f1 on f1.id = la.embeddedcoverartfile_id"
-				+ " left outer join (select f.id, f.filename, d.path from library.file f inner join library.directory d on f.directory_id = d.id) f2 on f2.id = la.coverartfile_id"
-				+ " where lt.id = " + trackId;
-
-		return jdbcTemplate.queryForObject(sql, new RowMapper<String>() {
-			@Override
-			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-				String coverArtFile = getFileName(rs.getString(1), rs.getString(2));
-				if (coverArtFile == null) {
-					coverArtFile = getFileName(rs.getString(3), rs.getString(4));
-				}
-				return coverArtFile;
-			}
-		});
+		return getCoverArtFileForTrackIds(Arrays.asList(trackId)).get(trackId);
 	}
 
+	@Override
+	public void addArtwork(List<Track> tracks) {
+		Map<Integer, String> map = getCoverArtFileForTrackIds(getTrackIds(tracks));
+		for (Track track : tracks) {
+			track.getMetaData().setArtworkPath(map.get(track.getId()));
+		}
+	}
+	
+	private List<Integer> getTrackIds(List<Track> tracks) {
+		List<Integer> trackIds = new ArrayList<>();
+		for (Track track : tracks) {
+			trackIds.add(track.getId());
+		}
+		return trackIds;
+	}
+
+	private Map<Integer, String> getCoverArtFileForTrackIds(List<Integer> trackIds) {
+		String sql = "select lt.id, d1.path, f1.filename, d2.path, f2.filename"
+				+ " from library.track lt"
+				+ " inner join library.album la on la.album_id = lt.album_id"
+				+ " left outer join library.file f1 on f1.id = la.embeddedcoverartfile_id"
+				+ " left outer join library.directory d1 on f1.directory_id = d1.id"
+				+ " left outer join library.file f2 on f2.id = la.coverartfile_id"
+				+ " left outer join library.directory d2 on f2.directory_id = d2.id"
+				+ " where lt.id in (" + PostgreSQLUtil.getIdParameters(trackIds) + ")";
+
+		final Map<Integer, String> map = new HashMap<>();
+
+		if (!trackIds.isEmpty()) {
+			jdbcTemplate.query(sql, new RowCallbackHandler() {
+				@Override
+				public void processRow(ResultSet rs) throws SQLException {
+					String coverArtFile = getFileName(rs.getString(2), rs.getString(3));
+					if (coverArtFile == null) {
+						coverArtFile = getFileName(rs.getString(4), rs.getString(5));
+					}
+					map.put(rs.getInt(1), coverArtFile);
+				}
+			});
+		}
+			
+		return map;
+	}
+	
 	@Override
 	public String getLyricsForTrack(int trackId) {
 		String sql = "select ft.lyrics from library.track lt"

@@ -279,6 +279,44 @@ public class LibraryBrowserServiceTest {
 		scannerService.add(set(aretha));
 	}
 	
+	@Test
+	public void findsCoverArtFileForTrack() throws Exception {
+		Artist artist = new Artist("Artist Name");
+		int artistId = musicDao.getArtistId(artist);
+		
+		scannerService.add(set(media3));
+		List<Album> albums = browserService.getAlbums(artistId, false, true);
+		int trackId = albums.get(1).getTrackIds().get(0);
+		
+		String coverArtPath = browserService.getCoverArtFileForTrack(trackId);
+		
+		Assert.assertNotNull(coverArtPath);
+		Assert.assertTrue(coverArtPath.endsWith(
+				"Folder artwork" + separatorChar + "folder.png"));
+	}
+	
+	@Test
+	public void addsCoverArtPathForTrack() throws Exception {
+		Artist artist = new Artist("Artist Name");
+		int artistId = musicDao.getArtistId(artist);
+		
+		scannerService.add(set(media3));
+		List<Album> albums = browserService.getAlbums(artistId, false, true);
+		int trackId = albums.get(0).getTrackIds().get(0);
+		List<Track> tracks = browserService.getTracks(asList(trackId));
+
+		Assert.assertNotNull(tracks);
+		Assert.assertEquals(1, tracks.size());
+		Assert.assertNull(tracks.get(0).getMetaData().getArtworkPath());
+		
+		browserService.addArtwork(tracks);
+
+		String artworkPath = tracks.get(0).getMetaData().getArtworkPath();
+		Assert.assertNotNull(artworkPath);
+		Assert.assertTrue(artworkPath.endsWith(
+				"Embedded artwork" + separatorChar + "Embedded artwork.mp3"));
+	}
+	
 	private void assertArtists(List<Artist> artists, String... artistNames) {
 		Assert.assertNotNull(artists);
 		Assert.assertEquals(artistNames.length, artists.size());

@@ -14,9 +14,9 @@ public interface LibraryBrowserDao {
 	List<Artist> getArtists();
 	List<Artist> getArtists(int indexLetter);
 	List<Artist> getArtists(String tag, int treshold);
-	List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, int offset, int limit, String query);
+	List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, boolean onlyAlbumArtists, int offset, int limit, String query);
 	List<ArtistRecommendation> getMostPlayedArtists(String lastFmUsername, int offset, int limit, String query);
-	List<ArtistRecommendation> getRandomArtists(int limit);
+	List<ArtistRecommendation> getRandomArtists(boolean onlyAlbumArtists, int limit);
 	List<ArtistRecommendation> getStarredArtists(String lastFmUsername, int offset, int limit, String query);
 
 	Album getAlbum(int albumId);
@@ -37,6 +37,7 @@ public interface LibraryBrowserDao {
 	List<Integer> getRandomTrackIds(int limit, Integer fromYear, Integer toYear, String genre);
 	
 	String getCoverArtFileForTrack(int trackId);
+	void addArtwork(List<Track> tracks);
 	String getLyricsForTrack(int trackId);
 
 	List<Integer> getArtistIndexes();
