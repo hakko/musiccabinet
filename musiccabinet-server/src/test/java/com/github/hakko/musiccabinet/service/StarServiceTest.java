@@ -4,6 +4,7 @@ import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
 
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -113,4 +114,24 @@ public class StarServiceTest {
 		Assert.assertEquals(false, mask[0]);
 	}
 
+	@Test
+	public void returnsStarredArtists() {
+		List<Artist> artists = starService.getStarredArtists(user1);
+		Assert.assertNotNull(artists);
+		Assert.assertEquals(0, artists.size());
+		
+		starService.starArtist(user1, artist.getId());
+
+		artists = starService.getStarredArtists(user1);
+		Assert.assertNotNull(artists);
+		Assert.assertEquals(1, artists.size());
+		Assert.assertEquals(artist, artists.get(0));
+		
+		starService.unstarArtist(user1, artist.getId());
+
+		artists = starService.getStarredArtists(user1);
+		Assert.assertNotNull(artists);
+		Assert.assertEquals(0, artists.size());
+	}
+	
 }

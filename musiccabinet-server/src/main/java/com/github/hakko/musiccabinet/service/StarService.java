@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.LastFmDao;
+import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.StarDao;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
+import com.github.hakko.musiccabinet.domain.model.music.Artist;
 
 public class StarService {
 
@@ -22,20 +24,21 @@ public class StarService {
 	
 	private StarDao starDao;
 	private LastFmDao lastFmDao;
+	private MusicDao musicDao;
 	
 	public void starArtist(String lastFmUsername, int artistId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.starArtist(lastFmUser, artistId);
-		getStarredArtists(lastFmUser).add(artistId);
+		getStarredArtistIds(lastFmUser).add(artistId);
 	}
 	
 	public void unstarArtist(String lastFmUsername, int artistId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.unstarArtist(lastFmUser, artistId);
-		getStarredArtists(lastFmUser).remove(artistId);
+		getStarredArtistIds(lastFmUser).remove(artistId);
 	}
 	
-	protected Set<Integer> getStarredArtists(LastFmUser lastFmUser) {
+	protected Set<Integer> getStarredArtistIds(LastFmUser lastFmUser) {
 		if (!starredArtists.containsKey(lastFmUser.getId())) {
 			starredArtists.put(lastFmUser.getId(), new HashSet<>(
 					starDao.getStarredArtistIds(lastFmUser, 0, MAX_VALUE, null)));
@@ -43,27 +46,31 @@ public class StarService {
 		return starredArtists.get(lastFmUser.getId());
 	}
 
+	public List<Artist> getStarredArtists(String lastFmUsername) {
+		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
+		return musicDao.getArtists(getStarredArtistIds(lastFmUser));
+	}
 	
 	public void starAlbum(String lastFmUsername, int albumId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.starAlbum(lastFmUser, albumId);
-		getStarredAlbums(lastFmUser).add(albumId);
+		getStarredAlbumIds(lastFmUser).add(albumId);
 	}
 	
 	public void unstarAlbum(String lastFmUsername, int albumId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.unstarAlbum(lastFmUser, albumId);
-		getStarredAlbums(lastFmUser).remove(albumId);
+		getStarredAlbumIds(lastFmUser).remove(albumId);
 	}
 	
-	protected Set<Integer> getStarredAlbums(LastFmUser lastFmUser) {
+	protected Set<Integer> getStarredAlbumIds(LastFmUser lastFmUser) {
 		if (!starredAlbums.containsKey(lastFmUser.getId())) {
 			starredAlbums.put(lastFmUser.getId(), new HashSet<>(
 					starDao.getStarredAlbumIds(lastFmUser, 0, MAX_VALUE, null)));
 		}
 		return starredAlbums.get(lastFmUser.getId());
 	}
-	
+
 	public void starTrack(String lastFmUsername, int trackId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.starTrack(lastFmUser, trackId);
@@ -98,7 +105,7 @@ public class StarService {
 			return false;
 		}
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
-		return getStarredArtists(lastFmUser).contains(artistId);
+		return getStarredArtistIds(lastFmUser).contains(artistId);
 	}
 
 	public boolean[] getStarredAlbumsMask(String lastFmUsername, List<Integer> albumIds) {
@@ -108,7 +115,7 @@ public class StarService {
 		}
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		for (int i = 0; i < mask.length; i++) {
-			mask[i] = getStarredAlbums(lastFmUser).contains(albumIds.get(i));
+			mask[i] = getStarredAlbumIds(lastFmUser).contains(albumIds.get(i));
 		}
 		return mask;
 	}
@@ -133,6 +140,10 @@ public class StarService {
 
 	public void setLastFmDao(LastFmDao lastFmDao) {
 		this.lastFmDao = lastFmDao;
+	}
+
+	public void setMusicDao(MusicDao musicDao) {
+		this.musicDao = musicDao;
 	}
 
 }
