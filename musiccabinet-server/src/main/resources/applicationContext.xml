@@ -69,6 +69,7 @@
 	<bean id="starService" class="com.github.hakko.musiccabinet.service.StarService">
 		<property name="lastFmDao" ref="lastFmDao"/>
 		<property name="starDao" ref="starDao"/>
+		<property name="musicDao" ref="musicDao"/>
 	</bean>
 
 	<bean id="lastFmService" class="com.github.hakko.musiccabinet.service.LastFmService">
