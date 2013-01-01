@@ -25,11 +25,10 @@ import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumNameRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRecommendationRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithMetadataRowMapper;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.domain.model.aggr.LibraryStatistics;
-import com.github.hakko.musiccabinet.domain.model.library.MetaData;
-import com.github.hakko.musiccabinet.domain.model.library.MetaData.Mediatype;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
@@ -380,6 +379,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 		String sql = "select mt.track_name_capitalization, "
 				+ " alb.album_name_capitalization,"
 				+ " art.artist_name_capitalization,"
+				+ " albart.artist_name_capitalization,"
 				+ " comp.artist_name_capitalization,"
 				+ " ft.track_nr, ft.track_nrs, ft.disc_nr, ft.disc_nrs, ft.year,"
 				+ " case when ft.lyrics is null then false else true end,"
@@ -392,37 +392,12 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join library.fileheader fh on fh.file_id = lt.file_id"
 				+ " inner join music.artist art on ft.artist_id = art.id"
+				+ " left outer join music.artist albart on ft.album_artist_id = albart.id"
 				+ " left outer join music.artist comp on ft.composer_id = comp.id"
 				+ " inner join music.album alb on lt.album_id = alb.id"
 				+ " where lt.id in (" + getIdParameters(trackIds) + ")";
 		
-		return jdbcTemplate.query(sql, new RowMapper<Track>() {
-			@Override
-			public Track mapRow(ResultSet rs, int rowNum) throws SQLException {
-				String trackName = rs.getString(1);
-				MetaData md = new MetaData();
-				md.setAlbum(rs.getString(2));
-				md.setArtist(rs.getString(3));
-				md.setComposer(rs.getString(4));
-				md.setTrackNr(rs.getShort(5));
-				md.setTrackNrs(rs.getShort(6));
-				md.setDiscNr(rs.getShort(7));
-				md.setDiscNrs(rs.getShort(8));
-				md.setYear(rs.getShort(9));
-				md.setHasLyrics(rs.getBoolean(10));
-				md.setBitrate(rs.getShort(11));
-				md.setVbr(rs.getBoolean(12));
-				md.setDuration(rs.getShort(13));
-				md.setMediaType(Mediatype.values()[rs.getShort(14)]);
-				md.setPath(rs.getString(15) + separatorChar + rs.getString(16));
-				md.setSize(rs.getInt(17));
-				md.setModified(rs.getTimestamp(18).getTime());
-				int trackId = rs.getInt(19);
-				md.setAlbumId(rs.getInt(20));
-				md.setArtistId(rs.getInt(21));
-				return new Track(trackId, trackName, md);
-			}
-		});
+		return jdbcTemplate.query(sql, new TrackWithMetadataRowMapper());
 	}
 
 	@Override
