@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
+import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,4 +59,16 @@ public class JdbcMusicDaoTest {
 		Assert.assertEquals(trackId2, trackId2Again);
 	}
 	
+	@Test
+	public void trackIdCanBeUsedToFetchTrack() {
+		final String artistName = "Death Grips";
+		final String trackName = "I've Seen Footage";
+
+		int trackId = dao.getTrackId(artistName, trackName);
+		Track track = dao.getTrack(trackId);
+
+		Assert.assertEquals(artistName, track.getArtist().getName());
+		Assert.assertEquals(trackName, track.getName());
+	}
+
 }

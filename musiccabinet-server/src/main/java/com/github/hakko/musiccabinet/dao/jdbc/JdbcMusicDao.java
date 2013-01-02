@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithArtistRowMapper;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
@@ -68,7 +69,15 @@ public class JdbcMusicDao implements MusicDao, JdbcTemplateDao {
 	public int getTrackId(Track track) {
 		return getTrackId(track.getArtist().getName(), track.getName());
 	}
-	
+
+	@Override
+	public Track getTrack(int trackId) {
+		String sql = "select a.artist_name_capitalization, t.track_name_capitalization"
+				+ " from music.artist a inner join music.track t on t.artist_id = a.id"
+				+ " where t.id = " + trackId;
+
+		return jdbcTemplate.queryForObject(sql, new TrackWithArtistRowMapper());
+	}
 
 	@Override
 	public JdbcTemplate getJdbcTemplate() {

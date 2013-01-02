@@ -16,5 +16,6 @@ public interface MusicDao {
 	int getAlbumId(Album album);
 	int getTrackId(String artistName, String trackName);
 	int getTrackId(Track track);
+	Track getTrack(int trackId);
 
 }
