@@ -1,7 +1,6 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.UPDATE_STATISTICS;
-import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.getFile;
 import static com.github.hakko.musiccabinet.util.UnittestLibraryUtil.submitFile;
 import static java.io.File.separatorChar;
 import static junit.framework.Assert.assertEquals;
@@ -23,7 +22,6 @@ import com.github.hakko.musiccabinet.domain.model.aggr.LibraryStatistics;
 import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
-import com.github.hakko.musiccabinet.service.library.LibraryUtilTest;
 import com.github.hakko.musiccabinet.util.UnittestLibraryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)

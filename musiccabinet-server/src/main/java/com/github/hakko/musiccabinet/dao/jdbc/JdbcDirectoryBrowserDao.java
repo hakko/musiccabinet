@@ -13,13 +13,10 @@ import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.DirectoryRowMapper;
 import com.github.hakko.musiccabinet.domain.model.library.Directory;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
-import com.github.hakko.musiccabinet.log.Logger;
 
 public class JdbcDirectoryBrowserDao implements DirectoryBrowserDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-
-	private static final Logger LOG = Logger.getLogger(JdbcDirectoryBrowserDao.class);
 
 	@Override
 	public Set<Directory> getRootDirectories() {
