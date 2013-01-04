@@ -38,7 +38,10 @@ public class JdbcArtistTopTracksDaoTest {
 	
 	@Autowired
 	private JdbcLibraryAdditionDao additionDao;
-	
+
+	@Autowired
+	private JdbcPlaylistGeneratorDao playlistGeneratorDao;
+
 	// testdata
 	private Artist cherArtist;
 	private Artist rihannaArtist;
@@ -127,6 +130,8 @@ public class JdbcArtistTopTracksDaoTest {
 				UnittestLibraryUtil.getFile("Rihanna", "Compilation", "Rude Boy"), // 1
 				UnittestLibraryUtil.getFile("Rihanna", "Compilation", "Man Down"), // 5
 				UnittestLibraryUtil.getFile("Rihanna", "Compilation", "Umbrella"))); // 8
+
+		playlistGeneratorDao.updateSearchIndex();
 
 		int rihannaId = musicDao.getArtistId("Rihanna");
 		List<Track> topTracks = dao.getTopTracks(rihannaId);
