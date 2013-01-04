@@ -253,6 +253,9 @@
 	
 	
 	<!--  LAST.FM WS CLIENTS -->
+	<bean id="trackLoveClient" class="com.github.hakko.musiccabinet.ws.lastfm.TrackLoveClient"/>
+	<bean id="trackUnLoveClient" class="com.github.hakko.musiccabinet.ws.lastfm.TrackUnLoveClient"/>
+
 	<bean id="updateNowPlayingClient" class="com.github.hakko.musiccabinet.ws.lastfm.UpdateNowPlayingClient"/>
 
 	<bean id="scrobbleClient" class="com.github.hakko.musiccabinet.ws.lastfm.ScrobbleClient"/>
