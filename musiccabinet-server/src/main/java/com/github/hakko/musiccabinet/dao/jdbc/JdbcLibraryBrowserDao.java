@@ -83,46 +83,66 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	}
 
 	public List<ArtistRecommendation> getRecentlyPlayedArtists(String lastFmUsername, boolean onlyAlbumArtists, int offset, int limit, String query) {
-		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
+		String userCriteria = "", artistNameCriteria = "", hasAlbumsCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userCriteria = " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
+				+ " where u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			artistNameCriteria = " and la.artist_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		if (onlyAlbumArtists) {
+			hasAlbumsCriteria = " and la.hasalbums";
+		}
+		args.add(offset);
+		args.add(limit);
+
+		String sql =
+				"select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
 				+ " inner join library.artist la on la.artist_id = a.id"
 				+ " inner join ("
 				+ " select artist_id, max(invocation_time) as last_invocation_time"
-				+ " from library.playcount pc"
-				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?)"
+				+ " from library.playcount pc " + userCriteria
 				+ " group by artist_id"
-				+ ") pc on pc.artist_id = a.id where true"
-				+ (query == null ? "" : " and la.artist_name_search like ?") 
-				+ (onlyAlbumArtists ? " and la.hasalbums" : "")
+				+ ") pc on pc.artist_id = a.id where true "
+				+ artistNameCriteria + hasAlbumsCriteria
 				+ " order by last_invocation_time desc offset ? limit ?";
 		
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
+		return jdbcTemplate.query(sql, args.toArray(), new ArtistRecommendationRowMapper());
 	}
 
 	public List<ArtistRecommendation> getMostPlayedArtists(String lastFmUsername, int offset, int limit, String query) {
+		String userCriteria = "", artistNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userCriteria = " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
+					+ " where u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			artistNameCriteria = " and la.artist_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+		
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
 				+ " inner join library.artist la on la.artist_id = a.id"
 				+ " inner join ("
 				+ " select artist_id, count(artist_id) as cnt"
-				+ " from library.playcount pc"
-				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?)"
+				+ " from library.playcount pc" + userCriteria
 				+ " group by artist_id"
-				+ ") pc on pc.artist_id = a.id"
-				+ (query == null ? "" : " where la.artist_name_search like ?") 
+				+ ") pc on pc.artist_id = a.id" + artistNameCriteria
 				+ " order by cnt desc offset ? limit ?";
 		
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
+		return jdbcTemplate.query(sql, args.toArray(), new ArtistRecommendationRowMapper());
 	}
 
 	public List<ArtistRecommendation> getRandomArtists(boolean onlyAlbumArtists, int limit) {
@@ -137,20 +157,29 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	}
 
 	public List<ArtistRecommendation> getStarredArtists(String lastFmUsername, int offset, int limit, String query) {
+		String userTable = "", userCriteria = "", artistNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userTable = " inner join music.lastfmuser u on sa.lastfmuser_id = u.id";
+			userCriteria = " and u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			artistNameCriteria = " and la.artist_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select a.id, a.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist a on ai.artist_id = a.id"
 				+ " inner join library.artist la on la.artist_id = a.id"
 				+ " inner join library.starredartist sa on sa.artist_id = la.artist_id"
-				+ " inner join music.lastfmuser u on sa.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?)"
-				+ (query == null ? "" : " and la.artist_name_search like ?") 
+				+ userTable + " where true" + userCriteria + artistNameCriteria
 				+ " order by sa.added desc offset ? limit ?";
 		
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-		return jdbcTemplate.query(sql, params, new ArtistRecommendationRowMapper());
+		return jdbcTemplate.query(sql, args.toArray(), new ArtistRecommendationRowMapper());
 	}
 
 	@Override
@@ -246,6 +275,20 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	
 	@Override
 	public List<Album> getRecentlyPlayedAlbums(String lastFmUsername, int offset, int limit, String query) {
+		String userTable = "", userCriteria = "", albumNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userTable = " inner join music.lastfmuser u on pc.lastfmuser_id = u.id";
+			userCriteria = " and u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			albumNameCriteria = " and la.album_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.last_invocation_time"
@@ -254,10 +297,8 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select la.album_id, max(invocation_time) as last_invocation_time"
 				+ " from library.playcount pc"
-				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
-				+"  inner join library.album la on pc.album_id = la.album_id"
-				+ " where u.lastfm_user = upper(?)"
-				+ (query == null ? "" : " and la.album_name_search like ?") 
+				+ " inner join library.album la on pc.album_id = la.album_id"
+				+ userTable + " where true" + userCriteria + albumNameCriteria
 				+ " group by la.album_id order by last_invocation_time desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.last_invocation_time) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -270,15 +311,25 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by last_invocation_time desc"; 
 
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-
-		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
+		return jdbcTemplate.query(sql, args.toArray(), new AlbumRowMapper());
 	}
 
 	@Override
 	public List<Album> getMostPlayedAlbums(String lastFmUsername, int offset, int limit, String query) {
+		String userTable = "", userCriteria = "", albumNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userTable = " inner join music.lastfmuser u on pc.lastfmuser_id = u.id";
+			userCriteria = " and u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			albumNameCriteria = " and la.album_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.cnt"
@@ -287,10 +338,8 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select la.album_id, count(la.album_id) as cnt"
 				+ " from library.playcount pc"
-				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
-				+"  inner join library.album la on pc.album_id = la.album_id"
-				+ " where u.lastfm_user = upper(?)"
-				+ (query == null ? "" : " and la.album_name_search like ?") 
+				+ " inner join library.album la on pc.album_id = la.album_id"
+				+ userTable + " where true" + userCriteria + albumNameCriteria
 				+ " group by la.album_id order by cnt desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.cnt) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -303,11 +352,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by cnt desc"; 
 
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-
-		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
+		return jdbcTemplate.query(sql, args.toArray(), new AlbumRowMapper());
 	}
 
 	@Override
@@ -335,6 +380,20 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	
 	@Override
 	public List<Album> getStarredAlbums(String lastFmUsername, int offset, int limit, String query) {
+		String userTable = "", userCriteria = "", albumNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userTable = " inner join music.lastfmuser u on sa.lastfmuser_id = u.id";
+			userCriteria = " and u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			albumNameCriteria = " and la.album_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select ma.artist_id, a.artist_name_capitalization, ma.id, ma.album_name_capitalization, la.year,"
 				+ " d1.path, f1.filename, d2.path, f2.filename, ai.largeimageurl, tr.track_ids from"
 				+ " (select lt.album_id as album_id, array_agg(lt.id order by coalesce(ft.disc_nr, 1)*100 + coalesce(ft.track_nr, 0)) as track_ids, filter.added"
@@ -343,9 +402,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " inner join library.filetag ft on ft.file_id = lt.file_id"
 				+ " inner join (select sa.album_id, sa.added from library.starredalbum sa "
 				+ " inner join library.album la on sa.album_id = la.album_id"
-				+ " inner join music.lastfmuser u on sa.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?)"
-				+ (query == null ? "" : " and la.album_name_search like ?") 
+				+ userTable + " where true" + userCriteria + albumNameCriteria
 				+ " order by sa.added desc offset ? limit ?) filter on lt.album_id = filter.album_id"
 				+ " group by lt.album_id, filter.added) tr"
 				+ " inner join library.album la on la.album_id = tr.album_id"
@@ -358,11 +415,7 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 				+ " left outer join music.albuminfo ai on ai.album_id = la.album_id"
 				+ " order by added desc"; 
 
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-
-		return jdbcTemplate.query(sql, params, new AlbumRowMapper());
+		return jdbcTemplate.query(sql, args.toArray(), new AlbumRowMapper());
 	}
 
 	private String getFileName(String directory, String filename) {
@@ -402,53 +455,82 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 
 	@Override
 	public List<Integer> getRecentlyPlayedTrackIds(String lastFmUsername, int offset, int limit, String query) {
+		String userCriteria = "", trackNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userCriteria = " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
+					+ " where u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			trackNameCriteria = " where lt.track_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, max(invocation_time) as last_invocation_time"
-				+ " from library.playcount pc"
-				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
+				+ " from library.playcount pc" + userCriteria
+				+ " group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
-				+ (query == null ? "" : " where lt.track_name_search like ?") 
+				+ trackNameCriteria
 				+ " order by last_invocation_time desc offset ? limit ?";
 
-		Object[] params = query == null ?
-				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-		return jdbcTemplate.queryForList(sql, params, Integer.class);
+		return jdbcTemplate.queryForList(sql, args.toArray(), Integer.class);
 	}
 
 	@Override
 	public List<Integer> getMostPlayedTrackIds(String lastFmUsername, int offset, int limit, String query) {
+		String userCriteria = "", trackNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userCriteria = " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
+					+ " where u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			trackNameCriteria = " where lt.track_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select lt.id from ("
 				+ " select track_id, album_id, count(track_id) as cnt"
-				+ " from library.playcount pc"
-				+ " inner join music.lastfmuser u on pc.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?) group by track_id, album_id"
+				+ " from library.playcount pc" + userCriteria
+				+ " group by track_id, album_id"
 				+ ") pc inner join library.track lt"
 				+ " on lt.track_id = pc.track_id and lt.album_id = pc.album_id"
-				+ (query == null ? "" : " where lt.track_name_search like ?") 
+				+ trackNameCriteria
 				+ " order by cnt desc offset ? limit ?";
 
-		Object[] params = query == null ?
-				new Object[]{lastFmUsername, offset, limit} :
-				new Object[]{lastFmUsername, query, offset, limit};
-		return jdbcTemplate.queryForList(sql, params, Integer.class);
+		return jdbcTemplate.queryForList(sql, args.toArray(), Integer.class);
 	}
 
 	@Override
 	public List<Integer> getStarredTrackIds(String lastFmUsername, int offset, int limit, String query) {
+		String userTable = "", userCriteria = "", trackNameCriteria = "";
+		List<Object> args = new ArrayList<>();
+		if (lastFmUsername != null) {
+			userTable = " inner join music.lastfmuser u on st.lastfmuser_id = u.id";
+			userCriteria = " and u.lastfm_user = upper(?)";
+			args.add(lastFmUsername);
+		}
+		if (query != null) {
+			trackNameCriteria = " and lt.track_name_search like ?";
+			args.add(getNameQuery(query));
+		}
+		args.add(offset);
+		args.add(limit);
+
 		String sql = "select lt.id from library.starredtrack st"
 				+ " inner join library.track lt on st.album_id = lt.album_id and st.track_id = lt.track_id"
-				+ " inner join music.lastfmuser u on st.lastfmuser_id = u.id"
-				+ " where u.lastfm_user = upper(?)"
-				+ (query == null ? "" : " and lt.track_name_search like ?")
+				+ userTable + " where true" + userCriteria + trackNameCriteria
 				+ " order by added desc offset ? limit ?";
 		
-		Object[] params = query == null ? 
-				new Object[]{lastFmUsername, offset, limit} : 
-				new Object[]{lastFmUsername, getNameQuery(query), offset, limit};
-		return jdbcTemplate.queryForList(sql, params, Integer.class);
+		return jdbcTemplate.queryForList(sql, args.toArray(), Integer.class);
 	}
 	
 	@Override
