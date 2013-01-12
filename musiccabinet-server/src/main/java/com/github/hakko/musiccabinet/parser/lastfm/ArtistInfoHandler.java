@@ -45,7 +45,7 @@ public class ArtistInfoHandler extends DefaultHandler {
 	throws SAXException {
 		if (parsing) {
 			String chars = characterData.toString();
-			if (TAG_NAME.equals(qName)) {
+			if (TAG_NAME.equals(qName) && artistInfo == null) {
 				artistInfo = new ArtistInfo();
 				artistInfo.setArtist(new Artist(chars));
 			} else if (TAG_IMAGE.equals(qName)) {

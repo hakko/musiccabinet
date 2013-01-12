@@ -3,6 +3,20 @@
 	<artist>
 		<name>ABBA</name>
 		<mbid>d87e52c5-bb8d-4da8-b941-9f4928627dc8</mbid>
+		<bandmembers>
+			<member>
+				<name>Anni-Frid Lyngstad</name>
+			</member>
+			<member>
+				<name>Björn Ulvaeus</name>
+			</member>
+			<member>
+				<name>Benny Andersson</name>
+			</member>
+			<member>
+				<name>Agnetha Fältskog</name>
+			</member>
+		</bandmembers>
 		<url>http://www.last.fm/music/ABBA</url>
 		<image size="small">http://userserve-ak.last.fm/serve/34/44442235.png</image>
 		<image size="medium">http://userserve-ak.last.fm/serve/64/44442235.png</image>
