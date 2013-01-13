@@ -15,7 +15,8 @@ public interface PlaylistGeneratorDao {
 	List<PlaylistItem> getPlaylistForTags(String[] tags, int artistCount, int totalCount);
 	List<PlaylistItem> getPlaylistForGroup(String lastFmGroup, int artistCount, int totalCount);
 	List<Integer> getPlaylistForRelatedArtists(int artistId, int artistCount, int totalCount);
-	
+
+	void setAllowedTrackLengthInterval(int minLength, int maxLength);
 	void updateSearchIndex();
 	boolean isSearchIndexCreated();
 	

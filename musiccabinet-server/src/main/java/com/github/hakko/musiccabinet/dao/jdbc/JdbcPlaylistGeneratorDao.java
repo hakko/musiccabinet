@@ -19,6 +19,9 @@ import com.github.hakko.musiccabinet.domain.model.aggr.PlaylistItem;
 public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
+
+	private int minLength = 0;
+	private int maxLength = Integer.MAX_VALUE;
 	
 	@Override
 	public List<Integer> getTopTracksForArtist(int artistId, int totalCount) {
@@ -172,8 +175,15 @@ public class JdbcPlaylistGeneratorDao implements PlaylistGeneratorDao, JdbcTempl
 	}
 
 	@Override
+	public void setAllowedTrackLengthInterval(int minLength, int maxLength) {
+		this.minLength = minLength;
+		this.maxLength = maxLength;
+	}
+
+	@Override
 	public void updateSearchIndex() { // TODO : evaluate time consumed + optimize
-		jdbcTemplate.execute("select library.update_librarytoptracks()");
+		jdbcTemplate.queryForInt("select library.update_librarytoptracks(?,?)", 
+				minLength, maxLength);
 	}
 
 	@Override

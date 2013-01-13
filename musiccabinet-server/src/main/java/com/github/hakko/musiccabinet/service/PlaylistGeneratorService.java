@@ -1,5 +1,7 @@
 package com.github.hakko.musiccabinet.service;
 
+import static java.lang.String.format;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -25,6 +27,11 @@ public class PlaylistGeneratorService {
 	 */
 	public PlaylistGeneratorService() {
 		LOG.info("MusicCabinet playlist service started at " + new Date() + ".");
+	}
+
+	public void setAllowedTrackLengthInterval(int minLength, int maxLength) {
+		LOG.debug(format("allowed radio song length interval (%d, %d)", minLength, maxLength));
+		dao.setAllowedTrackLengthInterval(minLength, maxLength);
 	}
 	
 	/*
