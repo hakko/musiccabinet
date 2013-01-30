@@ -71,14 +71,19 @@ public class JdbcArtistTopTracksDao implements ArtistTopTracksDao, JdbcTemplateD
 
 	@Override
 	public List<Track> getTopTracks(int artistId) {
-		String sql = "select coalesce(attpc.track_id, -1), mt.track_name_capitalization"
+		return getTopTracks(artistId, 20);
+	}
+	
+	protected List<Track> getTopTracks(int artistId, int limit) {
+		String sql = "select coalesce(attpc.track_id, -1), t.track_name_capitalization"
 				+ " from music.artisttoptrack att"
-				+ " inner join music.track mt on att.track_id = mt.id"
+				+ " inner join music.track t on att.track_id = t.id"
 				+ " left outer join library.artisttoptrackplaycount attpc"
 				+ " on attpc.artist_id = att.artist_id and attpc.rank = att.rank"
-				+ " where att.artist_id = ? order by att.rank limit 20";
+				+ " where att.artist_id = ? order by att.rank limit ?";
 		
-		return jdbcTemplate.query(sql, new Object[]{artistId}, new TrackRowMapper());
+		return jdbcTemplate.query(sql, new Object[]{artistId, limit}, 
+				new TrackRowMapper());
 	}
 	
 	@Override
