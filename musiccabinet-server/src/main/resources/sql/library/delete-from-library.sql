@@ -34,6 +34,10 @@ begin
 		select id from library.file where deleted
 	);
 
+	delete from library.filewarning where file_id in (
+		select id from library.file where deleted
+	);
+
 	update library.album set embeddedcoverartfile_id = null
 	where embeddedcoverartfile_id in (
 		select id from library.file where deleted

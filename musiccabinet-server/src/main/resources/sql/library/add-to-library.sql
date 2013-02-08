@@ -48,6 +48,15 @@ begin
 	update library.file_headertag_import fht
 		set type_id = t.id
 	from library.fileheader_type t where fht.extension = t.extension;
+
+	-- add warnings about file(s) missing mandatory tags
+	insert into library.filewarning (file_id)
+	select file_id from library.file_headertag_import
+		where artist_name is null or track_name is null;
+
+	-- delete file(s) missing mandatory tags before proceding
+	delete from library.file_headertag_import
+		where artist_name is null or track_name is null;
 	
 	-- create missing artist(s)
 	insert into music.artist (artist_name, artist_name_capitalization)
@@ -151,8 +160,7 @@ begin
 	select distinct on (artist_id, upper(track_name)) artist_id, upper(track_name), track_name 
 	from library.file_headertag_import fht
 		where not exists (select 1 from music.track
-			where artist_id = fht.artist_id and
-				  track_name = upper(fht.track_name));
+			where artist_id = fht.artist_id and track_name = upper(fht.track_name));
 
 	-- update all import rows to correct track id
 	update library.file_headertag_import fht set track_id = t.id

@@ -25,6 +25,7 @@ import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumNameRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRecommendationRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.FilenameRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithMetadataRowMapper;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
@@ -687,6 +688,15 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	@Override
 	public void markAllFilesForFullRescan() {
 		jdbcTemplate.update("update library.file set modified = 'infinity', size = -1");
+	}
+
+	@Override
+	public List<String> getFilesMissingMetadata() {
+		String sql = "select d.path, f.filename from library.filewarning fw"
+				+ " inner join library.file f on fw.file_id = f.id"
+				+ " inner join library.directory d on f.directory_id = d.id"
+				+ " order by d.path, f.filename";
+		return jdbcTemplate.query(sql, new FilenameRowMapper());
 	}
 
 	@Override

@@ -76,8 +76,8 @@ public class AudioTagService {
 		metaData.setMediaType(Mediatype.valueOf(extension));
 
 		try {
-			AudioFile audioFile = AudioFileIO.read(new java.io.File(file
-					.getDirectory(), file.getFilename()));
+			AudioFile audioFile = AudioFileIO.read(new java.io.File(
+					file.getDirectory(), file.getFilename()));
 			
 			Tag tag = audioFile.getTag();
 			if (tag != null) {

@@ -6,6 +6,7 @@ import static java.lang.Thread.currentThread;
 import static junit.framework.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryBrowserDao;
 import com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryPresenceDao;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.service.library.LibraryScannerService;
@@ -29,6 +31,9 @@ public class LibraryScannerServiceTest {
 	
 	@Autowired
 	private JdbcLibraryPresenceDao presenceDao;
+
+	@Autowired
+	private JdbcLibraryBrowserDao browserDao;
 
 	@Before
 	public void clearLibrary() throws ApplicationException {
@@ -48,6 +53,24 @@ public class LibraryScannerServiceTest {
 		scannerService.add(set(media1));
 		Assert.assertEquals(set(album), presenceDao.getSubdirectories(artist));
 		Assert.assertEquals(set(cd1, cd2), presenceDao.getSubdirectories(album));
+	}
+
+	@Test
+	public void ignoresFilesLackingMandatoryMetadata() throws Exception {
+		String library = new File(currentThread().getContextClassLoader()
+				.getResource("library").toURI()).getAbsolutePath();
+		String media1 = library + separatorChar + "media1";
+		String media9 = library + separatorChar + "media9";
+		String missingmetadata = media9 + separatorChar + "missingmetadata";
+
+		scannerService.add(set(media1, media9));
+
+		assertEquals(set(missingmetadata), presenceDao.getSubdirectories(media9));
+
+		List<String> files = browserDao.getFilesMissingMetadata();
+		assertEquals(2, files.size());
+		assertEquals(missingmetadata + separatorChar + "artist.mp3", files.get(0));
+		assertEquals(missingmetadata + separatorChar + "track.mp3", files.get(1));
 	}
 	
 	@Test

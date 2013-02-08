@@ -135,6 +135,10 @@ public class LibraryBrowserService {
 		libraryBrowserDao.markAllFilesForFullRescan();
 	}
 
+	public List<String> getFilesMissingMetadata() {
+		return libraryBrowserDao.getFilesMissingMetadata();
+	}
+
 	// Spring setters
 
 	public void setLibraryBrowserDao(LibraryBrowserDao libraryBrowserDao) {

@@ -46,5 +46,6 @@ public interface LibraryBrowserDao {
 	int getTrackId(String filename);
 	
 	void markAllFilesForFullRescan();
+	List<String> getFilesMissingMetadata();
 	
 }

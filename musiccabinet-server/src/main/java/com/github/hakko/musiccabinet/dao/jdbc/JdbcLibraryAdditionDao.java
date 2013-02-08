@@ -52,17 +52,13 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 		batchUpdate.declareParameter(new SqlParameter("modified", Types.TIMESTAMP));
 		batchUpdate.declareParameter(new SqlParameter("size", Types.INTEGER));
 
-		boolean metaData = false;
 		for (File file : files) {
 			batchUpdate.update(new Object[]{file.getDirectory(), file.getFilename(), 
 					file.getModified().toDate(), file.getSize()});
-			metaData = metaData || file.getMetadata() != null;
 		}
 		batchUpdate.flush();
 
-		if (metaData) {
-			addMetadata(files);
-		}
+		addMetadata(files);
 	}
 	
 	private void addMetadata(Set<File> files) {
@@ -95,7 +91,7 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 		batch.declareParameter(new SqlParameter("albumartistsort_name", Types.VARCHAR));
 		for (File file : files) {
 			MetaData md = file.getMetadata();
-			if (md != null && md.getArtist() != null && md.getAlbum() != null && md.getTitle() != null) {
+			if (md != null) {
 				batch.update(new Object[]{file.getDirectory(), file.getFilename(),
 						md.getMediaType().getFilesuffix(), md.getBitrate(), md.isVbr(),
 						md.getDuration(), md.getArtist(), md.getAlbumArtist(), 
@@ -103,9 +99,6 @@ public class JdbcLibraryAdditionDao implements LibraryAdditionDao, JdbcTemplateD
 						md.getTrackNrs(), md.getDiscNr(), md.getDiscNrs(), md.getYear(),
 						md.getGenre(), md.getLyrics(), md.isCoverArtEmbedded(), 
 						md.getArtistSort(), md.getAlbumArtistSort()});
-			} else if (md != null) {
-				LOG.warn("Insufficient tags, ignoring file " + file.getFilename() + 
-						" in " + file.getDirectory());
 			}
 		}
 		batch.flush();
