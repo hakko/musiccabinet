@@ -21,6 +21,8 @@ import com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryBrowserDao;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
+import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.lastfm.LastFmSettingsService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
@@ -37,6 +39,9 @@ public class StarServiceTest {
 	
 	@Autowired
 	private JdbcLastFmDao lastFmDao;
+
+	@Autowired
+	private LastFmSettingsService lastFmSettingsService;
 	
 	private Artist artist;
 	private Album album;
@@ -57,8 +62,10 @@ public class StarServiceTest {
 		
 		lastFmDao.getLastFmUserId(user1);
 		lastFmDao.getLastFmUserId(user2);
+
+		lastFmSettingsService.setSyncStarredAndLovedTracks(false);
 	}
-	
+
 	@Test
 	public void serviceCachesStarredArtistsAndUsers() {
 		Assert.assertFalse(starService.isArtistStarred(user1, artist.getId()));
@@ -93,7 +100,7 @@ public class StarServiceTest {
 	}
 
 	@Test
-	public void serviceCachesStarredTracksAndUsers() {
+	public void serviceCachesStarredTracksAndUsers() throws ApplicationException {
 		boolean[] mask = starService.getStarredTracksMask(user1, Arrays.asList(track.getId()));
 		Assert.assertEquals(1, mask.length);
 		Assert.assertEquals(false, mask[0]);

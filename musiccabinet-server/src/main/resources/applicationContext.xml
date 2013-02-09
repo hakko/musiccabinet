@@ -70,6 +70,10 @@
 		<property name="lastFmDao" ref="lastFmDao"/>
 		<property name="starDao" ref="starDao"/>
 		<property name="musicDao" ref="musicDao"/>
+		<property name="libraryBrowserDao" ref="libraryBrowserDao"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
+		<property name="trackLoveClient" ref="trackLoveClient"/>
+		<property name="trackUnLoveClient" ref="trackUnLoveClient"/>
 	</bean>
 
 	<bean id="lastFmService" class="com.github.hakko.musiccabinet.service.LastFmService">

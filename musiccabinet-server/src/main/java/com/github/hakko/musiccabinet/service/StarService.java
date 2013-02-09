@@ -9,10 +9,15 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.hakko.musiccabinet.dao.LastFmDao;
+import com.github.hakko.musiccabinet.dao.LibraryBrowserDao;
 import com.github.hakko.musiccabinet.dao.MusicDao;
 import com.github.hakko.musiccabinet.dao.StarDao;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
+import com.github.hakko.musiccabinet.exception.ApplicationException;
+import com.github.hakko.musiccabinet.service.lastfm.LastFmSettingsService;
+import com.github.hakko.musiccabinet.ws.lastfm.TrackLoveClient;
+import com.github.hakko.musiccabinet.ws.lastfm.TrackUnLoveClient;
 
 public class StarService {
 
@@ -25,6 +30,10 @@ public class StarService {
 	private StarDao starDao;
 	private LastFmDao lastFmDao;
 	private MusicDao musicDao;
+	private LibraryBrowserDao browserDao;
+	private LastFmSettingsService lastFmSettingsService;
+	private TrackLoveClient trackLoveClient;
+	private TrackUnLoveClient trackUnLoveClient;
 	
 	public void starArtist(String lastFmUsername, int artistId) {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
@@ -71,16 +80,22 @@ public class StarService {
 		return starredAlbums.get(lastFmUser.getId());
 	}
 
-	public void starTrack(String lastFmUsername, int trackId) {
+	public void starTrack(String lastFmUsername, int trackId) throws ApplicationException {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.starTrack(lastFmUser, trackId);
 		getStarredTracks(lastFmUser).add(trackId);
+		if (lastFmSettingsService.isSyncStarredAndLovedTracks()) {
+			trackLoveClient.love(browserDao.getTrack(trackId), lastFmUser);
+		}
 	}
 	
-	public void unstarTrack(String lastFmUsername, int trackId) {
+	public void unstarTrack(String lastFmUsername, int trackId) throws ApplicationException {
 		LastFmUser lastFmUser = getLastFmUser(lastFmUsername);
 		starDao.unstarTrack(lastFmUser, trackId);
 		getStarredTracks(lastFmUser).remove(trackId);
+		if (lastFmSettingsService.isSyncStarredAndLovedTracks()) {
+			trackUnLoveClient.unlove(browserDao.getTrack(trackId), lastFmUser);
+		}
 	}
 	
 	protected Set<Integer> getStarredTracks(LastFmUser lastFmUser) {
@@ -144,6 +159,22 @@ public class StarService {
 
 	public void setMusicDao(MusicDao musicDao) {
 		this.musicDao = musicDao;
+	}
+
+	public void setLibraryBrowserDao(LibraryBrowserDao browserDao) {
+		this.browserDao = browserDao;
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService lastFmSettingsService) {
+		this.lastFmSettingsService = lastFmSettingsService;
+	}
+
+	public void setTrackLoveClient(TrackLoveClient trackLoveClient) {
+		this.trackLoveClient = trackLoveClient;
+	}
+
+	public void setTrackUnLoveClient(TrackUnLoveClient trackUnLoveClient) {
+		this.trackUnLoveClient = trackUnLoveClient;
 	}
 
 }

@@ -13,7 +13,7 @@ public class TrackUnLoveClient extends AbstractWSPostClient {
 
 	public static final String METHOD = "track.unlove";
 
-	public WSResponse love(Track track, LastFmUser lastFmUser) throws ApplicationException {
+	public WSResponse unlove(Track track, LastFmUser lastFmUser) throws ApplicationException {
 		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_TRACK, track.getName()));

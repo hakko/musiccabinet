@@ -32,7 +32,7 @@ public class TrackUnLoveClientTest extends AbstractWSImplementationTest {
 				return null;
 			}
 
-		}.love(new Track(artist, track), new LastFmUser(lastFmUser, sessionKey));
+		}.unlove(new Track(artist, track), new LastFmUser(lastFmUser, sessionKey));
 
 	}
 

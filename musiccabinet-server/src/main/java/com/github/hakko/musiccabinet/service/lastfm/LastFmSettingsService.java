@@ -13,6 +13,7 @@ public class LastFmSettingsService {
 	private Locale locale = Locale.ENGLISH;
 	private String lastFmUsername;
 	private List<LastFmUser> lastFmUsers;
+	private boolean syncStarredAndLovedTracks;
 	
 	public Locale getLocale() {
 		return locale;
@@ -40,6 +41,14 @@ public class LastFmSettingsService {
 	
 	public void setLastFmUsers(List<LastFmUser> lastFmUsers) {
 		this.lastFmUsers = lastFmUsers;
+	}
+
+	public boolean isSyncStarredAndLovedTracks() {
+		return syncStarredAndLovedTracks;
+	}
+
+	public void setSyncStarredAndLovedTracks(boolean syncStarredAndLovedTracks) {
+		this.syncStarredAndLovedTracks = syncStarredAndLovedTracks;
 	}
 	
 }
