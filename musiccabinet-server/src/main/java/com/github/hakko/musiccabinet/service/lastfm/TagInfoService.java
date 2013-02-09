@@ -29,6 +29,7 @@ public class TagInfoService extends SearchIndexUpdateService {
 	protected TagInfoClient tagInfoClient;
 	protected TagInfoDao tagInfoDao;
 	protected TagDao tagDao;
+	protected LastFmSettingsService lastFmSettingsService;
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
@@ -82,6 +83,10 @@ public class TagInfoService extends SearchIndexUpdateService {
 
 	public void setTagDao(TagDao tagDao) {
 		this.tagDao = tagDao;
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService lastFmSettingsService) {
+		this.lastFmSettingsService = lastFmSettingsService;
 	}
 	
 }

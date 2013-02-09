@@ -26,6 +26,7 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 	protected ArtistInfoClient artistInfoClient;
 	protected ArtistInfoDao artistInfoDao;
 	protected WebserviceHistoryService webserviceHistoryService;
+	protected LastFmSettingsService lastFmSettingsService;
 	
 	private static final int BATCH_SIZE = 1000;
 	
@@ -103,6 +104,10 @@ public class ArtistInfoService extends SearchIndexUpdateService {
 	public void setWebserviceHistoryService(
 			WebserviceHistoryService webserviceHistoryService) {
 		this.webserviceHistoryService = webserviceHistoryService;
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService lastFmSettingsService) {
+		this.lastFmSettingsService = lastFmSettingsService;
 	}
 
 }

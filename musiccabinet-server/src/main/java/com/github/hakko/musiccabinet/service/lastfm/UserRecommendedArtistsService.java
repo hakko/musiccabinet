@@ -23,17 +23,13 @@ public class UserRecommendedArtistsService extends SearchIndexUpdateService {
 	protected UserRecommendedArtistsClient userRecommendedArtistsClient;
 	protected UserRecommendedArtistsDao dao;
 	protected WebserviceHistoryService webserviceHistoryService;
-	
-	private List<LastFmUser> users = new ArrayList<>();
+	protected LastFmSettingsService lastFmSettingsService;
 	
 	private static final Logger LOG = Logger.getLogger(UserRecommendedArtistsService.class);
-
-	public void setUsers(List<LastFmUser> users) {
-		this.users = users;
-	}
 	
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
+		List<LastFmUser> users = lastFmSettingsService.getLastFmUsers();
 		setTotalOperations(users.size());
 
 		List<UserRecommendedArtists> artists = new ArrayList<>();
@@ -75,6 +71,10 @@ public class UserRecommendedArtistsService extends SearchIndexUpdateService {
 
 	public void setWebserviceHistoryService(WebserviceHistoryService webserviceHistoryService) {
 		this.webserviceHistoryService = webserviceHistoryService;
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService lastFmSettingsService) {
+		this.lastFmSettingsService = lastFmSettingsService;
 	}
 
 }

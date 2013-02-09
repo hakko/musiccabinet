@@ -37,6 +37,7 @@ public class UserTopArtistsServiceTest {
 		Assert.assertNotNull(service.userTopArtistsClient);
 		Assert.assertNotNull(service.userTopArtistsDao);
 		Assert.assertNotNull(service.webserviceHistoryService);
+		Assert.assertNotNull(service.lastFmSettingsService);
 	}
 	
 	@Test

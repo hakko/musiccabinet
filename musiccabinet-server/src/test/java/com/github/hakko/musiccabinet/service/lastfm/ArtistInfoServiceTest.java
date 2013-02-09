@@ -34,6 +34,7 @@ public class ArtistInfoServiceTest {
 		Assert.assertNotNull(aiService.artistInfoDao);
 		Assert.assertNotNull(aiService.artistInfoClient);
 		Assert.assertNotNull(aiService.webserviceHistoryService);
+		Assert.assertNotNull(aiService.lastFmSettingsService);
 	}
 	
 	@Test

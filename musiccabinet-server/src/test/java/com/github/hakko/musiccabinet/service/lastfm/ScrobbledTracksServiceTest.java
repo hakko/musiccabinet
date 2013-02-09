@@ -39,6 +39,7 @@ public class ScrobbledTracksServiceTest {
 		Assert.assertNotNull(scrobbledTracksService);
 		Assert.assertNotNull(scrobbledTracksService.client);
 		Assert.assertNotNull(scrobbledTracksService.trackPlayCountDao);
+		Assert.assertNotNull(scrobbledTracksService.lastFmSettingsService);
 	}
 	
 	@Test

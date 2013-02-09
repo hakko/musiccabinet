@@ -131,10 +131,14 @@
 	<bean id="throttleService" class="com.github.hakko.musiccabinet.service.lastfm.ThrottleService">
 	</bean>
 
+	<bean id="lastFmSettingsService" class="com.github.hakko.musiccabinet.service.lastfm.LastFmSettingsService">
+	</bean>
+
 	<bean id="artistInfoService" class="com.github.hakko.musiccabinet.service.lastfm.ArtistInfoService">
 		<property name="artistInfoClient" ref="artistInfoClient"/>
 		<property name="artistInfoDao" ref="artistInfoDao"/>
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>	
 
 	<bean id="albumInfoService" class="com.github.hakko.musiccabinet.service.lastfm.AlbumInfoService">
@@ -164,24 +168,28 @@
 	<bean id="scrobbledTracksService" class="com.github.hakko.musiccabinet.service.lastfm.ScrobbledTracksService">
 		<property name="scrobbledTracksClient" ref="scrobbledTracksClient"/>
 		<property name="trackPlayCountDao" ref="trackPlayCountDao"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="tagInfoService" class="com.github.hakko.musiccabinet.service.lastfm.TagInfoService">
 		<property name="tagInfoClient" ref="tagInfoClient"/>
 		<property name="tagInfoDao" ref="tagInfoDao"/>
 		<property name="tagDao" ref="tagDao"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="userTopArtistsService" class="com.github.hakko.musiccabinet.service.lastfm.UserTopArtistsService">
 		<property name="userTopArtistsClient" ref="userTopArtistsClient"/>
 		<property name="userTopArtistsDao" ref="userTopArtistsDao"/>
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="userRecommendedArtistsService" class="com.github.hakko.musiccabinet.service.lastfm.UserRecommendedArtistsService">
 		<property name="userRecommendedArtistsClient" ref="userRecommendedArtistsClient"/>
 		<property name="userRecommendedArtistsDao" ref="userRecommendedArtistsDao"/>
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="groupWeeklyArtistChartService" class="com.github.hakko.musiccabinet.service.lastfm.GroupWeeklyArtistChartService">

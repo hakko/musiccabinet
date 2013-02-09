@@ -16,14 +16,14 @@ public class ScrobbledTracksService extends SearchIndexUpdateService {
 
 	protected ScrobbledTracksClient client;
 	protected TrackPlayCountDao trackPlayCountDao;
-	
-	private String lastFMUsername;
+	protected LastFmSettingsService lastFmSettingsService;
 
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
 		short page = 0, totalPages = 0;
 		do {
-			WSResponse wsResponse = client.getLibraryTracks(page, getLastFMUsername());
+			WSResponse wsResponse = client.getLibraryTracks(page, 
+					lastFmSettingsService.getLastFmUsername());
 			if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 				StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 				ScrobbledTracksParser parser = new ScrobbledTracksParserImpl(
@@ -40,14 +40,6 @@ public class ScrobbledTracksService extends SearchIndexUpdateService {
 	public String getUpdateDescription() {
 		return "scrobbled tracks statistics";
 	}
-	
-	public String getLastFMUsername() {
-		return lastFMUsername;
-	}
-
-	public void setLastFMUsername(String lastFMUsername) {
-		this.lastFMUsername = lastFMUsername;
-	}
 
 	// Spring setters
 	
@@ -57,6 +49,10 @@ public class ScrobbledTracksService extends SearchIndexUpdateService {
 
 	public void setTrackPlayCountDao(TrackPlayCountDao trackPlayCountDao) {
 		this.trackPlayCountDao = trackPlayCountDao;
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService lastFmSettingsService) {
+		this.lastFmSettingsService = lastFmSettingsService;
 	}
 	
 }
