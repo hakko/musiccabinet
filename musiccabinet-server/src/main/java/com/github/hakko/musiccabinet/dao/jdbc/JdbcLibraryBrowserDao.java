@@ -26,6 +26,7 @@ import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.AlbumRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRecommendationRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.FilenameRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithArtistRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithMetadataRowMapper;
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
@@ -422,6 +423,17 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	private String getFileName(String directory, String filename) {
 		return directory == null || filename == null ? null : 
 			directory + separatorChar + filename;
+	}
+
+	@Override
+	public Track getTrack(int trackId) {
+		String sql = "select ma.artist_name_capitalization,"
+				+ " mt.track_name_capitalization from library.track lt"
+				+ " inner join music.track mt on lt.track_id = mt.id"
+				+ " inner join music.artist ma on mt.artist_id = ma.id"
+				+ " where lt.id = " + trackId;
+
+		return jdbcTemplate.queryForObject(sql, new TrackWithArtistRowMapper());
 	}
 
 	@Override

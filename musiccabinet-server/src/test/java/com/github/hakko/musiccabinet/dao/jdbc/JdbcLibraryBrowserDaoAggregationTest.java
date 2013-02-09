@@ -108,6 +108,15 @@ public class JdbcLibraryBrowserDaoAggregationTest {
 	}
 
 	@Test
+	public void findsArtistAndTrackNameByLibraryTrackId() {
+		Track t1 = browserDao.getTracks(album1.getTrackIds()).get(0);
+		Track t2 = browserDao.getTrack(album1.getTrackIds().get(0));
+
+		assertEquals(t1.getArtist().getName(), t2.getArtist().getName());
+		assertEquals(t1.getName(), t2.getName());
+	}
+
+	@Test
 	public void filterArtistsByGenre() {
 		String artist = artistName1, indieArtist = "Indie Artist", jazzArtist = "Jazz Artist";
 		String indie = "indie", jazz = "jazz";

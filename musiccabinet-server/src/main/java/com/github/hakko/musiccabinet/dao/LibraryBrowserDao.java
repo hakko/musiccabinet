@@ -28,7 +28,8 @@ public interface LibraryBrowserDao {
 	List<Album> getMostPlayedAlbums(String lastFmUsername, int offset, int limit, String query);
 	List<Album> getRandomAlbums(int limit);
 	List<Album> getStarredAlbums(String lastFmUsername, int offset, int limit, String query);
-	
+
+	Track getTrack(int trackId);
 	List<Track> getTracks(List<Integer> trackIds);
 	List<Integer> getRecentlyPlayedTrackIds(String lastFmUsername, int offset, int limit, String query);
 	List<Integer> getMostPlayedTrackIds(String lastFmUsername, int offset, int limit, String query);
