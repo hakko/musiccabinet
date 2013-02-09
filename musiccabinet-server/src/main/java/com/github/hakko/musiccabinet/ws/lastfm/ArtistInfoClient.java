@@ -15,13 +15,14 @@ public class ArtistInfoClient extends AbstractWSGetClient {
 
 	public static final String METHOD = "artist.getinfo";
 	
-	public WSResponse getArtistInfo(Artist artist) throws ApplicationException {
+	public WSResponse getArtistInfo(Artist artist, String lang) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
 			new WebserviceInvocation(ARTIST_GET_INFO, artist);
 
 		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
 		params.add(new BasicNameValuePair(PARAM_ARTIST, artist.getName()));
+		params.add(new BasicNameValuePair(PARAM_LANG, lang));
 		
 		return executeWSRequest(webserviceInvocation, params);
 	}

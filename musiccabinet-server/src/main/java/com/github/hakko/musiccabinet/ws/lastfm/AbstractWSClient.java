@@ -32,22 +32,23 @@ public abstract class AbstractWSClient {
 	 */
 	protected HttpClient httpClient;
 	
-	public static final String PARAM_METHOD = "method";
-	public static final String PARAM_ARTIST = "artist";
-	public static final String PARAM_ALBUM = "album";
-	public static final String PARAM_TRACK = "track";
 	public static final String PARAM_API_KEY = "api_key";
-	public static final String PARAM_LIMIT = "limit";
-	public static final String PARAM_PAGE = "page";
-	public static final String PARAM_USER = "user";
+	public static final String PARAM_API_SIG = "api_sig";
+	public static final String PARAM_ALBUM = "album";
+	public static final String PARAM_ARTIST = "artist";
 	public static final String PARAM_GROUP = "group";
+	public static final String PARAM_LANG = "lang";
+	public static final String PARAM_LIMIT = "limit";
+	public static final String PARAM_METHOD = "method";
+	public static final String PARAM_PAGE = "page";
+	public static final String PARAM_PERIOD = "period";
+	public static final String PARAM_SK = "sk";
 	public static final String PARAM_TAG = "tag";
 	public static final String PARAM_TAGS = "tags";
-	public static final String PARAM_PERIOD = "period";
 	public static final String PARAM_TIMESTAMP = "timestamp";
 	public static final String PARAM_TOKEN = "token";
-	public static final String PARAM_API_SIG = "api_sig";
-	public static final String PARAM_SK = "sk";
+	public static final String PARAM_TRACK = "track";
+	public static final String PARAM_USER = "user";
 
 	/* API sec needed to generate md5 hash for signatures. */
 	private static final String API_SEC_RESOURCE = "last.fm/api.sec";

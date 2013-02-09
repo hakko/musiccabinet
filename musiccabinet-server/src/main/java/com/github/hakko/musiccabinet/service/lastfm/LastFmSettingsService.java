@@ -22,6 +22,10 @@ public class LastFmSettingsService {
 		this.locale = locale;
 	}
 	
+	public String getLang() {
+		return locale.getLanguage();
+	}
+
 	public String getLastFmUsername() {
 		return lastFmUsername;
 	}

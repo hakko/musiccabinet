@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.ws.lastfm;
 
 import java.util.List;
+import java.util.Locale;
 
 import junit.framework.Assert;
 
@@ -19,7 +20,8 @@ public class TagInfoClientTest extends AbstractWSImplementationTest {
 
 		final String method = TagInfoClient.METHOD;
 		final String tagName = "disco";
-		
+		final String lang = Locale.ENGLISH.getLanguage();
+
 		new TagInfoClient() {
 			@Override
 			protected WSResponse executeWSRequest(WebserviceInvocation wi,
@@ -29,6 +31,7 @@ public class TagInfoClientTest extends AbstractWSImplementationTest {
 				
 				assertHasParameter(params, PARAM_METHOD, method);
 				assertHasParameter(params, PARAM_TAG, tagName);
+				assertHasParameter(params, PARAM_LANG, lang);
 				
 				return null;
 			}
@@ -38,7 +41,7 @@ public class TagInfoClientTest extends AbstractWSImplementationTest {
 				return Mockito.mock(WebserviceHistoryService.class);
 			}
 
-		}.getTagInfo(tagName);
+		}.getTagInfo(tagName, lang);
 	}
 	
 }

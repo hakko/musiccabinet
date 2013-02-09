@@ -40,7 +40,7 @@ public class TagInfoService extends SearchIndexUpdateService {
 		setTotalOperations(tags.size());
 		
 		for (String tag : tags) {
-			WSResponse wsResponse = tagInfoClient.getTagInfo(tag);
+			WSResponse wsResponse = tagInfoClient.getTagInfo(tag, lastFmSettingsService.getLang());
 			if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 				StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
 				TagInfoParser tiParser = new TagInfoParserImpl(stringUtil.getInputStream());

@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.ws.lastfm;
 
 import java.util.List;
+import java.util.Locale;
 
 import junit.framework.Assert;
 
@@ -21,7 +22,8 @@ public class ArtistInfoClientTest extends AbstractWSImplementationTest {
 
 		final String method = ArtistInfoClient.METHOD;
 		final String artistName = "madonna";
-		
+		final String lang = Locale.FRANCE.getLanguage();
+
 		new ArtistInfoClient() {
 			@Override
 			protected WSResponse executeWSRequest(WebserviceInvocation wi,
@@ -32,7 +34,8 @@ public class ArtistInfoClientTest extends AbstractWSImplementationTest {
 				
 				assertHasParameter(params, PARAM_METHOD, method);
 				assertHasParameter(params, PARAM_ARTIST, artistName);
-				
+				assertHasParameter(params, PARAM_LANG, lang);
+
 				return null;
 			}
 			
@@ -41,7 +44,7 @@ public class ArtistInfoClientTest extends AbstractWSImplementationTest {
 				return Mockito.mock(WebserviceHistoryService.class);
 			}
 
-		}.getArtistInfo(new Artist(artistName));
+		}.getArtistInfo(new Artist(artistName), lang);
 	}
 	
 }
