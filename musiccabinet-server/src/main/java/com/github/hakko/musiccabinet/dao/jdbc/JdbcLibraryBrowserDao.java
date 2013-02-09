@@ -623,6 +623,18 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 	}
 
 	@Override
+	public String getLyricsForTrack(String artistName, String trackName) {
+		String sql = "select ft.lyrics from library.filetag ft"
+				+ " inner join music.artist a on ft.artist_id = a.id"
+				+ " inner join music.track t on ft.track_id = t.id"
+				+ " where a.artist_name = upper(?) and t.track_name = upper(?)";
+
+		List<String> lyrics = jdbcTemplate.queryForList(sql,
+				new Object[]{artistName, trackName}, String.class);
+		return lyrics.isEmpty() ? null : lyrics.get(0);
+	}
+
+	@Override
 	public List<Integer> getArtistIndexes() {
 		String sql = "select ascii_code from library.artistindex";
 

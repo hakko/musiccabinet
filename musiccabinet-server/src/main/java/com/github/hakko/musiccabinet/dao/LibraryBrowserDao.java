@@ -39,6 +39,7 @@ public interface LibraryBrowserDao {
 	String getCoverArtFileForTrack(int trackId);
 	void addArtwork(List<Track> tracks);
 	String getLyricsForTrack(int trackId);
+	String getLyricsForTrack(String artistName, String trackName);
 
 	List<Integer> getArtistIndexes();
 	LibraryStatistics getStatistics();

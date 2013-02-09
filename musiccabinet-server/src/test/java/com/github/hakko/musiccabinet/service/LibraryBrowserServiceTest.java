@@ -6,6 +6,9 @@ import static java.io.File.separatorChar;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.countMatches;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -246,7 +249,7 @@ public class LibraryBrowserServiceTest {
 	@Test
 	public void findsUnsynchronizedLyricsTag() throws Exception {
 		scannerService.add(set(media7));
-		
+
 		String lyrics = browserService.getLyricsForTrack(
 				browserService.getTrackId(media7 + separatorChar + "lyrics.mp3"));
 		
@@ -254,6 +257,18 @@ public class LibraryBrowserServiceTest {
 		Assert.assertTrue(lyrics.startsWith("In the town where I was born"));
 		
 		Assert.assertEquals(25, countMatches(lyrics.toLowerCase(), "yellow submarine"));
+	}
+
+	@Test
+	public void findsUnsynchronizedLyricsTagByArtistAndTrackName() throws Exception {
+		scannerService.add(set(media7));
+
+		assertNull(browserService.getLyricsForTrack("Unknown Artist", "Track"));
+		assertNull(browserService.getLyricsForTrack("Artist", "Unknown Track"));
+
+		String lyrics = browserService.getLyricsForTrack("Artist", "Track");
+		assertNotNull(lyrics);
+		assertTrue(lyrics.startsWith("In the town where I was born"));
 	}
 
 	@Test

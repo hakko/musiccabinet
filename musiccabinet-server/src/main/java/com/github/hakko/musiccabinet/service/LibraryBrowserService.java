@@ -119,6 +119,10 @@ public class LibraryBrowserService {
 		return libraryBrowserDao.getLyricsForTrack(trackId);
 	}
 
+	public String getLyricsForTrack(String artistName, String trackName) {
+		return libraryBrowserDao.getLyricsForTrack(artistName, trackName);
+	}
+
 	public List<Integer> getArtistIndexes() {
 		return libraryBrowserDao.getArtistIndexes();
 	}
