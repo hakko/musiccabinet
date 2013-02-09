@@ -49,6 +49,10 @@ public class WebserviceHistoryService {
 		return artistNames;
 	}
 
+	public void clearLanguageSpecificInvocations() {
+		historyDao.clearLanguageSpecificWebserviceInvocations();
+	}
+
 	// Spring setters
 	
 	public void setWebserviceHistoryDao(WebserviceHistoryDao webserviceHistoryDao) {

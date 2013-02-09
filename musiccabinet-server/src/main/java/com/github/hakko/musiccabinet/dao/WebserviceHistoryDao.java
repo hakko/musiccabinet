@@ -23,6 +23,10 @@ public interface WebserviceHistoryDao {
 	
 	boolean isWebserviceInvocationAllowed(WebserviceInvocation webserviceInvocation);
 
+	// Remove all traces of WebserviceInvocations where a language flag
+	// is used when fetching content.
+	void clearLanguageSpecificWebserviceInvocations();
+
 	List<String> getArtistNamesWithNoInvocations(Calltype callType);
 	List<String> getArtistNamesWithOldestInvocations(Calltype callType);
 	

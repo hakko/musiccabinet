@@ -8,6 +8,7 @@ import static com.github.hakko.musiccabinet.dao.util.PostgreSQLFunction.GET_LAST
 import static com.github.hakko.musiccabinet.domain.model.library.Period.OVERALL;
 import static com.github.hakko.musiccabinet.domain.model.library.Period.SIX_MONTHS;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_INFO;
+import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_SIMILAR;
 import static com.github.hakko.musiccabinet.domain.model.library.WebserviceInvocation.Calltype.ARTIST_GET_TOP_TRACKS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -430,6 +431,23 @@ public class JdbcWebserviceHistoryDaoTest {
 				"select 1 from library.webservice_history"
 				+ " where artist_id = ? and calltype_id = ? and invocation_time = 'infinity'",
 				Integer.class, artistId, TOP.getDatabaseId());
+	}
+
+	@Test
+	public void clearsLanguageSpecificWebserviceInvocations() {
+		Artist artist = new Artist("ABBA");
+		WebserviceInvocation wiInfo = new WebserviceInvocation(ARTIST_GET_INFO, artist);
+		WebserviceInvocation wiSimilar = new WebserviceInvocation(ARTIST_GET_SIMILAR, artist);
+		dao.logWebserviceInvocation(wiInfo);
+		dao.logWebserviceInvocation(wiSimilar);
+
+		Assert.assertFalse(dao.isWebserviceInvocationAllowed(wiInfo));
+		Assert.assertFalse(dao.isWebserviceInvocationAllowed(wiSimilar));
+
+		dao.clearLanguageSpecificWebserviceInvocations();
+
+		Assert.assertTrue(dao.isWebserviceInvocationAllowed(wiInfo));
+		Assert.assertFalse(dao.isWebserviceInvocationAllowed(wiSimilar));
 	}
 
 	@Test (expected = IllegalArgumentException.class)

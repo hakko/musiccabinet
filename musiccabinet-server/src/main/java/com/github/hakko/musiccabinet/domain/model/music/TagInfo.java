@@ -11,7 +11,7 @@ public class TagInfo {
 
 	public TagInfo() {
 	}
-	
+
 	public String getTagName() {
 		return tagName;
 	}

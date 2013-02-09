@@ -203,6 +203,20 @@ public class JdbcWebserviceHistoryDao implements JdbcTemplateDao, WebserviceHist
 	}
 
 	/*
+	 * Web services that are language dependant:
+	 * artist.getInfo (5)
+	 * tag.getInfo (not logged)
+	 */
+	@Override
+	public void clearLanguageSpecificWebserviceInvocations() {
+		jdbcTemplate.update("delete from library.webservice_history"
+				+ " where calltype_id in (5)");
+
+		jdbcTemplate.update("delete from music.artistinfo");
+		jdbcTemplate.update("delete from music.taginfo");
+	}
+
+	/*
 	 * Group artists in local library by last update time from last.fm, and return
 	 * the 1/30th, but maximum 1000 artists, that were updated longest ago.
 	 */
