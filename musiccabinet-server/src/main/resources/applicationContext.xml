@@ -196,6 +196,13 @@
 		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
+	<bean id="userLovedTracksService" class="com.github.hakko.musiccabinet.service.lastfm.UserLovedTracksService">
+		<property name="userLovedTracksClient" ref="userLovedTracksClient"/>
+		<property name="userLovedTracksDao" ref="userLovedTracksDao"/>
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
+	</bean>
+
 	<bean id="groupWeeklyArtistChartService" class="com.github.hakko.musiccabinet.service.lastfm.GroupWeeklyArtistChartService">
 		<property name="groupWeeklyArtistChartClient" ref="groupWeeklyArtistChartClient"/>
 		<property name="groupWeeklyArtistChartDao" ref="groupWeeklyArtistChartDao"/>
@@ -328,6 +335,11 @@
 		<property name="lastFmDao" ref="lastFmDao"/>
 	</bean>
 
+	<bean id="userLovedTracksClient" class="com.github.hakko.musiccabinet.ws.lastfm.UserLovedTracksClient">
+		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
+		<property name="throttleService" ref="throttleService"/>
+	</bean>
+
 	<bean id="groupWeeklyArtistChartClient" class="com.github.hakko.musiccabinet.ws.lastfm.GroupWeeklyArtistChartClient">
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 	</bean>
@@ -444,6 +456,10 @@
 	</bean>
 
 	<bean id="userRecommendedArtistsDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcUserRecommendedArtistsDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<bean id="userLovedTracksDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcUserLovedTracksDao">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
 
