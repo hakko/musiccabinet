@@ -25,7 +25,8 @@ public class WebserviceInvocation {
 		USER_GET_RECOMMENDED_ARTISTS	(9, 7),
 		GROUP_WEEKLY_ARTIST_CHART		(10, 7),
 		MB_ARTIST_QUERY					(11, 90),
-		MB_RELEASE_GROUPS				(12, 90);
+		MB_RELEASE_GROUPS				(12, 90),
+		USER_GET_LOVED_TRACKS			(13, 1);
 		
 		private final int databaseId;
 		private final int daysToCache;
