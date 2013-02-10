@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.UserLovedTracks;
+import com.github.hakko.musiccabinet.domain.model.aggr.UserStarredTrack;
 import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
@@ -176,18 +177,31 @@ public class JdbcUserLovedTracksDaoTest {
 		List<Integer> starred1 = starDao.getStarredTrackIds(user1, 0, 10, null);
 		List<Integer> starred2 = starDao.getStarredTrackIds(user2, 0, 10, null);
 
-		assertEquals(Arrays.asList(track2.getId(), track1.getId()), starred1);
-		assertEquals(Arrays.asList(track2.getId()), starred2);
+		assertEquals(asList(track2.getId(), track1.getId()), starred1);
+		assertEquals(asList(track2.getId()), starred2);
 
 		dao.createLovedTracks(asList(new UserLovedTracks(USERNAME2, asList(track2))));
 
 		starred1 = starDao.getStarredTrackIds(user1, 0, 10, null);
 		starred2 = starDao.getStarredTrackIds(user2, 0, 10, null);
 
-		assertEquals(Arrays.asList(track1.getId()), starred1);
-		assertEquals(Arrays.asList(track2.getId()), starred2);
+		assertEquals(asList(track1.getId()), starred1);
+		assertEquals(asList(track2.getId()), starred2);
 	}
-	
+
+	@Test
+	public void identifiesStarredButNotLovedTracks() {
+		starDao.starTrack(user1, track1.getId());
+		starDao.starTrack(user2, track1.getId());
+
+		dao.createLovedTracks(asList(new UserLovedTracks(USERNAME1, asList(track1, track2))));
+
+		List<UserStarredTrack> userStarredTracks = dao.getStarredButNotLovedTracks();
+		assertEquals(1, userStarredTracks.size());
+		assertEquals(user2, userStarredTracks.get(0).getLastFmUser());
+		assertEquals(track1, userStarredTracks.get(0).getStarredTrack());
+	}
+
 	private void deleteLovedAndStarredTracks() {
 		dao.getJdbcTemplate().execute("truncate music.lovedtrack");
 		dao.getJdbcTemplate().execute("truncate library.starredtrack");

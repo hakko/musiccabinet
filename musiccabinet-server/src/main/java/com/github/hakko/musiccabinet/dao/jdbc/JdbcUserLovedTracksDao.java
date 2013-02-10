@@ -11,7 +11,9 @@ import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.UserLovedTracksDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithArtistRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.UserStarredTrackRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.UserLovedTracks;
+import com.github.hakko.musiccabinet.domain.model.aggr.UserStarredTrack;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
 
 public class JdbcUserLovedTracksDao implements UserLovedTracksDao, JdbcTemplateDao {
@@ -64,6 +66,20 @@ public class JdbcUserLovedTracksDao implements UserLovedTracksDao, JdbcTemplateD
 
 		return jdbcTemplate.query(sql, new Object[]{lastFmUsername}, 
 				new TrackWithArtistRowMapper());
+	}
+
+	@Override
+	public List<UserStarredTrack> getStarredButNotLovedTracks() {
+		String sql = "select u.lastfm_user_capitalization, u.session_key,"
+				+ " a.artist_name_capitalization, t.track_name_capitalization"
+				+ " from library.starredtrack st"
+				+ " inner join music.lastfmuser u on st.lastfmuser_id = u.id"
+				+ " inner join music.track t on st.track_id = t.id"
+				+ " inner join music.artist a on t.artist_id = a.id"
+				+ " where not exists (select 1 from music.lovedtrack lt"
+				+ "	 where lt.lastfmuser_id = st.lastfmuser_id and lt.track_id = st.track_id)";
+
+		return jdbcTemplate.query(sql, new UserStarredTrackRowMapper());
 	}
 
 	@Override
