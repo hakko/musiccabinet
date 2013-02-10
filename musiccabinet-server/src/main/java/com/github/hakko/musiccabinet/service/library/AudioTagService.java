@@ -36,6 +36,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.flac.FlacTag;
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.reference.GenreTypes;
 
@@ -49,7 +50,8 @@ public class AudioTagService {
 
 	private static final Logger LOG = Logger.getLogger(AudioTagService.class);
 
-	private static final String ALBUM_ARTIST = "TPE2";
+	private static final String MP3_ALBUM_ARTIST = "TPE2";
+	private static final String FLAC_ALBUM_ARTIST = "ALBUM ARTIST";
 	
 	private Set<String> ALLOWED_EXTENSIONS = new HashSet<>();
 
@@ -144,9 +146,13 @@ public class AudioTagService {
 	
 	private String toAlbumArtist(Tag tag) {
 		String albumArtist = getTagField(tag, FieldKey.ALBUM_ARTIST);
-		if (albumArtist == null && tag instanceof AbstractID3v2Tag && tag.hasField(ALBUM_ARTIST)) {
+		if (albumArtist == null && tag instanceof AbstractID3v2Tag && tag.hasField(MP3_ALBUM_ARTIST)) {
 			// TPE2 is commonly used for "Album artist", but JAudioTagger doesn't pick it up
-			albumArtist = StringUtils.trimToNull(tag.getFirst(ALBUM_ARTIST));
+			albumArtist = StringUtils.trimToNull(tag.getFirst(MP3_ALBUM_ARTIST));
+		}
+		if (albumArtist == null && tag instanceof FlacTag && tag.hasField(FLAC_ALBUM_ARTIST)) {
+			// Some older versions of Foobar and JRiver uses Album Artist (with a space)
+			albumArtist = StringUtils.trimToNull(tag.getFirst(FLAC_ALBUM_ARTIST));
 		}
 		return albumArtist;
 	}

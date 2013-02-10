@@ -6,6 +6,7 @@ import static java.io.File.separatorChar;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.countMatches;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +52,8 @@ public class LibraryBrowserServiceTest {
 	private JdbcMusicDao musicDao;
 	
 	// paths to resources folders containing actual, tagged, mp3 files
-	private String library, media1, media2, media3, media4, media5, media6, media7, media8, aretha;
+	private String library, media0, media1, media2, media3, media4,
+	media5, media6, media7, media8, aretha;
 	
 	@Before
 	public void clearDirectories() throws Exception {
@@ -61,6 +63,7 @@ public class LibraryBrowserServiceTest {
 
 		library = new File(currentThread().getContextClassLoader()
 				.getResource("library").toURI()).getAbsolutePath();
+		media0 = library + separatorChar + "media0";
 		media1 = library + separatorChar + "media1";
 		media2 = library + separatorChar + "media2";
 		media3 = library + separatorChar + "media3";
@@ -269,6 +272,20 @@ public class LibraryBrowserServiceTest {
 		String lyrics = browserService.getLyricsForTrack("Artist", "Track");
 		assertNotNull(lyrics);
 		assertTrue(lyrics.startsWith("In the town where I was born"));
+	}
+
+	@Test
+	public void findsAlbumArtistWithSpaceInFlacFile() throws Exception {
+		scannerService.add(set(media0));
+
+		List<Track> tracks = browserService.getTracks(Arrays.asList(
+				browserService.getTrackId(media0 + separatorChar + "aa.flac")));
+
+		assertNotNull(tracks);
+		assertEquals(1, tracks.size());
+		assertEquals("Artist", tracks.get(0).getArtist().getName());
+		assertEquals("Title", tracks.get(0).getName());
+		assertEquals("Album Artist", tracks.get(0).getMetaData().getAlbumArtist());
 	}
 
 	@Test
