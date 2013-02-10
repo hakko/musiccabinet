@@ -67,15 +67,15 @@ public class Artist implements Comparable<Artist> {
 		.append(name, a.name)
 		.isEquals();
 	}
-	
-	@Override
-	public String toString() {
-		return "artist " + name;
-	}
 
 	@Override
 	public int compareTo(Artist a) {
 		return name.compareTo(a.name);
+	}
+
+	@Override
+	public String toString() {
+		return "artist " + name;
 	}
 
 }

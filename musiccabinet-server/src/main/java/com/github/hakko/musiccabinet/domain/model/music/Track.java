@@ -1,11 +1,12 @@
 package com.github.hakko.musiccabinet.domain.model.music;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.github.hakko.musiccabinet.domain.model.library.MetaData;
 
-public class Track {
+public class Track implements Comparable<Track> {
 
 	private int id = -1; // TODO : start using music.track.id
 	private Artist artist;
@@ -92,6 +93,13 @@ public class Track {
           .append(artist, t.artist)
           .append(name, t.name)
           .isEquals();
+	}
+
+	@Override
+	public int compareTo(Track t) {
+		return new CompareToBuilder()
+		.append(artist, t.artist)
+		.append(name, t.name).toComparison();
 	}
 	
 	@Override
