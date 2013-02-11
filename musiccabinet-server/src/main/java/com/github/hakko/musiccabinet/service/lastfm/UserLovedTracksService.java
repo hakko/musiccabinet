@@ -61,8 +61,10 @@ public class UserLovedTracksService extends SearchIndexUpdateService {
 	}
 
 	private void loveStarredTracks() throws ApplicationException {
-		for (UserStarredTrack ust : userLovedTracksDao.getStarredButNotLovedTracks()) {
-			trackLoveClient.love(ust.getStarredTrack(), ust.getLastFmUser());
+		if (lastFmSettingsService.isSyncStarredAndLovedTracks()) {
+			for (UserStarredTrack ust : userLovedTracksDao.getStarredButNotLovedTracks()) {
+				trackLoveClient.love(ust.getStarredTrack(), ust.getLastFmUser());
+			}
 		}
 	}
 
