@@ -267,6 +267,7 @@
         <property name="tagTopArtistsService" ref="tagTopArtistsService"/>
         <property name="userTopArtistsService" ref="userTopArtistsService"/>
         <property name="userRecommendedArtistsService" ref="userRecommendedArtistsService"/>
+        <property name="userLovedTracksService" ref="userLovedTracksService"/>
         <property name="searchIndexUpdateExecutorService" ref="searchIndexUpdateExecutorService"/>
         <property name="searchIndexUpdateSettingsService" ref="searchIndexUpdateSettingsService"/>
 	</bean>

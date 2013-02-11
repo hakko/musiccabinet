@@ -23,6 +23,7 @@ import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateService;
 import com.github.hakko.musiccabinet.service.lastfm.SearchIndexUpdateSettingsService;
 import com.github.hakko.musiccabinet.service.lastfm.TagInfoService;
 import com.github.hakko.musiccabinet.service.lastfm.TagTopArtistsService;
+import com.github.hakko.musiccabinet.service.lastfm.UserLovedTracksService;
 import com.github.hakko.musiccabinet.service.lastfm.UserRecommendedArtistsService;
 import com.github.hakko.musiccabinet.service.lastfm.UserTopArtistsService;
 import com.github.hakko.musiccabinet.service.library.LibraryScannerService;
@@ -42,6 +43,7 @@ public class LibraryUpdateService {
     private GroupWeeklyArtistChartService groupWeeklyArtistChartService;
     private UserTopArtistsService userTopArtistsService;
     private UserRecommendedArtistsService userRecommendedArtistsService;
+    private UserLovedTracksService userLovedTracksService;
     private ScrobbledTracksService scrobbledTracksService;
     
     private PlaylistGeneratorService playlistGeneratorService;
@@ -145,7 +147,8 @@ public class LibraryUpdateService {
     			albumInfoService, tagInfoService,
     			groupWeeklyArtistChartService,
     			tagTopArtistsService, userTopArtistsService, 
-    			userRecommendedArtistsService, scrobbledTracksService);
+    			userRecommendedArtistsService, userLovedTracksService,
+    			scrobbledTracksService);
     }
     
 	public List<SearchIndexUpdateProgress> getSearchIndexUpdateProgress() {
@@ -215,6 +218,10 @@ public class LibraryUpdateService {
 
 	public void setUserRecommendedArtistsService(UserRecommendedArtistsService userRecommendedArtistsService) {
 		this.userRecommendedArtistsService = userRecommendedArtistsService;
+	}
+
+	public void setUserLovedTracksService(UserLovedTracksService userLovedTracksService) {
+		this.userLovedTracksService = userLovedTracksService;
 	}
 
 	public void setSearchIndexUpdateExecutorService(SearchIndexUpdateExecutorService executorService) {
