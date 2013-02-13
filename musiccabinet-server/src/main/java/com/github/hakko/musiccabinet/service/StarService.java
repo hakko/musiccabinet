@@ -146,7 +146,11 @@ public class StarService {
 		}
 		return mask;
 	}
-	
+
+	public void clearTrackCache() {
+		starredTracks.clear();
+	}
+
 	// Spring setters
 	
 	public void setStarDao(StarDao starDao) {

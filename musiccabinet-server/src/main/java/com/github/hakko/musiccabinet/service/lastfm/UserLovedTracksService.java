@@ -11,6 +11,7 @@ import com.github.hakko.musiccabinet.domain.model.music.Track;
 import com.github.hakko.musiccabinet.exception.ApplicationException;
 import com.github.hakko.musiccabinet.parser.lastfm.UserLovedTracksParser;
 import com.github.hakko.musiccabinet.parser.lastfm.UserLovedTracksParserImpl;
+import com.github.hakko.musiccabinet.service.StarService;
 import com.github.hakko.musiccabinet.util.StringUtil;
 import com.github.hakko.musiccabinet.ws.lastfm.TrackLoveClient;
 import com.github.hakko.musiccabinet.ws.lastfm.UserLovedTracksClient;
@@ -27,18 +28,27 @@ public class UserLovedTracksService extends SearchIndexUpdateService {
 	protected UserLovedTracksClient userLovedTracksClient;
 	protected UserLovedTracksDao userLovedTracksDao;
 	protected TrackLoveClient trackLoveClient;
+	protected StarService starService;
 
 	@Override
 	protected void updateSearchIndex() throws ApplicationException {
+		if (!lastFmSettingsService.isSyncStarredAndLovedTracks()) {
+			return;
+		}
+
+		starService.clearTrackCache();
+
+		updateUserLovedTracks();
+	}
+
+	private void updateUserLovedTracks() throws ApplicationException {
 		List<LastFmUser> users = lastFmSettingsService.getLastFmUsers();
 		setTotalOperations(users.size());
-
-		List<Track> lovedTracks;
-		List<UserLovedTracks> userLovedTracks = new ArrayList<>();
 		
+		List<UserLovedTracks> userLovedTracks = new ArrayList<>();
 		for (LastFmUser user : users) {
 			short page = 0, totalPages = 0;
-			lovedTracks = new ArrayList<>();
+			List<Track> lovedTracks = new ArrayList<>();
 			do {
 				WSResponse wsResponse = userLovedTracksClient.getUserLovedTracks(user, page);
 				if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
@@ -57,14 +67,8 @@ public class UserLovedTracksService extends SearchIndexUpdateService {
 		
 		userLovedTracksDao.createLovedTracks(userLovedTracks);
 
-		loveStarredTracks();
-	}
-
-	private void loveStarredTracks() throws ApplicationException {
-		if (lastFmSettingsService.isSyncStarredAndLovedTracks()) {
-			for (UserStarredTrack ust : userLovedTracksDao.getStarredButNotLovedTracks()) {
-				trackLoveClient.love(ust.getStarredTrack(), ust.getLastFmUser());
-			}
+		for (UserStarredTrack ust : userLovedTracksDao.getStarredButNotLovedTracks()) {
+			trackLoveClient.love(ust.getStarredTrack(), ust.getLastFmUser());
 		}
 	}
 
@@ -94,6 +98,10 @@ public class UserLovedTracksService extends SearchIndexUpdateService {
 
 	public void setTrackLoveClient(TrackLoveClient trackLoveClient) {
 		this.trackLoveClient = trackLoveClient;
+	}
+
+	public void setStarService(StarService starService) {
+		this.starService = starService;
 	}
 
 }
