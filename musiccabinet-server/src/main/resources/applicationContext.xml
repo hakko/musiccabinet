@@ -202,6 +202,7 @@
 		<property name="webserviceHistoryService" ref="webserviceHistoryService"/>
 		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 		<property name="trackLoveClient" ref="trackLoveClient"/>
+		<property name="starService" ref="starService"/>
 	</bean>
 
 	<bean id="groupWeeklyArtistChartService" class="com.github.hakko.musiccabinet.service.lastfm.GroupWeeklyArtistChartService">
