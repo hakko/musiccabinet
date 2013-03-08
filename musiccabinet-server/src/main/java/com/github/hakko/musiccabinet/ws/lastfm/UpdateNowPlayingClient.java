@@ -15,8 +15,9 @@ public class UpdateNowPlayingClient extends AbstractWSPostClient {
 	public WSResponse updateNowPlaying(Scrobble scrobble) throws ApplicationException {
 		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));
-		params.add(new BasicNameValuePair(PARAM_ARTIST, scrobble.getTrack().getMetaData().getArtist()));
+		params.add(new BasicNameValuePair(PARAM_ARTIST, scrobble.getTrack().getArtist().getName()));
 		params.add(new BasicNameValuePair(PARAM_TRACK, scrobble.getTrack().getName()));
+		params.add(new BasicNameValuePair(PARAM_DURATION, "" + scrobble.getTrack().getMetaData().getDuration()));
 		params.add(new BasicNameValuePair(PARAM_SK, scrobble.getLastFmUser().getSessionKey()));
 		
 		return executeWSRequest(params);

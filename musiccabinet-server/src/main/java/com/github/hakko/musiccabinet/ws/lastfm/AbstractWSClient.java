@@ -36,6 +36,7 @@ public abstract class AbstractWSClient {
 	public static final String PARAM_API_SIG = "api_sig";
 	public static final String PARAM_ALBUM = "album";
 	public static final String PARAM_ARTIST = "artist";
+	public static final String PARAM_DURATION = "duration";
 	public static final String PARAM_GROUP = "group";
 	public static final String PARAM_LANG = "lang";
 	public static final String PARAM_LIMIT = "limit";
