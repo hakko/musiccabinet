@@ -2,6 +2,7 @@ package com.github.hakko.musiccabinet.domain.model.aggr;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 
 import com.github.hakko.musiccabinet.domain.model.library.LastFmUser;
@@ -61,6 +62,11 @@ public class Scrobble {
 		.append(track.getId(), s.track.getId())
 		.append(startTime, s.startTime)
 		.isEquals();
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).toString();
 	}
 
 }
