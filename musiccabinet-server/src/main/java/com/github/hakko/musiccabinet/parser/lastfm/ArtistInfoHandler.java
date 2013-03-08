@@ -3,7 +3,7 @@ package com.github.hakko.musiccabinet.parser.lastfm;
 import static com.github.hakko.musiccabinet.configuration.CharSet.UTF8;
 import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
-import static org.apache.commons.lang.StringUtils.replace;
+import static org.apache.commons.lang.StringUtils.remove;
 import static org.apache.commons.lang.math.NumberUtils.toInt;
 
 import java.io.UnsupportedEncodingException;
@@ -84,10 +84,10 @@ public class ArtistInfoHandler extends DefaultHandler {
 	}
 
 	protected String stripLicenseAndReadMoreLink(String biography, String artistName) {
-		biography = replace(biography, LICENSE, "");
+		biography = remove(biography, LICENSE);
 		try {
 			String LINK = format(READ_MORE_LINK, artistName, encode(artistName, UTF8));
-			biography = replace(biography, LINK, "");
+			biography = remove(biography, LINK);
 		} catch (UnsupportedEncodingException e) {
 			// unlikely, and only means we can't remove the "read more about ..." link.
 		}
