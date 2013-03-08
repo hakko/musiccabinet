@@ -1,6 +1,12 @@
 package com.github.hakko.musiccabinet.parser.lastfm;
 
+import static com.github.hakko.musiccabinet.configuration.CharSet.UTF8;
+import static java.lang.String.format;
+import static java.net.URLEncoder.encode;
+import static org.apache.commons.lang.StringUtils.replace;
 import static org.apache.commons.lang.math.NumberUtils.toInt;
+
+import java.io.UnsupportedEncodingException;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -31,6 +37,9 @@ public class ArtistInfoHandler extends DefaultHandler {
 	private static final String ATTR_LARGE = "large";
 	private static final String ATTR_EXTRA_LARGE = "extralarge";
 	
+	private static final String LICENSE = "User-contributed text is available under the Creative Commons By-SA License and may also be available under the GNU FDL.";
+	private static final String READ_MORE_LINK = "<a href=\"http://www.last.fm/music/%s\">Read more about %s on Last.fm</a>.";
+
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) 
 	throws SAXException {
@@ -66,10 +75,23 @@ public class ArtistInfoHandler extends DefaultHandler {
 			}
 		}
 		if (TAG_BIO_SUMMARY.equals(qName)) {
-			artistInfo.setBioSummary(characterData.toString());
+			artistInfo.setBioSummary(stripLicenseAndReadMoreLink(
+					characterData.toString(), artistInfo.getArtist().getName()));
 		} else if (TAG_BIO_CONTENT.equals(qName)) {
-			artistInfo.setBioContent(characterData.toString());
+			artistInfo.setBioContent(stripLicenseAndReadMoreLink(
+					characterData.toString(), artistInfo.getArtist().getName()));
 		}
+	}
+
+	protected String stripLicenseAndReadMoreLink(String biography, String artistName) {
+		biography = replace(biography, LICENSE, "");
+		try {
+			String LINK = format(READ_MORE_LINK, artistName, encode(artistName, UTF8));
+			biography = replace(biography, LINK, "");
+		} catch (UnsupportedEncodingException e) {
+			// unlikely, and only means we can't remove the "read more about ..." link.
+		}
+		return biography.trim();
 	}
 
 	@Override
