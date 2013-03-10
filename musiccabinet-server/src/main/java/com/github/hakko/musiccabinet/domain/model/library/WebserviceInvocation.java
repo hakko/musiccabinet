@@ -91,13 +91,13 @@ public class WebserviceInvocation {
 		this.user = user;
 	}
 	
-	public WebserviceInvocation(Calltype callType, LastFmUser user, short days) {
+	public WebserviceInvocation(Calltype callType, LastFmUser user, short page) {
 		if (user == null) {
 			throw new IllegalArgumentException("Cannot create WebserviceInvocation for user null!");
 		}
 		this.callType = callType;
 		this.user = user;
-		this.page = days;
+		this.page = page;
 	}
 	
 	public WebserviceInvocation(Calltype callType, LastFmGroup group) {
