@@ -19,7 +19,7 @@ public class UserLovedTracksClient extends AbstractWSGetClient {
 
 	public WSResponse getUserLovedTracks(LastFmUser user, short page) throws ApplicationException {
 		WebserviceInvocation webserviceInvocation = 
-			new WebserviceInvocation(USER_GET_LOVED_TRACKS, user);
+			new WebserviceInvocation(USER_GET_LOVED_TRACKS, user, page);
 
 		List<NameValuePair> params = getDefaultParameterList();
 		params.add(new BasicNameValuePair(PARAM_METHOD, METHOD));

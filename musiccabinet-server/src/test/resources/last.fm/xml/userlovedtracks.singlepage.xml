@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lfm status="ok">
+<lovedtracks user="RJ" page="1" perPage="50" totalPages="1" total="1">
+    <track>
+        <name>Lost</name>
+                <mbid>88429f7d-3407-4a8c-8741-e072e03fc71f</mbid>
+                            <url>http://www.last.fm/music/Frank+Ocean/_/Lost</url>
+                <date uts="1343751705">31 Jul 2012, 16:21</date>
+                <artist> 
+            <name>Frank Ocean</name>
+                    <mbid>e520459c-dff4-491d-a6e4-c97be35e0044</mbid>
+                            <url>http://www.last.fm/music/Frank+Ocean</url>
+        </artist>
+                        <image size="small">http://userserve-ak.last.fm/serve/34s/84365607.png</image>
+        <image size="medium">http://userserve-ak.last.fm/serve/64s/84365607.png</image>
+        <image size="large">http://userserve-ak.last.fm/serve/126/84365607.png</image>
+        <image size="extralarge">http://userserve-ak.last.fm/serve/300x300/84365607.png</image>
+                <streamable fulltrack="0">0</streamable>
+    </track>
+</lovedtracks></lfm>
