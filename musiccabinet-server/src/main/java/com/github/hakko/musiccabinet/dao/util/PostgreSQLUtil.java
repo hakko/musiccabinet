@@ -57,6 +57,7 @@ public class PostgreSQLUtil {
 		jdbcTemplate.execute("truncate music.artist cascade");
 		jdbcTemplate.execute("truncate library.directory cascade");
 		jdbcTemplate.execute("truncate music.tag cascade");
+		jdbcTemplate.execute("truncate music.lastfmuser cascade");
 		
 		/*
 		 * If we really wanted to truncate all tables, we could do: 
