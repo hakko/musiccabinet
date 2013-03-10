@@ -21,8 +21,8 @@ public class UnittestLibraryUtil {
 		File file = new File("/unittest", "/unittest/file" + counter++ + ".ogg", new DateTime(), 0);
 		MetaData md = new MetaData();
 		md.setArtist("Unittest Artist");
-		md.setAlbum("Unittest Album " + counter++);
-		md.setTitle("Unittest Title " + counter++);
+		md.setAlbum("Unittest Album " + counter);
+		md.setTitle("Unittest Title " + counter);
 		md.setBitrate((short) 144);
 		md.setVbr(false);
 		md.setDuration((short) 90);
