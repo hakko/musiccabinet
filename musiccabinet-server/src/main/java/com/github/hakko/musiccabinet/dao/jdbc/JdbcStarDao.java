@@ -1,6 +1,7 @@
 package com.github.hakko.musiccabinet.dao.jdbc;
 
 import static com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao.getNameQuery;
+import static java.lang.Short.MAX_VALUE;
 
 import java.util.List;
 
@@ -96,6 +97,10 @@ public class JdbcStarDao implements StarDao, JdbcTemplateDao {
 				+ " and lt.id = " + trackId + " and lastfmuser_id = " + lastFmUser.getId();
 		
 		jdbcTemplate.update(sql);
+	}
+
+	public List<Integer> getStarredTrackIds(LastFmUser lastFmUser) {
+		return getStarredTrackIds(lastFmUser, 0, MAX_VALUE, null);
 	}
 
 	@Override
