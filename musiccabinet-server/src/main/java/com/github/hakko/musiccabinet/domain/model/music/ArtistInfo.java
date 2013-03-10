@@ -18,7 +18,11 @@ public class ArtistInfo {
 	
 	public ArtistInfo() {
 	}
-	
+
+	public ArtistInfo(Artist artist) {
+		setArtist(artist);
+	}
+
 	public ArtistInfo(Artist artist, String largeImageUrl) {
 		setArtist(artist);
 		setLargeImageUrl(largeImageUrl);
