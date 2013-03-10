@@ -80,6 +80,8 @@ public class UserLovedTracksServiceTest {
 	 */
 	@Test
 	public void updatesStarredTracksWhenImportIsOnlyAllowedForOneUser() throws ApplicationException {
+		lastFmDao.createOrUpdateLastFmUser(new LastFmUser(USER1));
+		lastFmDao.createOrUpdateLastFmUser(new LastFmUser(USER2));
 		LastFmUser user1 = lastFmDao.getLastFmUser(USER1),
 				user2 = lastFmDao.getLastFmUser(USER2);
 		Track track1 = new Track("Frank Ocean", "Lost"),
