@@ -1,6 +1,13 @@
 create function music.update_artistinfo() returns int as $$
 begin
 
+	-- create missing artist(s)
+	insert into music.artist (artist_name, artist_name_capitalization)
+	select distinct on (upper(artist_name)) upper(artist_name), artist_name
+	from music.artistinfo_import aii
+		where not exists (select 1 from music.artist
+			where artist_name = upper(aii.artist_name));
+
 	-- update all import rows to correct artist id
 	update music.artistinfo_import aii set artist_id = a.id
 	from music.artist a
