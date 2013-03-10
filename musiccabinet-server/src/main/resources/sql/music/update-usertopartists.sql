@@ -24,8 +24,8 @@ begin
 		where upper(ui.artist_name) = a.artist_name;
 
 	-- delete previous top artists for user
-	delete from music.usertopartist where lastfmuser_id in
-		(select distinct lastfmuser_id from music.usertopartist_import);
+	delete from music.usertopartist uta where exists
+		(select 1 from music.usertopartist_import where lastfmuser_id = uta.lastfmuser_id);
 
 	-- add new top artists for user
 	insert into music.usertopartist (lastfmuser_id, artist_id, rank, days)
