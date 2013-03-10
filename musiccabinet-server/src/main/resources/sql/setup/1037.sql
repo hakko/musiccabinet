@@ -1,0 +1,1 @@
+delete from library.webservice_history where calltype_id = 13;
