@@ -5,7 +5,7 @@
 
 	<groupId>com.github.hakko.musiccabinet</groupId>
 	<artifactId>musiccabinet-server</artifactId>
-	<version>0.7.22</version>
+	<version>0.7.22b</version>
 	<packaging>jar</packaging>
 
 	<name>musiccabinet-server</name>
