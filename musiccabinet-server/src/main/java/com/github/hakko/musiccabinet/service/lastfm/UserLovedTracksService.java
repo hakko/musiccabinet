@@ -57,10 +57,9 @@ public class UserLovedTracksService extends SearchIndexUpdateService {
 							stringUtil.getInputStream());
 					totalPages = parser.getTotalPages();
 					lovedTracks.addAll(parser.getLovedTracks());
-					setTotalOperations(totalPages);
-					addFinishedOperation();
 				}
 			} while (++page < totalPages);
+			addFinishedOperation();
 
 			userLovedTracks.add(new UserLovedTracks(user.getLastFmUsername(), lovedTracks));
 		}
