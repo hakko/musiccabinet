@@ -31,6 +31,7 @@ import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TrackWithMetadataRowMapp
 import com.github.hakko.musiccabinet.dao.util.PostgreSQLUtil;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.domain.model.aggr.LibraryStatistics;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
@@ -675,19 +676,27 @@ public class JdbcLibraryBrowserDao implements LibraryBrowserDao, JdbcTemplateDao
 
 	@Override
 	public int getTrackId(String absolutePath) {
+		String directory = FilenameUtils.getFullPathNoEndSeparator(absolutePath);
+		String filename = FilenameUtils.getName(absolutePath);
+		try {
+			return getTrackId(directory, filename);
+		} catch (DataAccessException e) {
+			return getCaseInsensitiveTrackId(absolutePath);
+		}
+	}
+
+	@Override
+	public int getTrackId(File file) {
+		return getTrackId(file.getDirectory(), file.getFilename());
+	}
+
+	private int getTrackId(String directory, String filename) {
 		String sql = "select lt.id from library.file f"
 		+ " inner join library.directory d on f.directory_id = d.id"
 		+ " inner join library.track lt on lt.file_id = f.id"
 		+ " where d.path = ? and f.filename = ?";
-		
-		String directory = FilenameUtils.getFullPathNoEndSeparator(absolutePath);
-		String filename = FilenameUtils.getName(absolutePath);
 
-		try {
-			return jdbcTemplate.queryForInt(sql, directory, filename);
-		} catch (DataAccessException e) {
-			return getCaseInsensitiveTrackId(absolutePath);
-		}
+		return jdbcTemplate.queryForInt(sql, directory, filename);
 	}
 
 	/*

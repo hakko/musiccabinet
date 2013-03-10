@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
 import com.github.hakko.musiccabinet.domain.model.aggr.LibraryStatistics;
+import com.github.hakko.musiccabinet.domain.model.library.File;
 import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
@@ -46,6 +47,7 @@ public interface LibraryBrowserDao {
 	LibraryStatistics getStatistics();
 	
 	int getTrackId(String filename);
+	int getTrackId(File file);
 	
 	void markAllFilesForFullRescan();
 	List<String> getFilesMissingMetadata();
