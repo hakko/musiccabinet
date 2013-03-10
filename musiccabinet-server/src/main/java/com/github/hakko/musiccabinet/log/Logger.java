@@ -2,14 +2,19 @@ package com.github.hakko.musiccabinet.log;
 
 import static java.io.File.separator;
 
-import org.apache.commons.lang.exception.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
- * Logger implementation which logs to ${JAVA_TMP_DIR}/musiccabinet.log.
+ * Logger implementation which by default logs to ${JAVA_TMP_DIR}/musiccabinet.log.
+ *
+ * If system property "musiccabinet.log.fileName" is defined, this is used instead.
  * 
  * This is a modified version of the Logger class used in Subsonic, written by
  * Sindre Mehus.
@@ -28,23 +33,34 @@ public class Logger {
 	private static PrintWriter printWriter;
 	private static String logFileLocation;
 	
+	private static final String LOG_FILE_LOCATION = "musiccabinet.log.fileName";
+
 	static {
+		File logFile = getLogFile();
+		try {
+			printWriter = new PrintWriter(logFile);
+			logFileLocation = logFile.getAbsolutePath();
+		} catch (IOException e) {
+			System.err.println("Could not write to " + logFile + "!");
+			e.printStackTrace(System.err);
+			printWriter = new PrintWriter(System.err);
+			logFileLocation = "stderr (" + logFile + " not accessible)";
+		}
+	}
+
+	private static File getLogFile() {
+		String logFileLocation = System.getProperty(LOG_FILE_LOCATION);
+		if (logFileLocation != null) {
+			System.out.println("Writing log file to " + logFileLocation);
+			return new File(logFileLocation);
+		}
 		String tmpDir = System.getProperty("java.io.tmpdir");
 		if (!tmpDir.endsWith(separator)) {
 			tmpDir = tmpDir + separator;
 		}
-		File logFile = new File(tmpDir, "musiccabinet.log");
-		try {
-			printWriter = new PrintWriter(logFile);
-			logFileLocation = tmpDir + "musiccabinet.log";
-		} catch (IOException e) {
-			System.err.println("Could not write to musiccabinet.log!");
-			e.printStackTrace(System.err);
-			printWriter = new PrintWriter(System.err);
-			logFileLocation = "stderr (" + tmpDir + " not accessible)";
-		}
+		return new File(tmpDir, "musiccabinet.log");
 	}
-	
+
 	public static String getLogFileLocation() {
 		return logFileLocation;
 	}
