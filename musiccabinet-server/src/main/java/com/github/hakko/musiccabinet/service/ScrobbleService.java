@@ -53,7 +53,10 @@ public class ScrobbleService {
 
 	private static final Logger LOG = Logger.getLogger(ScrobbleService.class);
 
-	/* Async method that registers scrobbles and delegates submissions, in case last.fm is down. */
+	/* Async method that registers scrobbles and delegates submissions, in case last.fm is down.
+	 *
+	 * Submission: Whether this is a "scrobble" or a "now playing" notification.
+	 */
 	public void scrobble(String lastFmUsername, Track track, boolean submission) {
 		LastFmUser lastFmUser = lastFmDao.getLastFmUser(lastFmUsername);
 		Scrobble scrobble = new Scrobble(lastFmUser, track, submission);
