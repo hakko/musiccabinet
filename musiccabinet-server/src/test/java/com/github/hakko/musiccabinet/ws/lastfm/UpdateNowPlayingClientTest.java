@@ -59,6 +59,7 @@ public class UpdateNowPlayingClientTest extends AbstractWSImplementationTest {
 
 				assertHasParameter(params, PARAM_METHOD, method);
 				assertHasParameter(params, PARAM_ARTIST, track.getArtist().getName());
+				assertHasParameter(params, PARAM_ALBUM, track.getMetaData().getAlbum());
 				assertHasParameter(params, PARAM_TRACK, track.getName());
 				assertHasParameter(params, PARAM_DURATION, "" + track.getMetaData().getDuration());
 				assertHasParameter(params, PARAM_SK, user.getSessionKey());
@@ -68,5 +69,5 @@ public class UpdateNowPlayingClientTest extends AbstractWSImplementationTest {
 
 		}.updateNowPlaying(scrobble);
 	}
-	
+
 }
