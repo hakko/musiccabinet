@@ -59,6 +59,7 @@ public class TagOccurrence {
 	public int hashCode() {
 		return new HashCodeBuilder()
 		.append(tag)
+		.append(occurrence)
 		.toHashCode();
 	}
 
