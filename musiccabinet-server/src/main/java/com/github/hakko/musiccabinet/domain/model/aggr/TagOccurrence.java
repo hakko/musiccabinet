@@ -5,7 +5,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /*
  * TagOccurrence doesn't map to a single database table but is rather aggregated
- * from music.tag, music.artisttoptag, library.toptag.
+ * from music.tag, music|library.artisttoptag, library.toptag.
  */
 public class TagOccurrence {
 
@@ -13,7 +13,7 @@ public class TagOccurrence {
 	private String correctedTag;
 	private int occurrence;
 	private boolean use;
-	
+
 	public TagOccurrence(String tag, String correctedTag, int occurrence, boolean use) {
 		this.tag = tag;
 		this.correctedTag = correctedTag;
@@ -52,9 +52,9 @@ public class TagOccurrence {
 	public void setUse(boolean use) {
 		this.use = use;
 	}
-	
+
 	// tag is used as primary id, which is what we want to use for equals method.
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()
@@ -71,9 +71,10 @@ public class TagOccurrence {
 		TagOccurrence to = (TagOccurrence) o;
 		return new EqualsBuilder()
 		.append(tag, to.tag)
+		.append(occurrence, to.occurrence)
 		.isEquals();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[tag=" + tag + ", corrected=" + correctedTag + ", occurrence=" + occurrence + ", use=" + use + "]";
