@@ -9,10 +9,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.github.hakko.musiccabinet.dao.ArtistRecommendationDao;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.ArtistRecommendationRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.ArtistRecommendation;
+import com.github.hakko.musiccabinet.service.lastfm.LastFmSettingsService;
 
 public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
+	private LastFmSettingsService settingsService;
 
 	@Override
 	public List<ArtistRecommendation> getRelatedArtistsInLibrary(
@@ -45,12 +47,13 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	@Override
 	public List<ArtistRecommendation> getGenreArtistsInLibrary(
 			String tagName, int offset, int length, boolean onlyAlbumArtists) {
+		String topTagTable = settingsService.getArtistTopTagsTable();
 		String sql = "select ma.id, ma.artist_name_capitalization, ai.largeimageurl"
 				+ " from music.artistinfo ai"
 				+ " inner join music.artist ma on ai.artist_id = ma.id"
 				+ " inner join library.artist la on la.artist_id = ma.id "
 				+ " inner join ("
-				+ " select artist_id, max(tag_count) as tag_count from music.artisttoptag att"
+				+ " select artist_id, max(tag_count) as tag_count from " + topTagTable + " att"
 				+ " inner join music.tag t on att.tag_id = t.id"
 				+ " where coalesce(corrected_id, id) in "
 				+ " (select id from music.tag where tag_name = ?)"
@@ -105,7 +108,7 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 				+ " (select 1 from library.artist where artist_id = ura.artist_id"
 				+ (onlyAlbumArtists ? " and hasalbums" : "")
 				+ " ) order by rank limit " + amount;
-		
+
 		return jdbcTemplate.queryForList(sql, new Object[]{lastFmUsername}, String.class);
 	}
 
@@ -138,7 +141,7 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 				+ " (select 1 from library.artist where artist_id = gwac.artist_id"
 				+ (onlyAlbumArtists ? " and hasalbums" : "")
 				+ " ) order by gwac.playcount desc limit " + amount;
-		
+
 		return jdbcTemplate.queryForList(sql, new Object[]{lastFmGroupName}, String.class);
 	}
 
@@ -148,9 +151,13 @@ public class JdbcArtistRecommendationDao implements ArtistRecommendationDao, Jdb
 	}
 
 	// Spring setters
-	
+
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService settingsService) {
+		this.settingsService = settingsService;
 	}
 
 }

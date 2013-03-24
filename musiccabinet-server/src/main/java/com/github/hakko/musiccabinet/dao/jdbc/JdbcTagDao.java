@@ -19,17 +19,20 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 
 import com.github.hakko.musiccabinet.dao.TagDao;
-import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagOccurrenceRowMapper;
 import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagIdNameRowMapper;
+import com.github.hakko.musiccabinet.dao.jdbc.rowmapper.TagOccurrenceRowMapper;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagOccurrence;
 import com.github.hakko.musiccabinet.domain.model.aggr.TagTopArtists;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.Tag;
+import com.github.hakko.musiccabinet.service.lastfm.LastFmSettingsService;
 
 public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
-	
+	private LastFmSettingsService settingsService;
+
+	@Override
 	public void createTags(List<String> tags) {
 		String sql = "insert into music.tag (tag_name) select distinct (?)"
 				+ " where not exists (select 1 from music.tag where tag_name = ?)";
@@ -37,19 +40,20 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		batchUpdate.setBatchSize(1000);
 		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
 		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
-		
+
 		for (String tag : tags) {
 			batchUpdate.update(new Object[]{tag, tag});
 		}
 		batchUpdate.flush();
 	}
 
+	@Override
 	public List<Tag> getTags() {
 		String sql = "select id, tag_name from music.tag";
-		
+
 		return jdbcTemplate.query(sql, new TagIdNameRowMapper());
 	}
-	
+
 	/*
 	 * tagCorrection is a map of <original tag name> -> <corrected tag name>
 	 */
@@ -59,7 +63,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		jdbcTemplate.execute(sql);
 
 		if (tagCorrections.size() == 0) return;
-		
+
 		sql = getCreateMissingTagsSql(tagCorrections.size());
 		jdbcTemplate.update(sql, (Object[]) tagCorrections.keySet().
 				toArray(new String[tagCorrections.size()]));
@@ -68,7 +72,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 
 		sql = "update music.tag t set corrected_id = tc.id"
 				+ " from music.tag tc where t.tag_name = ? and tc.tag_name = ?";
-		
+
 		BatchSqlUpdate batchUpdate = new BatchSqlUpdate(jdbcTemplate.getDataSource(), sql);
 		batchUpdate.setBatchSize(1000);
 		batchUpdate.declareParameter(new SqlParameter("t.tag_name", Types.VARCHAR));
@@ -90,12 +94,12 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		sb.append("(select 1 from music.tag where tag_name = t.tag_name)");
 		return sb.toString();
 	}
-	
+
 	@Override
 	public Map<String, String> getCorrectedTags() {
 		String sql = "select t.tag_name, tc.tag_name from music.tag t"
 				+ " inner join music.tag tc on t.corrected_id = tc.id";
-		
+
 		final Map<String, String> correctedTags = new HashMap<>();
 		jdbcTemplate.query(sql, new RowCallbackHandler() {
 			@Override
@@ -105,37 +109,40 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		});
 		return correctedTags;
 	}
-	
+
 	/*
 	 * Returns a list of fairly popular and relevant tags that are used for artists
 	 * found in library.
-	 * 
+	 *
 	 * The tags chosen are the top 250 ordered by having most unique artists with a
 	 * tag count of > 25, and a minimum of 5 artists being tagged with it.
 	 */
 	@Override
 	public List<TagOccurrence> getAvailableTags() {
+		String topTagsTable = settingsService.getArtistTopTagsTable();
 		String sql = "select * from"
-				+ " (select t.tag_name, tc.tag_name, occ.count, case when tt.tag_id is null then false else true end from music.tag t"
-				+ " inner join (select tag_id, count(tag_id) from music.artisttoptag att where tag_count > 25 group by tag_id) occ on occ.tag_id = t.id"
+				+ " (select t.tag_name, tc.tag_name, occ.count,"
+				+ " case when tt.tag_id is null then false else true end from music.tag t"
+				+ " inner join (select tag_id, count(tag_id) from " + topTagsTable + " att"
+				+ " where tag_count > 25 group by tag_id) occ on occ.tag_id = t.id"
 				+ " left outer join music.tag tc on t.corrected_id = tc.id"
 				+ " left outer join (select tag_id from library.toptag) tt on t.id = tt.tag_id"
 				+ " where occ.count >= 5"
 				+ " order by occ.count desc limit 250) top order by 1";
-		
+
 		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}
-	
+
 	@Override
 	public void setTopTags(final List<String> topTags) {
 		assert(topTags != null && topTags.size() > 0);
 
 		jdbcTemplate.update("truncate library.toptag");
-		
+
 		String sql = "insert into library.toptag (tag_id)"
 			+ " select id from music.tag where tag_name in ("
 			+ getParameters(topTags.size()) + ")";
-		
+
 		jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -149,42 +156,44 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 
 	@Override
 	public List<String> getTopTags() {
-		String sql = 
+		String sql =
 			"select tag.tag_name from library.toptag tt"
 			+ " inner join music.tag tag on tt.tag_id = tag.id"
 			+ " order by lower(tag.tag_name)";
-		
+
 		return jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	/*
 	 * Returns top tags (prerequisite), together with an equally distributed weighted
 	 * system indicating popularity for each tag.
-	 * 
+	 *
 	 * Right now, the popularity comes distributed in the interval 10-40, to support a
 	 * tag cloud using the popularity as font size.
-	 * 
+	 *
 	 * TODO : turn min & max values into parameters
 	 */
 	@Override
 	public List<TagOccurrence> getTopTagsOccurrence() {
-		String sql = 
+		String topTagsTable = settingsService.getArtistTopTagsTable();
+		String sql =
 				"select tag.tag_name, null, 10+ntile(30) over (order by pop.sum), true from library.toptag tt"
 				+ " inner join music.tag tag on tt.tag_id = tag.id"
 				+ " inner join (select coalesce(t.corrected_id, t.id) as tag_id, sum(tag_count)"
-				+ "  from music.artisttoptag att inner join music.tag t on att.tag_id = t.id"
-				+ "  group by coalesce(t.corrected_id, t.id)) pop on tag.id = pop.tag_id" 
+				+ "  from " + topTagsTable + " att inner join music.tag t on att.tag_id = t.id"
+				+ "  group by coalesce(t.corrected_id, t.id)) pop on tag.id = pop.tag_id"
 				+ " order by tag.tag_name";
-			
+
 		return jdbcTemplate.query(sql, new TagOccurrenceRowMapper());
 	}
 
 	@Override
 	public List<Tag> getTagsWithoutTopArtists() {
+		String topTagsTable = settingsService.getArtistTopTagsTable();
 		String sql =
 				"select t.id, t.tag_name from music.tag t"
-				+ " left outer join (select tag_id, count(tag_id) from music.artisttoptag where tag_count > 25 group by tag_id) occ on t.id = occ.tag_id"
-				+ " left outer join (select tag_id, sum(tag_count) from music.artisttoptag group by tag_id) pop on t.id = pop.tag_id"
+				+ " left outer join (select tag_id, count(tag_id) from " + topTagsTable + " where tag_count > 25 group by tag_id) occ on t.id = occ.tag_id"
+				+ " left outer join (select tag_id, sum(tag_count) from " + topTagsTable + " group by tag_id) pop on t.id = pop.tag_id"
 				+ " left outer join (select tag_id from library.toptag) tt on t.id = tt.tag_id"
 				+ " where ((occ.count > 5 and pop.sum/occ.count > 50)"
 				+ " or t.id in (select tag_id from library.toptag))"
@@ -215,7 +224,7 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 		batchUpdate.declareParameter(new SqlParameter("tag_name", Types.VARCHAR));
 		batchUpdate.declareParameter(new SqlParameter("artist_name", Types.VARCHAR));
 		batchUpdate.declareParameter(new SqlParameter("rank", Types.INTEGER));
-		
+
 		for (int i = 0; i < artists.size(); i++) {
 			batchUpdate.update(new Object[]{tagName, artists.get(i).getName(), i});
 		}
@@ -239,9 +248,13 @@ public class JdbcTagDao implements TagDao, JdbcTemplateDao {
 	}
 
 	// Spring setters
-	
+
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService settingsService) {
+		this.settingsService = settingsService;
 	}
 
 }

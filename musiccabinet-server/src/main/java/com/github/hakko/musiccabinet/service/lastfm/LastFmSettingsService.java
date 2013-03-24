@@ -14,15 +14,19 @@ public class LastFmSettingsService {
 	private String lastFmUsername;
 	private List<LastFmUser> lastFmUsers;
 	private boolean syncStarredAndLovedTracks;
-	
+
+	// whether to use artist genres calculated from file tags,
+	// over artist genres calculated from artist tags from last.fm
+	private boolean preferLocalGenres;
+
 	public Locale getLocale() {
 		return locale;
 	}
-	
+
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
+
 	public String getLang() {
 		return locale.getLanguage();
 	}
@@ -30,15 +34,15 @@ public class LastFmSettingsService {
 	public String getLastFmUsername() {
 		return lastFmUsername;
 	}
-	
+
 	public void setLastFmUsername(String lastFmUsername) {
 		this.lastFmUsername = lastFmUsername;
 	}
-	
+
 	public List<LastFmUser> getLastFmUsers() {
 		return lastFmUsers;
 	}
-	
+
 	public void setLastFmUsers(List<LastFmUser> lastFmUsers) {
 		this.lastFmUsers = lastFmUsers;
 	}
@@ -50,5 +54,17 @@ public class LastFmSettingsService {
 	public void setSyncStarredAndLovedTracks(boolean syncStarredAndLovedTracks) {
 		this.syncStarredAndLovedTracks = syncStarredAndLovedTracks;
 	}
-	
+
+	public boolean isPreferLocalGenres() {
+		return preferLocalGenres;
+	}
+
+	public void setPreferLocalGenres(boolean preferLocalGenres) {
+		this.preferLocalGenres = preferLocalGenres;
+	}
+
+	public String getArtistTopTagsTable() {
+		return (preferLocalGenres ? "library" : "music") + ".artisttoptag";
+	}
+
 }

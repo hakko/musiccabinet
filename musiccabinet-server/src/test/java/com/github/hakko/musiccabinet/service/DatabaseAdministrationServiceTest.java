@@ -16,23 +16,23 @@ public class DatabaseAdministrationServiceTest {
 
 	@Autowired
 	private DatabaseAdministrationService dbAdmService;
-	
+
 	@Test
 	public void serviceConfigured() {
 		Assert.assertNotNull(dbAdmService);
 	}
-	
+
 	@Test
 	public void serviceFindsAllDatabaseUpdates() {
 		List<Integer> updates = dbAdmService.getDatabaseUpdates();
 
-		final int NR_OF_UPDATES = 38;
-		
+		final int NR_OF_UPDATES = 39;
+
 		Assert.assertNotNull(updates);
 		Assert.assertEquals(NR_OF_UPDATES, updates.size());
 		for (int i = 0; i < NR_OF_UPDATES; i++) {
 			Assert.assertEquals(1000 + i, updates.get(i).intValue());
 		}
 	}
-	
+
 }

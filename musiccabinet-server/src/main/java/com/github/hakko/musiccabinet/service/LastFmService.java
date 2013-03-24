@@ -30,7 +30,7 @@ public class LastFmService {
 		WSResponse wsResponse = authSessionClient.getAuthSession(token);
 		if (wsResponse.wasCallAllowed() && wsResponse.wasCallSuccessful()) {
 			StringUtil stringUtil = new StringUtil(wsResponse.getResponseBody());
-			AuthSessionParser authSessionParser = 
+			AuthSessionParser authSessionParser =
 					new AuthSessionParserImpl(stringUtil.getInputStream());
 			return authSessionParser.getLastFmUser();
 		} else {
@@ -39,11 +39,11 @@ public class LastFmService {
 					+ wsResponse.getErrorCode() + ", " + wsResponse.getErrorMessage() + ")");
 		}
 	}
-	
+
 	public LastFmUser getLastFmUser(String lastFmUsername) {
 		return lastFmDao.getLastFmUser(lastFmUsername);
 	}
-	
+
 	public void createOrUpdateLastFmUser(LastFmUser lastFmUser) {
 		lastFmDao.createOrUpdateLastFmUser(lastFmUser);
 	}
@@ -51,11 +51,11 @@ public class LastFmService {
 	public List<LastFmGroup> getLastFmGroups() {
 		return lastFmDao.getLastFmGroups();
 	}
-	
+
 	public void setLastFmGroups(List<LastFmGroup> lastFmGroups) {
 		lastFmDao.setLastFmGroups(lastFmGroups);
 	}
-	
+
 	// Spring setters
 
 	public void setAuthSessionClient(AuthSessionClient authSessionClient) {
@@ -65,5 +65,5 @@ public class LastFmService {
 	public void setLastFmDao(LastFmDao lastFmDao) {
 		this.lastFmDao = lastFmDao;
 	}
-	
+
 }

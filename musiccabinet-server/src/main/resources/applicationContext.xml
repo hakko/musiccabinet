@@ -382,6 +382,7 @@
 
 	<bean id="libraryBrowserDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcLibraryBrowserDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="musicDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcMusicDao">
@@ -420,6 +421,7 @@
 
 	<bean id="artistRelationDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistRelationDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 	
 	<bean id="artistTopTracksDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistTopTracksDao">
@@ -428,22 +430,27 @@
 
 	<bean id="artistTopTagsDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistTopTagsDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="nameSearchDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcNameSearchDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 	
 	<bean id="playlistGeneratorDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcPlaylistGeneratorDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="artistRecommendationDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcArtistRecommendationDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="tagDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcTagDao">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="lastFmSettingsService" ref="lastFmSettingsService"/>
 	</bean>
 
 	<bean id="tagInfoDao" class="com.github.hakko.musiccabinet.dao.jdbc.JdbcTagInfoDao">

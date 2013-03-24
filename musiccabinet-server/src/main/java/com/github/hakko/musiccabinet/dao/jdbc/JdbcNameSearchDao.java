@@ -26,24 +26,26 @@ import com.github.hakko.musiccabinet.domain.model.music.Album;
 import com.github.hakko.musiccabinet.domain.model.music.Artist;
 import com.github.hakko.musiccabinet.domain.model.music.SearchCriteria;
 import com.github.hakko.musiccabinet.domain.model.music.Track;
+import com.github.hakko.musiccabinet.service.lastfm.LastFmSettingsService;
 
 public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 
 	private JdbcTemplate jdbcTemplate;
+	private LastFmSettingsService settingsService;
 
 	@Override
 	public NameSearchResult<Artist> getArtists(String userQuery, int offset, int limit) {
 		String sql = "select ma.id, ma.artist_name_capitalization"
 				+ " from library.artist la"
-				+ " inner join music.artist ma on la.artist_id = ma.id" 
+				+ " inner join music.artist ma on la.artist_id = ma.id"
 				+ " where la.artist_name_search like ?"
 				+ " order by la.hasalbums desc, ma.artist_name"
 				+ " offset ? limit ?";
-		List<Artist> artists = jdbcTemplate.query(sql, 
+		List<Artist> artists = jdbcTemplate.query(sql,
 				new Object[]{getNameQuery(userQuery), offset, limit}, new ArtistRowMapper());
 		return new NameSearchResult<>(artists, offset);
 	}
-	
+
 	@Override
 	public NameSearchResult<Album> getAlbums(String userQuery, int offset, int limit) {
 		String sql = "select mart.id, mart.artist_name_capitalization,"
@@ -51,7 +53,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " d1.path, f1.filename, d2.path, f2.filename, null, array[]::int[]"
 				+ " from library.album la"
 				+ " inner join music.album malb on la.album_id = malb.id"
-				+ " inner join music.artist mart on malb.artist_id = mart.id" 
+				+ " inner join music.artist mart on malb.artist_id = mart.id"
 				+ " left outer join library.file f1 on f1.id = la.embeddedcoverartfile_id"
 				+ " left outer join library.directory d1 on f1.directory_id = d1.id"
 				+ " left outer join library.file f2 on f2.id = la.coverartfile_id"
@@ -59,9 +61,9 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " where la.album_name_search like ?"
 				+ " order by malb.album_name"
 				+ " offset ? limit ?";
-		List<Album> albums = jdbcTemplate.query(sql, 
+		List<Album> albums = jdbcTemplate.query(sql,
 				new Object[]{getNameQuery(userQuery), offset, limit}, new AlbumRowMapper());
-		
+
 		return new NameSearchResult<>(albums, offset);
 	}
 
@@ -72,11 +74,11 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				+ " lt.id, mt.track_name_capitalization from library.track lt"
 				+ " inner join music.track mt on lt.track_id = mt.id"
 				+ " inner join music.album malb on lt.album_id = malb.id"
-				+ " inner join music.artist mart on mt.artist_id = mart.id" 
+				+ " inner join music.artist mart on mt.artist_id = mart.id"
 				+ " where lt.track_name_search like ?"
 				+ " order by mt.track_name"
 				+ " offset ? limit ?";
-		List<Track> albums = jdbcTemplate.query(sql, 
+		List<Track> albums = jdbcTemplate.query(sql,
 				new Object[]{getNameQuery(userQuery), offset, limit}, new RowMapper<Track>() {
 			@Override
 			public Track mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -88,7 +90,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 				return new Track(rs.getInt(5), rs.getString(6), metaData);
 			}
 		});
-		
+
 		return new NameSearchResult<>(albums, offset);
 	}
 
@@ -98,15 +100,15 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 	 * - for an artist, artist name
 	 * - for an album, artist name + album name
 	 * - for a track, artist name + album name + track name
-	 * 
+	 *
 	 * The words are sorted, so "Express Yourself" from album "Like A Prayer" by Madonna
 	 * is stored as A EXPRESS LIKE MADONNA PRAYER YOURSELF
-	 * 
-	 * When a user searches for "express yourself madonna" or "madonna express yourself", 
+	 *
+	 * When a user searches for "express yourself madonna" or "madonna express yourself",
 	 * we internally translate this to an SQL query:
 	 * track_name_search like '%EXPRESS%MADONNA%YOURSELF%'.
-	 * 
-	 * This method returns such a name search query, for a user query and a search type. 
+	 *
+	 * This method returns such a name search query, for a user query and a search type.
 	 */
 	protected static String getNameQuery(String userQuery) {
 		userQuery = StringUtils.replaceChars(userQuery, '%', ' ');
@@ -133,11 +135,11 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 		select.append(where);
 		select.append(" order by ft.album_id desc, ft.disc_nr, ft.track_nr");
 		select.append(format(" offset %d limit %d", offset, limit));
-		
+
 		return jdbcTemplate.queryForList(select.toString(), args.toArray(), Integer.class);
 	}
-	
-	private void addFileTagCriteria(StringBuilder select, StringBuilder where, 
+
+	private void addFileTagCriteria(StringBuilder select, StringBuilder where,
 			List<Object> args, SearchCriteria criteria) {
 		if (criteria.getArtist() != null) {
 			select.append(" inner join music.artist tag_artist on ft.artist_id = tag_artist.id");
@@ -189,7 +191,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 		}
 	}
 
-	private void addFileHeaderCriteria(StringBuilder select, StringBuilder where, 
+	private void addFileHeaderCriteria(StringBuilder select, StringBuilder where,
 			List<Object> args, SearchCriteria criteria) {
 		if (criteria.hasFileHeaderCriteria()) {
 			select.append(" inner join library.fileheader fh on fh.file_id = lt.file_id");
@@ -201,7 +203,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 			where.append(" and fh.duration <= " + criteria.getDurationTo());
 		}
 		if (criteria.getFiletypes() != null && !criteria.getFiletypes().isEmpty()) {
-			where.append(format(" and fh.type_id in (%s)", 
+			where.append(format(" and fh.type_id in (%s)",
 					getIdParameters(criteria.getFiletypes())));
 		}
 	}
@@ -212,7 +214,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 			select.append(" inner join library.file f on f.id = lt.file_id");
 		}
 		if (criteria.getModifiedDays() != null) {
-			where.append(format(" and age(modified) < '%d days'::interval", 
+			where.append(format(" and age(modified) < '%d days'::interval",
 					criteria.getModifiedDays()));
 		}
 		if (criteria.getDirectory() != null) {
@@ -222,14 +224,15 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 		}
 	}
 
-	private void addExternalCriteria(StringBuilder select, StringBuilder where, 
+	private void addExternalCriteria(StringBuilder select, StringBuilder where,
 			List<Object> args, SearchCriteria criteria) {
 		if (criteria.getSearchQuery() != null) {
 			where.append(" and lt.track_name_search like ?");
 			args.add(getNameQuery(criteria.getSearchQuery()));
 		}
 		if (criteria.getArtistGenre() != null) {
-			where.append(" and exists (select 1 from music.artisttoptag toptag" 
+			String topTagsTable = settingsService.getArtistTopTagsTable();
+			where.append(" and exists (select 1 from " + topTagsTable + " toptag"
 					+ " inner join music.tag toptagtag on toptag.tag_id = toptagtag.id"
 					+ " where toptag.artist_id = ft.artist_id and toptag.tag_count > 25"
 					+ " and toptagtag.tag_name = lower(?))");
@@ -250,7 +253,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 			where.append(format(" and exists (select 1 from library.playcount pld"
 					+ " inner join music.lastfmuser u on pld.lastfmuser_id = u.id"
 					+ " where u.lastfm_user = upper(?) and pld.track_id = ft.track_id"
-					+ " and age(invocation_time) < '%d days'::interval)", 
+					+ " and age(invocation_time) < '%d days'::interval)",
 					criteria.getPlayedLastDays()));
 			args.add(criteria.getLastFmUsername());
 		}
@@ -262,7 +265,7 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 					defaultIfNull(criteria.getPlayCountTo(), Short.MAX_VALUE)));
 		}
 	}
-	
+
 	private String sqlContains(String input) {
 		return '%' + input + '%';
 	}
@@ -270,11 +273,11 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 	private String sqlStartsWith(String input) {
 		return input + '%';
 	}
-	
+
 	@Override
 	public List<String> getFileTypes() {
 		String sql = "select extension from library.fileheader_type order by id";
-		
+
 		return jdbcTemplate.queryForList(sql, String.class);
 	}
 
@@ -284,9 +287,13 @@ public class JdbcNameSearchDao implements NameSearchDao, JdbcTemplateDao {
 	}
 
 	// Spring setters
-	
+
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	public void setLastFmSettingsService(LastFmSettingsService settingsService) {
+		this.settingsService = settingsService;
 	}
 
 }
