@@ -18,7 +18,7 @@
 		<version.postgresql-jdbc>9.0-801.jdbc4</version.postgresql-jdbc>
 		<version.httpclient>4.2.1</version.httpclient>
 		<version.woodstox>4.1.4</version.woodstox>
-		<version.junit>4.10</version.junit>
+		<version.junit>4.13.1</version.junit>
 		<version.mockito>1.9.0</version.mockito>
 		<version.jaudiotagger>2.0.2</version.jaudiotagger>
 		<version.springframework>3.1.0.RELEASE</version.springframework>
